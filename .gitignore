@@ -24,6 +24,8 @@
 !/.screen/
 !/.tmux.conf
 # etc
+!/.config/
+!/.config/*
 !/.gdbinit
 !/README.md
 
