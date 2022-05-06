@@ -1,31 +1,35 @@
-### all ignore ###
+###### all ignore ######
 /*
-/.**
+/.*
+/.*/*
+/.*/*/*
 
-### not ignore ###
-!/.virc
-!/.vimrc
+###### not ignore list ######
+!/.bashrc
+!/.bash_profile
+!/.dircolors
+!/.inputrc
+# vim setting file
 !/.vim/
-!/.vim/*/
-!/.vim/rc/
-!/.vim/rc/**
-!/.vim/ftplugin/**
-!/.vim/ftdetect/**
-!/.vim/template/**
-!/.vim/snippets/**
-!/.vim/after/**
-!/.vim/init.vim
-!/.vim/coc-settings.json
+!/.vimrc
+# exec directory
 !/.bin/
-!/.bin/**
-!/.bin.local
-!/.github/**
-!/.config/
-!/.config/**
-!/.gitignore_global
-!/.gitconfig_shared
-
+!/.bin/*
+!/.bin/completion/
+!/.bin/completion/*
+!/.bin/bash_completion.d/
+!/.bin/bash_completion.d/*
+# application setting file
+!/.screenrc
+!/.screen/
+!/.tmux.conf
+# etc
+!/.gdbinit
 !/README.md
-!/LICENSE
+
+###### ignore list ######
+*.swp
+
+###### final not ignore list ######
 !.gitignore
 !.gitkeep
