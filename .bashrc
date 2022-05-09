@@ -345,6 +345,7 @@ alias vi='vim'
 alias v='vim'
 alias jutf='export LANG=ja_JP.UTF-8'
 alias jeuc='export LANG=ja_JP.euc-jp'
+alias findall="find / -type d -name 'mnt' -prune -o "
 
 ##############
 ### Export ###
