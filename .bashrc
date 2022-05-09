@@ -226,37 +226,47 @@ function __show_status() {
 ######################
 ### PROMPT_COMMAND ###
 ######################
-function __prompt_command() {
-  share_history
-}
+#function __prompt_command() {
+#  share_history
+#}
+#
+#GIT_PS1_SHOWDIRTYSTATE=true
+#GIT_PS1_SHOWUNTRACKEDFILES="enable"
+#GIT_PS1_SHOWUPSTREAM="auto"
+#
+#function colorize_by_host() {
+#  local hash=$(hostname | sha256sum | cut -b 1-2)
+#  local color_fg=$(( $(echo "0x"${hash:0:1}) % 8 ))
+#  local color_bg=$(( $(echo "0x"${hash:1:1}) % 8 ))
+#  if [[ $color_fg -eq $color_bg ]]; then
+#    color_bg=$(( ($color_bg +1) % 8 + 40 ))
+#  else
+#    color_bg=$(( ($color_bg +1) % 8 + 40 ))
+#  fi
+#  if [[ ${color_fg} -eq 0 ]]; then
+#    color_fg=$(( ($color_fg +1) % 8 ))
+#  fi
+#  color_fg=$(( $color_fg + 30 ))
+#  #echo "\e[${color_fg}m\e[${color_bg}m\]"
+#  echo "\e[${color_fg}m\]"
+#}
+#
+#
+#PROMPT_COLOR="\033[0;37;40m"
+##export PS1="${PROMPT_COLOR}[\u@\h:\w]${Color_Off}\$(init_prompt_git_branch)\$(prompt_right_aligned)${PROMPT_COLOR}===\D{%FT%T}===${Color_Off}\n\$ "
+#export PS1="${PROMPT_COLOR}[\u@\h:\w]${Color_Off}\$(init_prompt_git_branch)\$(__show_status)\$(prompt_right_aligned)$(colorize_by_host)===\D{%FT%T}===${Color_Off}\n\$ "
+#PROMPT_COMMAND=__prompt_command
+#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME:+$FUNCNAME(): }'
 
-GIT_PS1_SHOWDIRTYSTATE=true
-GIT_PS1_SHOWUNTRACKEDFILES="enable"
-GIT_PS1_SHOWUPSTREAM="auto"
-
-function colorize_by_host() {
-  local hash=$(hostname | sha256sum | cut -b 1-2)
-  local color_fg=$(( $(echo "0x"${hash:0:1}) % 8 ))
-  local color_bg=$(( $(echo "0x"${hash:1:1}) % 8 ))
-  if [[ $color_fg -eq $color_bg ]]; then
-    color_bg=$(( ($color_bg +1) % 8 + 40 ))
+# 出力の後に改行を入れる
+function add_line {
+  if [[ -z "${PS1_NEWLINE_LOGIN}" ]]; then
+    PS1_NEWLINE_LOGIN=true
   else
-    color_bg=$(( ($color_bg +1) % 8 + 40 ))
+    printf '\n'
   fi
-  if [[ ${color_fg} -eq 0 ]]; then
-    color_fg=$(( ($color_fg +1) % 8 ))
-  fi
-  color_fg=$(( $color_fg + 30 ))
-  #echo "\e[${color_fg}m\e[${color_bg}m\]"
-  echo "\e[${color_fg}m\]"
 }
-
-
-PROMPT_COLOR="\033[0;37;40m"
-#export PS1="${PROMPT_COLOR}[\u@\h:\w]${Color_Off}\$(init_prompt_git_branch)\$(prompt_right_aligned)${PROMPT_COLOR}===\D{%FT%T}===${Color_Off}\n\$ "
-export PS1="${PROMPT_COLOR}[\u@\h:\w]${Color_Off}\$(init_prompt_git_branch)\$(__show_status)\$(prompt_right_aligned)$(colorize_by_host)===\D{%FT%T}===${Color_Off}\n\$ "
-PROMPT_COMMAND=__prompt_command
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME:+$FUNCNAME(): }'
+PROMPT_COMMAND='add_line'
 
 ##############
 ### Custom ###
@@ -341,8 +351,9 @@ alias sc="screen"
 alias cd="cdls"
 alias gre="grep --color=auto -n -H -i -I"
 alias makecolor="makecolor"
-alias vi='vim'
-alias v='vim'
+alias vi='nvim'
+alias v='nvim'
+alias vim='nvim'
 alias jutf='export LANG=ja_JP.UTF-8'
 alias jeuc='export LANG=ja_JP.euc-jp'
 alias findall="find / -type d -name 'mnt' -prune -o "
@@ -352,6 +363,10 @@ alias findall="find / -type d -name 'mnt' -prune -o "
 ##############
 export PATH="$PATH:$HOME/.bin"
 
+if [ -f /usr/local/bin/nvim ]; then
+    export EDITOR=/usr/local/bin/nvim
+fi
+
 ##########################
 ## load local settings ###
 ##########################
@@ -359,5 +374,27 @@ if [ -f ~/.bashrc.local ]; then
     source ~/.bashrc.local
 fi
 
-:
+##########################
+## Powerline setting   ###
+##########################
+function _update_ps1() {
+    PS1=$(powerline-shell $?)
+}
 
+if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
+    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+fi
+
+
+##############################
+# 初回シェル時のみ tmux実行
+##############################
+alias tmux="tmux -u2"
+
+# tmuxの自動起動
+count=`ps aux | grep tmux | grep -v grep | wc -l`
+if test $count -eq 0; then
+    echo `tmux`
+elif test $count -eq 1; then
+    echo `tmux a`
+fi
