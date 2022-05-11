@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo apt-add-repository ppa:fish-shell/release-3;
 sudo apt update;
 sudo apt install \ 
    tree             \
@@ -20,7 +21,9 @@ sudo apt install \
    ruby             \ 
    gem              \
    ruby-dev         \
-   build-essential  
+   build-essential  \
+   fish
 
 sudo pip install --upgrade pynvim
 sudo pip install powerline-shell
+sudo gem install neovim
