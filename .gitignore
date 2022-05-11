@@ -19,7 +19,13 @@
 !/.bin/completion/*
 !/.bin/bash_completion.d/
 !/.bin/bash_completion.d/*
-# application setting file
+!/bin/
+!/bin/*
+!/bin/completion/
+!/bin/completion/*
+!/bin/bash_completion.d/
+!/bin/bash_completion.d/*
+# pplication setting file
 !/.screenrc
 !/.screen/
 !/.tmux.conf
