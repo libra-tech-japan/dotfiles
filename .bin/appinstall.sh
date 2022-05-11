@@ -21,8 +21,8 @@ sudo apt install \
    ruby             \ 
    gem              \
    ruby-dev         \
-   build-essential  \
-   fish
+   build-essential  
+#   fish
 
 sudo pip install --upgrade pynvim
 sudo pip install powerline-shell
