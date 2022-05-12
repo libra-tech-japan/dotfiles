@@ -31,11 +31,16 @@ sudo ln -s -f /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/
 brew install --HEAD neovim
 brew install rust
 
-SAFE_RM=~/.cache/shell-safe-rm
+CHSHE=~/.cache
+SAFE_RM=$CHSHE/shell-safe-rm
 git clone git@github.com:kaelzhang/shell-safe-rm.git $SAFE_RM
 sudo cp $SAFE_RM/bin/rm.sh /bin/safe-rm
 mkdir -p ~/.local/share/Trash/files
 ln -s -f ~/.local/share/Trash/files ~/.trash
+
+OH_MY_TMUX=$CHSHE/oh-my-tmux
+git clone https://github.com/gpakosz/.tmux.git $OH_MY_TMUX
+ln -s -f $OH_MY_TMUX/.tmux.conf ~/.tmux.conf
 
 sudo pip install --upgrade pynvim
 # sudo gem install neovim

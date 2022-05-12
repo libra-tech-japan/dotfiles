@@ -29,6 +29,7 @@
 !/.screenrc
 !/.screen/
 !/.tmux.conf
+!/.tmux.conf.local
 # etc
 !/.config/
 !/.config/*
