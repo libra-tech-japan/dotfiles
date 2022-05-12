@@ -358,6 +358,20 @@ alias jutf='export LANG=ja_JP.UTF-8'
 alias jeuc='export LANG=ja_JP.euc-jp'
 alias findall="find / -type d -name 'mnt' -prune -o "
 
+alias e='exa --icons'
+alias l=e
+alias ls=e
+alias ea='exa -a --icons'
+alias la=ea
+alias ee='exa -aal --icons'
+alias ll=ee
+alias et='exa -T -L 3 -a -I "node_modules|.git|.cache" --icons'
+alias lt=et
+alias eta='exa -T -a -I "node_modules|.git|.cache" --color=always --icons | less -r'
+alias lta=eta
+
+alias g='git'
+alias cat='bat'
 
 ##########################
 ## load local settings ###
@@ -376,7 +390,6 @@ fi
 #if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
 #    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
 #fi
-#
 
 ##############################
 # 初回シェル時のみ tmux実行
