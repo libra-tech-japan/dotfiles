@@ -342,7 +342,7 @@ alias la='ls -a'
 alias lla='ls -al'
 alias lal='ls -al'
 alias cl='clear'
-alias rm="trash"
+alias rm="safe-rm"
 alias Trash="~/.trash"
 alias cp="cp -ip"
 alias mv='mv -i'
@@ -358,14 +358,6 @@ alias jutf='export LANG=ja_JP.UTF-8'
 alias jeuc='export LANG=ja_JP.euc-jp'
 alias findall="find / -type d -name 'mnt' -prune -o "
 
-##############
-### Export ###
-##############
-export PATH="$PATH:$HOME/.bin"
-
-if [ -f /usr/local/bin/nvim ]; then
-    export EDITOR=/usr/local/bin/nvim
-fi
 
 ##########################
 ## load local settings ###
@@ -377,14 +369,14 @@ fi
 ##########################
 ## Powerline setting   ###
 ##########################
-function _update_ps1() {
-    PS1=$(powerline-shell $?)
-}
-
-if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
-    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
-fi
-
+#function _update_ps1() {
+#    PS1=$(powerline-shell $?)
+#}
+#
+#if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
+#    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+#fi
+#
 
 ##############################
 # 初回シェル時のみ tmux実行
@@ -398,3 +390,14 @@ if test $count -eq 0; then
 elif test $count -eq 1; then
     echo `tmux a`
 fi
+
+##############
+### Export ###
+##############
+export PATH="$PATH:$HOME/.bin"
+
+if [ -f /usr/local/bin/nvim ]; then
+    export EDITOR=/usr/local/bin/nvim
+fi
+
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
