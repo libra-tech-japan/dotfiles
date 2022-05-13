@@ -302,10 +302,10 @@ tmux_conf_battery_vbar_palette="gradient"
 #tmux_conf_battery_vbar_palette="#d70000,#ff5f00,#5fff00"  # red, orange, green
 
 # symbols used to indicate whether battery is charging or discharging
-tmux_conf_battery_status_charging="↑"       # U+2191
-tmux_conf_battery_status_discharging="↓"    # U+2193
-#tmux_conf_battery_status_charging="🔌"     # U+1F50C
-#tmux_conf_battery_status_discharging="🔋"  # U+1F50B
+#tmux_conf_battery_status_charging="↑"       # U+2191
+#tmux_conf_battery_status_discharging="↓"    # U+2193
+tmux_conf_battery_status_charging="🔌"     # U+1F50C
+tmux_conf_battery_status_discharging="🔋"  # U+1F50B
 
 # clock style (when you hit <prefix> + t)
 # you may want to use %I:%M %p in place of %R in tmux_conf_theme_status_right
@@ -416,3 +416,25 @@ tmux_conf_uninstall_plugins_on_reload=true
 #
 # "$@"
 # # /!\ do not remove the previous line
+
+# コピーモードを設定する
+# コピーモードでvimキーバインドを使う
+setw -g mode-keys vi
+
+# 'v' で選択を始める
+bind -T copy-mode-vi v send -X begin-selection
+
+# 'V' で行選択
+bind -T copy-mode-vi V send -X select-line
+
+# 'C-v' で矩形選択
+bind -T copy-mode-vi C-v send -X rectangle-toggle
+
+# 'y' でヤンク
+bind -T copy-mode-vi y send -X copy-selection
+
+# 'Y' で行ヤンク
+bind -T copy-mode-vi Y send -X copy-line
+
+# 'C-p'でペースト
+bind-key C-p paste-buffer

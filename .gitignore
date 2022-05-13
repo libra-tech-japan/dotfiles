@@ -33,6 +33,12 @@
 # etc
 !/.config/
 !/.config/*
+!/.config/*/
+!/.config/*/*
+!/.config/*/*/
+!/.config/*/*/*
+!/.config/*/*/*/
+!/.config/*/*/*/*
 !/.gdbinit
 !/README.md
 

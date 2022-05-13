@@ -6,30 +6,6 @@ if [ -f /etc/bashrc ]; then
 fi
 
 ####################
-### 先行読み込み ###
-####################
-if [ -f /etc/profile.d/bash_completion.sh ]; then
-    source /etc/profile.d/bash_completion.sh
-elif [ -f ~/.bin/completion/bash_completion.sh ]; then
-    source ~/.bin/completion/bash_completion.sh
-fi
-
-if [ -f /etc/profile.d/git-prompt.sh ]; then
-    source /etc/profile.d/git-prompt.sh
-elif [ -f ~/.bin/completion/git-prompt.sh ]; then
-    source ~/.bin/completion/git-prompt.sh
-fi
-
-if [ -f ~/.bin/completion/git-completion.bash ]; then
-    source ~/.bin/completion/git-completion.bash
-fi
-
-if [ -f ~/.bin/completion/mvn_completion.sh ]; then
-    source ~/.bin/completion/mvn_completion.sh
-fi
-
-
-####################
 ### Color Define ###
 ####################
 # Reset
@@ -105,168 +81,16 @@ On_IPurple="\033[10;95m"  # Purple
 On_ICyan="\033[0;106m"    # Cyan
 On_IWhite="\033[0;107m"   # White
 
-# Various variables you might want for your PS1 prompt instead
-Time12h="\T"
-Time12a="\@"
-PathShort="\w"
-PathFull="\W"
-NewLine="\n"
-Jobs="\j"
-
 ############################
 ### Function definitions ###
 ############################
-function trash() {
-    NOWDATE=`date  +"%y%m%d-%H%M%S"`
-
-    if [ ! -d ~/.trash/$NOWDATE ];then
-      mkdir -p ~/.trash/$NOWDATE
-    fi
-
-    while [ "$1" != "" ];do
-        if [ "${1:0:1}" != "-" ];then
-            mv "$1" ~/.trash/$NOWDATE && echo "mv "$1" ~/.trash/$NOWDATE"
-        fi
-        shift
-    done
-}
-
-function share_history() {  # 以下の内容を関数として定義
-    history -a  # .bash_historyに前回コマンドを1行追記
-    history -c  # 端末ローカルの履歴を一旦消去
-    history -r  # .bash_historyから履歴を読み込み直す
-}
-
 function cdls() {
     # cdがaliasでループするので\をつける
     \cd "$@";
     if [ "$?" -eq 0 ];then
-        ls --color=auto
+        exa --icons
     fi
 }
-
-function length() {
-    echo -n "${#1}"
-}
-
-function init_prompt_git_branch() {
-    git branch &>/dev/null
-    if [ $? -eq 0 ]; then
-      echo -ne "$(GIT_LFS_SKIP_SMUDGE=1 echo `git status` | grep "nothing to commit" > /dev/null 2>&1; \
-      if [ "$?" -eq "0" ]; then \
-        # @4 - Clean repository - nothing to commit
-        echo ""$Green""$(__git_ps1 " (%s)"); \
-      else \
-        # @5 - Changes to working tree
-        echo ""$IRed""$(__git_ps1 " (%s)"); \
-      fi) "$BYellow$Color_Off""
-    else
-      # @2 - Prompt when not in GIT repo
-      echo -ne " "$Yellow$Color_Off""
-    fi
-}
-
-function branch_length()  {
-    #length "`echo -ne \"\$(__git_ps1)\"`"
-    length "`echo -ne ===2017-06-06T21:58:36===`"
-}
-
-function prompt_right_aligned() {
-    echo -ne "\e[$[COLUMNS]D\e[$[COLUMNS-$(branch_length)-1]C"
-}
-
-function makecolor() {
-    LANG=C make $* 2>&1 \
-    | while read line ; do
-    case $line in
-        *error:\ *)
-          echo -e "$BIRed"$line"$Color_Off"
-          ;;
-
-        *warning:\ *)
-          echo -e "$BIYellow"$line"$Color_Off"
-          ;;
-
-        *undefined\ reference*)
-          echo -e "$BIPurple"$line"$Color_Off"
-          ;;
-
-        *)
-          echo $line
-          ;;
-
-        esac
-    done
-}
-
-function __show_status() {
-    local status=$(echo ${PIPESTATUS[@]})
-    local SETCOLOR_SUCCESS="echo -ne $Green"
-    local SETCOLOR_FAILURE="echo -ne $Red"
-    local SETCOLOR_WARNING="echo -ne $Yellow"
-    local SETCOLOR_NORMAL="echo -ne $Color_Off"
-
-    local SETCOLOR s
-    for s in ${status}; do
-        if [ ${s} -gt 100 ] ; then
-            SETCOLOR=${SETCOLOR_FAILURE}
-        elif [ ${s} -gt 0 ] ; then
-            SETCOLOR=${SETCOLOR_WARNING}
-        else
-            SETCOLOR=${SETCOLOR_SUCCESS}
-        fi
-    done
-    ${SETCOLOR}
-    if [ "${SETCOLOR}" != "${SETCOLOR_SUCCESS}" ]; then
-        echo -ne "(${status// /|}) "
-    fi
-    ${SETCOLOR_NORMAL}
-}
-
-######################
-### PROMPT_COMMAND ###
-######################
-#function __prompt_command() {
-#  share_history
-#}
-#
-#GIT_PS1_SHOWDIRTYSTATE=true
-#GIT_PS1_SHOWUNTRACKEDFILES="enable"
-#GIT_PS1_SHOWUPSTREAM="auto"
-#
-#function colorize_by_host() {
-#  local hash=$(hostname | sha256sum | cut -b 1-2)
-#  local color_fg=$(( $(echo "0x"${hash:0:1}) % 8 ))
-#  local color_bg=$(( $(echo "0x"${hash:1:1}) % 8 ))
-#  if [[ $color_fg -eq $color_bg ]]; then
-#    color_bg=$(( ($color_bg +1) % 8 + 40 ))
-#  else
-#    color_bg=$(( ($color_bg +1) % 8 + 40 ))
-#  fi
-#  if [[ ${color_fg} -eq 0 ]]; then
-#    color_fg=$(( ($color_fg +1) % 8 ))
-#  fi
-#  color_fg=$(( $color_fg + 30 ))
-#  #echo "\e[${color_fg}m\e[${color_bg}m\]"
-#  echo "\e[${color_fg}m\]"
-#}
-#
-#
-#PROMPT_COLOR="\033[0;37;40m"
-##export PS1="${PROMPT_COLOR}[\u@\h:\w]${Color_Off}\$(init_prompt_git_branch)\$(prompt_right_aligned)${PROMPT_COLOR}===\D{%FT%T}===${Color_Off}\n\$ "
-#export PS1="${PROMPT_COLOR}[\u@\h:\w]${Color_Off}\$(init_prompt_git_branch)\$(__show_status)\$(prompt_right_aligned)$(colorize_by_host)===\D{%FT%T}===${Color_Off}\n\$ "
-#PROMPT_COMMAND=__prompt_command
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME:+$FUNCNAME(): }'
-
-# 出力の後に改行を入れる
-function add_line {
-  if [[ -z "${PS1_NEWLINE_LOGIN}" ]]; then
-    PS1_NEWLINE_LOGIN=true
-  else
-    printf '\n'
-  fi
-}
-PROMPT_COMMAND='add_line'
 
 ##############
 ### Custom ###
@@ -350,7 +174,7 @@ alias scp="scp -p"
 alias sc="screen"
 alias cd="cdls"
 alias gre="grep --color=auto -n -H -i -I"
-alias makecolor="makecolor"
+# alias makecolor="makecolor"
 alias vi='nvim'
 alias v='nvim'
 alias vim='nvim'
@@ -373,23 +197,20 @@ alias lta=eta
 alias g='git'
 alias cat='bat'
 
+# 現在の作業リポジトリをブラウザで表示する
+alias hb='hub browse'
+# リポジトリの一覧の中からブラウザで表示したい対象を検索・表示する
+alias hbrl='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
+# リポジトリのディレクトリへ移動
+alias gcd='cd $(ghq root)/$(ghq list | peco)'
+
+
 ##########################
 ## load local settings ###
 ##########################
 if [ -f ~/.bashrc.local ]; then
     source ~/.bashrc.local
 fi
-
-##########################
-## Powerline setting   ###
-##########################
-#function _update_ps1() {
-#    PS1=$(powerline-shell $?)
-#}
-#
-#if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
-#    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
-#fi
 
 ##############################
 # 初回シェル時のみ tmux実行
@@ -414,3 +235,196 @@ if [ -f /usr/local/bin/nvim ]; then
 fi
 
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+
+############################
+### fish shell   
+############################
+exec fish
+
+###################
+### 先行読み込み ###
+####################
+#if [ -f /etc/profile.d/bash_completion.sh ]; then
+#    source /etc/profile.d/bash_completion.sh
+#elif [ -f ~/.bin/completion/bash_completion.sh ]; then
+#    source ~/.bin/completion/bash_completion.sh
+#fi
+#
+#if [ -f /etc/profile.d/git-prompt.sh ]; then
+#    source /etc/profile.d/git-prompt.sh
+#elif [ -f ~/.bin/completion/git-prompt.sh ]; then
+#    source ~/.bin/completion/git-prompt.sh
+#fi
+#
+#if [ -f ~/.bin/completion/git-completion.bash ]; then
+#    source ~/.bin/completion/git-completion.bash
+#fi
+#
+#if [ -f ~/.bin/completion/mvn_completion.sh ]; then
+#    source ~/.bin/completion/mvn_completion.sh
+#fi
+
+# Various variables you might want for your PS1 prompt instead
+#Time12h="\T"
+#Time12a="\@"
+#PathShort="\w"
+#PathFull="\W"
+#NewLine="\n"
+#Jobs="\j"
+
+#function trash() {
+#    NOWDATE=`date  +"%y%m%d-%H%M%S"`
+#
+#    if [ ! -d ~/.trash/$NOWDATE ];then
+#      mkdir -p ~/.trash/$NOWDATE
+#    fi
+#
+#    while [ "$1" != "" ];do
+#        if [ "${1:0:1}" != "-" ];then
+#            mv "$1" ~/.trash/$NOWDATE && echo "mv "$1" ~/.trash/$NOWDATE"
+#        fi
+#        shift
+#    done
+#}
+
+#function share_history() {  # 以下の内容を関数として定義
+#    history -a  # .bash_historyに前回コマンドを1行追記
+#    history -c  # 端末ローカルの履歴を一旦消去
+#    history -r  # .bash_historyから履歴を読み込み直す
+#}
+
+#function length() {
+#    echo -n "${#1}"
+#}
+
+#function init_prompt_git_branch() {
+#    git branch &>/dev/null
+#    if [ $? -eq 0 ]; then
+#      echo -ne "$(GIT_LFS_SKIP_SMUDGE=1 echo `git status` | grep "nothing to commit" > /dev/null 2>&1; \
+#      if [ "$?" -eq "0" ]; then \
+#        # @4 - Clean repository - nothing to commit
+#        echo ""$Green""$(__git_ps1 " (%s)"); \
+#      else \
+#        # @5 - Changes to working tree
+#        echo ""$IRed""$(__git_ps1 " (%s)"); \
+#      fi) "$BYellow$Color_Off""
+#    else
+#      # @2 - Prompt when not in GIT repo
+#      echo -ne " "$Yellow$Color_Off""
+#    fi
+#}
+
+#function branch_length()  {
+#    #length "`echo -ne \"\$(__git_ps1)\"`"
+#    length "`echo -ne ===2017-06-06T21:58:36===`"
+#}
+#
+#function prompt_right_aligned() {
+#    echo -ne "\e[$[COLUMNS]D\e[$[COLUMNS-$(branch_length)-1]C"
+#}
+#
+#function makecolor() {
+#    LANG=C make $* 2>&1 \
+#    | while read line ; do
+#    case $line in
+#        *error:\ *)
+#          echo -e "$BIRed"$line"$Color_Off"
+#          ;;
+#
+#        *warning:\ *)
+#          echo -e "$BIYellow"$line"$Color_Off"
+#          ;;
+#
+#        *undefined\ reference*)
+#          echo -e "$BIPurple"$line"$Color_Off"
+#          ;;
+#
+#        *)
+#          echo $line
+#          ;;
+#
+#        esac
+#    done
+#}
+
+#function __show_status() {
+#    local status=$(echo ${PIPESTATUS[@]})
+#    local SETCOLOR_SUCCESS="echo -ne $Green"
+#    local SETCOLOR_FAILURE="echo -ne $Red"
+#    local SETCOLOR_WARNING="echo -ne $Yellow"
+#    local SETCOLOR_NORMAL="echo -ne $Color_Off"
+#
+#    local SETCOLOR s
+#    for s in ${status}; do
+#        if [ ${s} -gt 100 ] ; then
+#            SETCOLOR=${SETCOLOR_FAILURE}
+#        elif [ ${s} -gt 0 ] ; then
+#            SETCOLOR=${SETCOLOR_WARNING}
+#        else
+#            SETCOLOR=${SETCOLOR_SUCCESS}
+#        fi
+#    done
+#    ${SETCOLOR}
+#    if [ "${SETCOLOR}" != "${SETCOLOR_SUCCESS}" ]; then
+#        echo -ne "(${status// /|}) "
+#    fi
+#    ${SETCOLOR_NORMAL}
+#}
+
+######################
+### PROMPT_COMMAND ###
+######################
+#function __prompt_command() {
+#  share_history
+#}
+#
+#GIT_PS1_SHOWDIRTYSTATE=true
+#GIT_PS1_SHOWUNTRACKEDFILES="enable"
+#GIT_PS1_SHOWUPSTREAM="auto"
+#
+#function colorize_by_host() {
+#  local hash=$(hostname | sha256sum | cut -b 1-2)
+#  local color_fg=$(( $(echo "0x"${hash:0:1}) % 8 ))
+#  local color_bg=$(( $(echo "0x"${hash:1:1}) % 8 ))
+#  if [[ $color_fg -eq $color_bg ]]; then
+#    color_bg=$(( ($color_bg +1) % 8 + 40 ))
+#  else
+#    color_bg=$(( ($color_bg +1) % 8 + 40 ))
+#  fi
+#  if [[ ${color_fg} -eq 0 ]]; then
+#    color_fg=$(( ($color_fg +1) % 8 ))
+#  fi
+#  color_fg=$(( $color_fg + 30 ))
+#  #echo "\e[${color_fg}m\e[${color_bg}m\]"
+#  echo "\e[${color_fg}m\]"
+#}
+#
+#
+#PROMPT_COLOR="\033[0;37;40m"
+##export PS1="${PROMPT_COLOR}[\u@\h:\w]${Color_Off}\$(init_prompt_git_branch)\$(prompt_right_aligned)${PROMPT_COLOR}===\D{%FT%T}===${Color_Off}\n\$ "
+#export PS1="${PROMPT_COLOR}[\u@\h:\w]${Color_Off}\$(init_prompt_git_branch)\$(__show_status)\$(prompt_right_aligned)$(colorize_by_host)===\D{%FT%T}===${Color_Off}\n\$ "
+#PROMPT_COMMAND=__prompt_command
+#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME:+$FUNCNAME(): }'
+
+# 出力の後に改行を入れる
+#function add_line {
+#  if [[ -z "${PS1_NEWLINE_LOGIN}" ]]; then
+#    PS1_NEWLINE_LOGIN=true
+#  else
+#    printf '\n'
+#  fi
+#}
+#PROMPT_COMMAND='add_line'
+
+##########################
+## Powerline setting   ###
+##########################
+#function _update_ps1() {
+#    PS1=$(powerline-shell $?)
+#}
+#
+#if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
+#    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+#fi
+
