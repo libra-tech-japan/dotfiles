@@ -22,14 +22,22 @@ sudo apt install ruby             -y
 sudo apt install gem              -y
 sudo apt install ruby-dev         -y
 sudo apt install build-essential  -y
+sudo apt install fish		  -y
 
-
+# Homebrew Install
 PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 sudo ln -s -f /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/
 
 brew install --HEAD neovim
+brew install go
 brew install rust
+brew install exa
+brew install bat
+brew install ghq
+brew install peco
+brew install hub
+brew install fzf
 
 CHSHE=~/.cache
 SAFE_RM=$CHSHE/shell-safe-rm
@@ -42,6 +50,5 @@ OH_MY_TMUX=$CHSHE/oh-my-tmux
 git clone https://github.com/gpakosz/.tmux.git $OH_MY_TMUX
 ln -s -f $OH_MY_TMUX/.tmux.conf ~/.tmux.conf
 
-sudo pip install --upgrade pynvim
-# sudo gem install neovim
+curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
 
