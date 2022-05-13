@@ -38,3 +38,4 @@ ssh -T git@github.com
 4. fish Plugin
 `fisher install jethrokuan/z`
 `fisher install oh-my-fish/theme-bobthefish4. fish Plugin`
+
