@@ -1,5 +1,5 @@
 """"""""""""""""""
-"""   .vimrc   """
+"""   .vimrc   
 """"""""""""""""""
 set incsearch
 set ignorecase
