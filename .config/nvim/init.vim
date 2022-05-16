@@ -27,7 +27,7 @@ set belloff=all
 nnoremap <Space>q :<C-u>q!<Return>
 
 " ESC*2 でハイライトやめる
-nnoremap <Esc><Esc> :<C-u>set nohlsearch<Return>
+nnoremap <silent><Esc><Esc> :<C-u>set nohlsearch<Return>
 
 "tab/indentの設定
 set shellslash
