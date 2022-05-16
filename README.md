@@ -11,7 +11,7 @@ Can be used quickly.
 sudo apt update
 sudo apt upgrade
 
-# git設定
+# git setting
 git config --global user.email "*******@example.com"
 git config --global user.name "USER NAME"
 git config --global core.editor 'vim -c "set fenc=utf-8"'  
@@ -24,7 +24,7 @@ git config --global color.branch auto
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
   lga = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 
-# GitHub接続設定
+# GitHub connection settiong
 ssh-keygen
 ssh -T git@github.com
 
