@@ -39,16 +39,30 @@ brew install peco
 brew install hub
 brew install fzf
 
-CHSHE=~/.cache
-SAFE_RM=$CHSHE/shell-safe-rm
-git clone git@github.com:kaelzhang/shell-safe-rm.git $SAFE_RM
+# CasheDirectory
+CACHE=~/.cache
+rm -rf $CACHE
+
+#Install shell-safe-rm
+SAFE_RM=$CACHE/shell-safe-rm
+git clone https://github.com/kaelzhang/shell-safe-rm.git $SAFE_RM
 sudo cp $SAFE_RM/bin/rm.sh /bin/safe-rm
 mkdir -p ~/.local/share/Trash/files
 ln -s -f ~/.local/share/Trash/files ~/.trash
 
-OH_MY_TMUX=$CHSHE/oh-my-tmux
+# Install oh-my-tmux
+OH_MY_TMUX=$CACHE/oh-my-tmux
 git clone https://github.com/gpakosz/.tmux.git $OH_MY_TMUX
 ln -s -f $OH_MY_TMUX/.tmux.conf ~/.tmux.conf
 
+# Install git-secrets
+SECRET=$CACHE/git-secrets
+git clone https://github.com/awslabs/git-secrets.git $SECRET
+sudo chmod +x $SECRET/git-secrets
+sudo cp $SECRET/git-secrets /usr/local/bin/
+git secrets --register-aws --global
+git secrets --install
+
+# Install fisher
 curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
 
