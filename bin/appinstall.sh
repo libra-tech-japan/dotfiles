@@ -30,6 +30,8 @@ PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 sudo ln -s -f /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/
 
 brew install --HEAD neovim
+brew install --HEAD tree-sitter
+brew install --HEAD luajit
 brew install go
 brew install rust
 brew install exa
@@ -38,6 +40,7 @@ brew install ghq
 brew install peco
 brew install hub
 brew install fzf
+brew install anyenv
 
 # CasheDirectory
 CACHE=~/.cache
@@ -65,4 +68,9 @@ git secrets --install
 
 # Install fisher
 curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
+
+# vim plugin maneger
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
 

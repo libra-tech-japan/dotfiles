@@ -42,3 +42,5 @@ alias lta=eta
 alias g='git'
 alias cat='bat'
 
+status --is-interactive; and source (nodenv init -|psub)
+

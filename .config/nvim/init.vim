@@ -23,7 +23,7 @@ set mouse=a
 " ビープ音を消す"
 set belloff=all
 
-" <Space>q で強制終了
+
 nnoremap <Space>q :<C-u>q!<Return>
 
 " ESC*2 でハイライトやめる
@@ -129,4 +129,35 @@ set encoding=utf-8
 set fileencodings=utf-8,euc-jp,iso-2022-jp,cp932,sjis
 set fileformats=unix,dos,mac
 
+
+" ==================== プラグイン ==================== "
+call plug#begin('~/.config/nvim/plugged')
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'easymotion/vim-easymotion'
+Plug 'tpope/vim-commentary'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'preservim/nerdtree'
+Plug 'ryanoasis/vim-devicons'
+Plug 'neovim/nvim-lspconfig'
+
+call plug#end()
+
+
+" -- vim-sasymotion -----------------
+" <Leader>f{char} to move to {char}
+map  <Leader>f <Plug>(easymotion-bd-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+
+" -- NERDTree SETTINGS --------------
+nmap <C-f> :NERDTreeToggle<CR>
+
+" -- Airline SETTINGS -------------
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#enabled = 1
+nmap <C-p> <Plug>AirlineSelectPrevTab
+nmap <C-n> <Plug>AirlineSelectNextTab
 
