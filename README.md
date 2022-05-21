@@ -42,9 +42,9 @@ ssh -T git@github.com
 2. `./bin/sh applnstall.sh
 
 3. `./bin/dotsinstall.sh`
+```
 
-4. Create a new Zsh configuration by copying/linking the Zsh configuration files provided:
-
+# Create a new Zsh configuration by copying/linking the Zsh configuration files provided:
 ```
 setopt EXTENDED_GLOB
 for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
