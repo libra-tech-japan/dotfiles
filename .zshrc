@@ -38,12 +38,15 @@ compinit
 #############
 ### Alias ###
 #############
+alias sc='source ~/.zshrc'
+
 alias ls='ls --color=auto'
 alias l='ls'
 alias ll='ls -l'
 alias la='ls -a'
 alias lla='ls -al'
 alias lal='ls -al'
+
 alias cl='clear'
 alias rm="safe-rm"
 alias Trash="~/.trash"
@@ -62,16 +65,23 @@ alias findall="find / -type d -name 'mnt' -prune -o "
 alias e='exa --icons'
 alias l=e
 alias ls=e
+
+alias ee='exa -l -h -@ -m --icons --git --time-style=long-iso --color=automatic --group-directories-first'
+alias ll=ee
+
 alias ea='exa -l -aa -h -@ -m --icons --git --time-style=long-iso --color=automatic --group-directories-first'
 alias la=ea
-alias ee='exa -aal --icons'
-alias ll=ee
+
 alias et='exa -T -L 3 -a -I "node_modules|.git|.cache" --icons'
 alias lt=et
 alias eta='exa -T -a -I "node_modules|.git|.cache" --color=always --icons | less -r'
 alias lta=eta
 
 alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit -m'
+
 alias cat='bat'
 
 # 現在の作業リポジトリをブラウザで表示する

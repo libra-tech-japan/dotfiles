@@ -54,6 +54,7 @@ brew install peco
 brew install hub
 brew install fzf
 brew install anyenv
+brew install zsh-syntax-highlighting
 
 # CasheDirectory
 CACHE=~/.cache
