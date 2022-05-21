@@ -45,7 +45,7 @@ set cindent
 let mapleader="\<Space>"
 
 " reload vimrc
-nnoremap <leader><leader> :source ~/.ideavimrc<cr>
+nnoremap <leader><leader> :source ~/.config/nvim/init.vim<cr>
 "  上書き保存"
 nnoremap <C-s> :w<CR>
 
@@ -111,7 +111,6 @@ set splitbelow
 set splitright
 
 " ==================== カラー ==================== "
-colorscheme hybrid          " カラースキーム
 syntax on " シンタックスカラーリングオン
 filetype indent on " ファイルタイプによるインデントを行う
 filetype plugin on " ファイルタイプごとのプラグインを使う
@@ -140,10 +139,21 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-commentary'
+Plug 'vim-jp/vimdoc-ja'
+Plug 'junegunn/fzf', {'dir': '~/.fzf_bin', 'do': './install --all'}
+
+
+" https://zenn.dev/yano/articles/vim_frontend_development_2021
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'preservim/nerdtree'
-Plug 'ryanoasis/vim-devicons'
-Plug 'neovim/nvim-lspconfig'
+Plug 'lambdalisue/fern.vim'
+Plug 'lambdalisue/fern-git-status.vim'
+Plug 'lambdalisue/fern-renderer-nerdfont.vim'
+Plug 'lambdalisue/fern-hijack.vim'
+Plug 'yuki-yano/fern-preview.vim'
+Plug 'lambdalisue/gina.vim'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'sainnhe/sonokai'
+Plug 'sainnhe/gruvbox-material'
 
 call plug#end()
 
@@ -155,7 +165,7 @@ nmap <Leader>f <Plug>(easymotion-overwin-f)
 
 
 " -- NERDTree SETTINGS --------------
-nmap <C-f> :NERDTreeToggle<CR>
+" nmap <C-f> :NERDTreeToggle<CR>
 
 " -- Airline SETTINGS -------------
 let g:airline_powerline_fonts = 1
@@ -163,3 +173,75 @@ let g:airline#extensions#tabline#enabled = 1
 nmap <C-p> <Plug>AirlineSelectPrevTab
 nmap <C-n> <Plug>AirlineSelectNextTab
 
+
+nnoremap [dev]    <Nop>
+xnoremap [dev]    <Nop>
+nmap     m        [dev]
+xmap     m        [dev]
+nnoremap [ff]     <Nop>
+xnoremap [ff]     <Nop>
+nmap     z        [ff]
+xmap     z        [ff]
+
+
+"" -- coc.nvim -----------------
+let g:coc_global_extensions = ['coc-tsserver', 'coc-eslint8', 'coc-prettier', 'coc-git', 'coc-fzf-preview', 'coc-lists']
+
+inoremap <silent> <expr> <C-Space> coc#refresh()
+nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
+nmap     <silent> [dev]rn <Plug>(coc-rename)
+nmap     <silent> [dev]a  <Plug>(coc-codeaction-selected)iw
+
+function! s:coc_typescript_settings() abort
+  nnoremap <silent> <buffer> [dev]f :<C-u>CocCommand eslint.executeAutofix<CR>:CocCommand prettier.formatFile<CR>
+endfunction
+
+augroup coc_ts
+  autocmd!
+  autocmd FileType typescript,typescriptreact call <SID>coc_typescript_settings()
+augroup END
+
+function! s:show_documentation() abort
+  if index(['vim','help'], &filetype) >= 0
+    execute 'h ' . expand('<cword>')
+  elseif coc#rpc#ready()
+    call CocActionAsync('doHover')
+  endif
+endfunction
+
+"" -- fzf-preview  ----------------------
+let $BAT_THEME                     = 'gruvbox-dark'
+let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'gruvbox-dark'
+
+nnoremap <silent> <C-p>  :<C-u>CocCommand fzf-preview.FromResources buffer project_mru project<CR>
+nnoremap <silent> [ff]s  :<C-u>CocCommand fzf-preview.GitStatus<CR>
+nnoremap <silent> [ff]gg :<C-u>CocCommand fzf-preview.GitActions<CR>
+nnoremap <silent> [ff]b  :<C-u>CocCommand fzf-preview.Buffers<CR>
+nnoremap          [ff]f  :<C-u>CocCommand fzf-preview.ProjectGrep --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>
+xnoremap          [ff]f  "sy:CocCommand fzf-preview.ProjectGrep --add-fzf-arg=--exact --add-fzf-arg=--no-sort<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+
+nnoremap <silent> [ff]q  :<C-u>CocCommand fzf-preview.CocCurrentDiagnostics<CR>
+nnoremap <silent> [ff]rf :<C-u>CocCommand fzf-preview.CocReferences<CR>
+nnoremap <silent> [ff]d  :<C-u>CocCommand fzf-preview.CocDefinition<CR>
+nnoremap <silent> [ff]t  :<C-u>CocCommand fzf-preview.CocTypeDefinition<CR>
+nnoremap <silent> [ff]o  :<C-u>CocCommand fzf-preview.CocOutline --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
+
+"" -- fern -------------------------
+nnoremap <silent> <Leader>e :<C-u>Fern . -drawer<CR>
+nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
+
+"" -- treesitter ---------------------
+lua <<EOF
+require('nvim-treesitter.configs').setup {
+  ensure_installed = {
+    "typescript",
+    "tsx",
+  },
+  highlight = {
+    enable = true,
+  },
+}
+EOF
+
+"" -- sonokai -------------------
+colorscheme sonokai

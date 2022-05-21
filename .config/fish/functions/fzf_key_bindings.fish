@@ -1,0 +1,1 @@
+/Users/akira/.fzf_bin/shell/key-bindings.fish
