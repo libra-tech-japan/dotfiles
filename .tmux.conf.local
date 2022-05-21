@@ -340,7 +340,7 @@ tmux_conf_copy_to_os_clipboard=false
 # replace C-b by C-a instead of using both prefixes
 # set -gu prefix2
 # unbind C-a
-# unbind C-b
+unbind C-b  # MODIFY
 # set -g prefix C-Space
 # bind C-Space send-prefix
 

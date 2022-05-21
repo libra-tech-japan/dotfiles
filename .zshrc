@@ -34,11 +34,13 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
+export EDITOR=nvim
+export VISUAL=$EDITOR
 
 #############
 ### Alias ###
 #############
-alias sc='source ~/.zshrc'
+alias src='source ~/.zshrc'
 
 alias ls='ls --color=auto'
 alias l='ls'
@@ -70,7 +72,7 @@ alias ee='exa -l -h -@ -m --icons --git --time-style=long-iso --color=automatic 
 alias ll=ee
 
 alias ea='exa -l -aa -h -@ -m --icons --git --time-style=long-iso --color=automatic --group-directories-first'
-alias la=ea
+alias lla=ea
 
 alias et='exa -T -L 3 -a -I "node_modules|.git|.cache" --icons'
 alias lt=et
@@ -79,7 +81,7 @@ alias lta=eta
 
 alias g='git'
 alias gs='git status'
-alias ga='git add'
+alias ga='git add . && git status '
 alias gc='git commit -m'
 
 alias cat='bat'
