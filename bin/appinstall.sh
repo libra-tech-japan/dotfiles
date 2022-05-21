@@ -58,11 +58,12 @@ brew install anyenv
 # CasheDirectory
 CACHE=~/.cache
 rm -rf $CACHE
+mkdir $CACHE
 
 #Install shell-safe-rm
 SAFE_RM=$CACHE/shell-safe-rm
 git clone https://github.com/kaelzhang/shell-safe-rm.git $SAFE_RM
-sudo cp $SAFE_RM/bin/rm.sh /bin/safe-rm
+sudo cp $SAFE_RM/bin/rm.sh /usr/local/bin/safe-rm
 mkdir -p ~/.local/share/Trash/files
 ln -s -f ~/.local/share/Trash/files ~/.trash
 
