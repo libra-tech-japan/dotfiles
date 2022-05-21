@@ -6,6 +6,8 @@ set ignorecase
 set wrapscan
 set hlsearch
 set smartcase
+set pumblend=10
+set termguicolors
 
 set ruler
 set number
@@ -109,7 +111,7 @@ set splitbelow
 set splitright
 
 " ==================== カラー ==================== "
-colorscheme murphy          " カラースキーム
+colorscheme hybrid          " カラースキーム
 syntax on " シンタックスカラーリングオン
 filetype indent on " ファイルタイプによるインデントを行う
 filetype plugin on " ファイルタイプごとのプラグインを使う

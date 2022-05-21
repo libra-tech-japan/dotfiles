@@ -38,6 +38,8 @@
 !/.config/*/
 !/.config/nvim/
 !/.config/nvim/.*
+!/.config/nvim/colors/
+!/.config/nvim/colors/.*
 !/.config/*/*
 !/.config/*/*/
 !/.config/*/*/*
