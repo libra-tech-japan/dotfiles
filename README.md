@@ -52,3 +52,7 @@ for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
 done
 ```
 
+## prezto is PowerLevel10k
+
+prompt -s powerlevel10k
+
