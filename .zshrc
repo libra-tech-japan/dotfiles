@@ -35,8 +35,6 @@ compinit
 # End of lines added by compinstall
 
 
-export TERM=xterm-color256
-
 #############
 ### Alias ###
 #############
@@ -64,7 +62,7 @@ alias findall="find / -type d -name 'mnt' -prune -o "
 alias e='exa --icons'
 alias l=e
 alias ls=e
-alias ea='exa -a --icons'
+alias ea='exa -l -aa -h -@ -m --icons --git --time-style=long-iso --color=automatic --group-directories-first'
 alias la=ea
 alias ee='exa -aal --icons'
 alias ll=ee
@@ -84,4 +82,9 @@ alias hbrl='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
 alias gcd='cd $(ghq root)/$(ghq list | peco)'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+autoload -Uz promptinit
+promptinit
+prompt powerlevel10k
+
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
