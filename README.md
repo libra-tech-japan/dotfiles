@@ -42,8 +42,13 @@ ssh -T git@github.com
 2. `./bin/sh applnstall.sh
 
 3. `./bin/dotsinstall.sh`
-
-4. fish Plugin
-`fisher install jethrokuan/z`
-`fisher install oh-my-fish/theme-bobthefish
 ```
+
+# Create a new Zsh configuration by copying/linking the Zsh configuration files provided:
+```
+setopt EXTENDED_GLOB
+for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+done
+```
+
