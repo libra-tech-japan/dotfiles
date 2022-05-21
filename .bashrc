@@ -244,7 +244,7 @@ export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 
 
 ############################
-### fish shell   
+### zsh 
 ############################
-exec fish
+exec zsh
 

@@ -1,34 +1,47 @@
 #!/bin/bash
-sudo apt-add-repository ppa:fish-shell/release-3 -y
-sudo apt update
 
-sudo apt install tree             -y
-sudo apt install ninja-build      -y
-sudo apt install gettext          -y
-sudo apt install libtool          -y
-sudo apt install libtool-bin      -y
-sudo apt install autoconf         -y
-sudo apt install automake         -y
-sudo apt install cmake            -y
-sudo apt install g++              -y
-sudo apt install pkg-config       -y
-sudo apt install unzip            -y
-sudo apt install curl             -y
-sudo apt install doxygen          -y
-sudo apt install tmux             -y
-sudo apt install fonts-powerline  -y
-sudo apt install python3-pip      -y
-sudo apt install ruby             -y 
-sudo apt install gem              -y
-sudo apt install ruby-dev         -y
-sudo apt install build-essential  -y
-sudo apt install fish		  -y
+if [ "`uname`" == "Darwin" ]; then
+  ISMAC=true
+elif [ "`uname`" == "Linux" ]; then
+  ISLINUX=true
+fi
 
-# Homebrew Install
-PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-sudo ln -s -f /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/
+if [ $ISLINUX ]; then
 
+	sudo apt-add-repository ppa:fish-shell/release-3 -y
+	sudo apt update
+
+	sudo apt install tree             -y
+	sudo apt install ninja-build      -y
+	sudo apt install gettext          -y
+	sudo apt install libtool          -y
+	sudo apt install libtool-bin      -y
+	sudo apt install autoconf         -y
+	sudo apt install automake         -y
+	sudo apt install cmake            -y
+	sudo apt install g++              -y
+	sudo apt install pkg-config       -y
+	sudo apt install unzip            -y
+	sudo apt install curl             -y
+	sudo apt install doxygen          -y
+	sudo apt install tmux             -y
+	sudo apt install fonts-powerline  -y
+	sudo apt install python3-pip      -y
+	sudo apt install ruby             -y 
+	sudo apt install gem              -y
+	sudo apt install ruby-dev         -y
+	sudo apt install build-essential  -y
+#	sudo apt install fish		  -y
+
+	# Homebrew Install
+	PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	sudo ln -s -f /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/
+fi
+
+
+
+brew install zsh
 brew install --HEAD neovim
 brew install --HEAD tree-sitter
 brew install --HEAD luajit
@@ -66,11 +79,15 @@ sudo cp $SECRET/git-secrets /usr/local/bin/
 git secrets --register-aws --global
 git secrets --install
 
-# Install fisher
-curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
 
 # vim plugin maneger
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+# Install prezto
+git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+
+# Install fisher
+# curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
 
 
