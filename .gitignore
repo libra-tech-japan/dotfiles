@@ -42,9 +42,8 @@
 !/.config/nvim/colors/
 !/.config/nvim/colors/*
 !/.config/nvim/plugged/
-!/.config/nvim/plugged/*
-!/.config/nvim/anyenv/
-!/.config/nvim/anyenv/*
+!/.config/anyenv/
+!/.config/anyenv/*
 
 # etc
 !/.gdbinit
