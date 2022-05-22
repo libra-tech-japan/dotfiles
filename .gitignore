@@ -3,8 +3,8 @@
 /.*
 /.*/*
 /.*/*/*
-/.config/anyenv/
-/.config/anyenv/*
+/.*/*/*/*
+/.*/*/*/*/*
 
 ###### not ignore list ######
 !/.bashrc
@@ -35,19 +35,18 @@
 !/.screen/
 !/.tmux.conf
 !/.tmux.conf.local
-# etc
+# config
 !/.config/
-!/.config/*
-!/.config/*/
 !/.config/nvim/
-!/.config/nvim/.*
+!/.config/nvim/*
 !/.config/nvim/colors/
-!/.config/nvim/colors/.*
-!/.config/*/*
-!/.config/*/*/
-!/.config/*/*/*
-!/.config/*/*/*/
-!/.config/*/*/*/*
+!/.config/nvim/colors/*
+!/.config/nvim/plugged/
+!/.config/nvim/plugged/*
+!/.config/nvim/anyenv/
+!/.config/nvim/anyenv/*
+
+# etc
 !/.gdbinit
 !/README.md
 

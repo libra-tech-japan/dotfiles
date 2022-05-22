@@ -116,6 +116,11 @@ prompt powerlevel10k
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# anyenv
 export PATH="$HOME/.anyenv/bin:$PATH"
 eval "$(anyenv init - zsh)"
 
+# nodenv
+export NODENV_ROOT="$HOME/.nodenv"
+export PATH="$NODENV_ROOT/bin:$PATH"
+eval "$(nodenv init - zsh)"
