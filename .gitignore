@@ -3,6 +3,8 @@
 /.*
 /.*/*
 /.*/*/*
+/.config/anyenv/
+/.config/anyenv/*
 
 ###### not ignore list ######
 !/.bashrc

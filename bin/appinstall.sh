@@ -54,6 +54,7 @@ brew install peco
 brew install hub
 brew install fzf
 brew install anyenv
+brew install nodenv
 
 # CasheDirectory
 CACHE=~/.cache

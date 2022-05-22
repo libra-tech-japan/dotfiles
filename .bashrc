@@ -225,14 +225,6 @@ elif test $count -eq 1; then
     echo `tmux a`
 fi
 
-# anyenv設定
-eval "$(anyenv init -)"
-
-# nodenv設定
-eval "$(nodenv init -)"
-
-##############
-### Export ###
 ##############
 export PATH="$PATH:$HOME/.bin"
 
@@ -249,4 +241,3 @@ export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 exec zsh
 
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash

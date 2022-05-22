@@ -112,8 +112,10 @@ alias gcd='cd $(ghq root)/$(ghq list | peco)'
 autoload -Uz promptinit
 promptinit
 prompt powerlevel10k
-
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export PATH="$HOME/.anyenv/bin:$PATH"
+eval "$(anyenv init - zsh)"
+
