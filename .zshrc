@@ -108,6 +108,19 @@ alias hbrl='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
 # リポジトリのディレクトリへ移動
 alias gcd='cd $(ghq root)/$(ghq list | peco)'
 
+##############################
+# 初回シェル時のみ tmux実行
+##############################
+alias tmux="tmux -u2"
+
+# tmuxの自動起動
+count=`ps aux | grep tmux | grep -v grep | wc -l`
+if test $count -eq 0; then
+    echo `tmux`
+elif test $count -eq 1; then
+    echo `tmux a`
+fi
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 autoload -Uz promptinit
 promptinit
