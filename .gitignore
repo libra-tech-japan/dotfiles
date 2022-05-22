@@ -17,6 +17,8 @@
 # vim setting file
 !/.vim/
 !/.vimrc
+# zprezeto 
+!/.zpreztorc
 # exec directory
 !/.bin/
 !/.bin/*
