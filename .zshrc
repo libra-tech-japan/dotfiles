@@ -37,10 +37,25 @@ compinit
 export EDITOR=nvim
 export VISUAL=$EDITOR
 
+
+############################
+### Function definitions ###
+############################
+function cdls() {
+    # cdがaliasでループするので\をつける
+    \cd "$@";
+    if [ "$?" -eq 0 ];then
+        exa --icons
+    fi
+}
+
+
 #############
 ### Alias ###
 #############
 alias src='source ~/.zshrc'
+
+alias cd="cdls"
 
 alias ls='ls --color=auto'
 alias l='ls'
