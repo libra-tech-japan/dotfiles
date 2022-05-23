@@ -62,7 +62,7 @@ done
 
 ## prezto is PowerLevel10k
 
-prompt -s powerlevel10k
+`p10k configure`
 
 # SetUp anyenv
 ```
