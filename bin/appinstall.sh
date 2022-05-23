@@ -53,6 +53,7 @@ brew install ghq
 brew install peco
 brew install hub
 brew install fzf
+brew install glow
 brew install anyenv
 brew install nodenv
 
@@ -89,7 +90,8 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
 # Install prezto
 git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
 
-# Install fisher
-# curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
-
+# CreateLocalBin
+if [ ! -f $HOME/.local/bin ]; then
+    mkdir -p  $HOME/.local/bin
+fi
 

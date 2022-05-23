@@ -66,6 +66,7 @@ alias lal='ls -al'
 
 alias cl='clear'
 alias rm="safe-rm"
+alias mkdir="mkdir -p"
 alias Trash="~/.trash"
 alias cp="cp -ip"
 alias mv='mv -i'

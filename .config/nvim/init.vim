@@ -44,6 +44,7 @@ let mapleader="\<Space>"
 
 " reload vimrc
 nnoremap <leader><leader> :source ~/.config/nvim/init.vim<cr>
+nnoremap <leader>i :e ~/.config/nvim/init.vim<cr>
 "  上書き保存"
 nnoremap <C-s> :w<CR>
 " 上書きしないで終了
@@ -79,8 +80,8 @@ vnoremap <Tab> %
 
 
 " 入力モード中に素早くJJと入力した場合はESCとみなす
-inoremap jj <ESC>:set iminsert=0<CR>
-inoremap <ESC> <ESC>:set iminsert=0<CR>
+inoremap jj <ESC>
+inoremap ZZ <ESC>:wq!<CR>
 
 set shellslash              " Windowsでディレクトリパスの区切り文字に / を使えるようにする
 set lazyredraw              " マクロなどを実行中は描画を中断
@@ -141,14 +142,17 @@ Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-commentary'
 Plug 'vim-jp/vimdoc-ja'
 Plug 'junegunn/fzf', {'dir': '~/.fzf_bin', 'do': './install --all'}
-
+Plug 'ellisonleao/glow.nvim', {'branch':'main'}
+Plug 'tpope/vim-fugitive'
 
 " https://zenn.dev/yano/articles/vim_frontend_development_2021
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'lambdalisue/fern.vim'
 Plug 'lambdalisue/fern-git-status.vim'
 Plug 'lambdalisue/fern-renderer-nerdfont.vim'
+Plug 'lambdalisue/nerdfont.vim'
 Plug 'lambdalisue/fern-hijack.vim'
+Plug 'lambdalisue/glyph-palette.vim'
 Plug 'yuki-yano/fzf-preview.vim'
 Plug 'lambdalisue/gina.vim'
 Plug 'nvim-treesitter/nvim-treesitter'
@@ -211,6 +215,10 @@ function! s:show_documentation() abort
   endif
 endfunction
 
+"" -- glow         ----------------------
+let g:glow_border = "rounded"
+noremap <leader>p :Glow<CR>
+
 "" -- fzf-preview  ----------------------
 let $BAT_THEME                     = 'gruvbox-dark'
 let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'gruvbox-dark'
@@ -229,8 +237,16 @@ nnoremap <silent> [ff]t  :<C-u>CocCommand fzf-preview.CocTypeDefinition<CR>
 nnoremap <silent> [ff]o  :<C-u>CocCommand fzf-preview.CocOutline --add-fzf-arg=--exact --add-fzf-arg=--no-sort<CR>
 
 "" -- fern -------------------------
+let g:fern#renderer="nerdfont"
 nnoremap <silent> <Leader>e :<C-u>Fern . -drawer<CR>
 nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
+" colord Icon
+" アイコンに色をつける
+augroup my-glyph-palette
+  autocmd! *
+  autocmd FileType fern call glyph_palette#apply()
+  autocmd FileType nerdtree,startify call glyph_palette#apply()
+augroup END
 
 "" -- treesitter ---------------------
 lua <<EOF

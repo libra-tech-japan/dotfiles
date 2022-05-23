@@ -5,6 +5,7 @@
 /.*/*/*
 /.*/*/*/*
 /.*/*/*/*/*
+/.*/*/*/*/*/*
 
 ###### not ignore list ######
 !/.bashrc
@@ -44,6 +45,8 @@
 !/.config/nvim/colors/
 !/.config/nvim/colors/*
 !/.config/nvim/plugged/
+!/.config/nvim/ftplugin/
+!/.config/nvim/ftplugin/*
 !/.config/anyenv/
 
 # etc
