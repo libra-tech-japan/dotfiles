@@ -238,6 +238,8 @@ export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 ############################
 ### zsh 
 ############################
-exec zsh
+# exec zsh
 
 
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

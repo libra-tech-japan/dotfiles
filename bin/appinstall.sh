@@ -31,7 +31,7 @@ if [ $ISLINUX ]; then
 	sudo apt install gem              -y
 	sudo apt install ruby-dev         -y
 	sudo apt install build-essential  -y
-#	sudo apt install fish		  -y
+	sudo apt install zsh    		  -y
 
 	# Homebrew Install
 	PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"

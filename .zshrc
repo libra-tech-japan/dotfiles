@@ -129,6 +129,13 @@ prompt powerlevel10k
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+##############################
+# Path
+##############################
+export PATH="$PATH:$HOME/.bin"
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+
 # anyenv
 export PATH="$HOME/.anyenv/bin:$PATH"
 eval "$(anyenv init - zsh)"
