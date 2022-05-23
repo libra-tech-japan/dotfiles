@@ -64,3 +64,8 @@ done
 
 prompt -s powerlevel10k
 
+# SetUp anyenv
+```
+anyenv install --init
+```
+

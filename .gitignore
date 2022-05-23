@@ -45,7 +45,6 @@
 !/.config/nvim/colors/*
 !/.config/nvim/plugged/
 !/.config/anyenv/
-!/.config/anyenv/*
 
 # etc
 !/.gdbinit
