@@ -45,6 +45,13 @@ ssh -T git@github.com
 3. `./bin/dotsinstall.sh`
 ```
 
+# Change Zsh
+```
+cat /etc/shells
+
+chsh
+```
+
 # Create a new Zsh configuration by copying/linking the Zsh configuration files provided:
 ```
 setopt EXTENDED_GLOB
