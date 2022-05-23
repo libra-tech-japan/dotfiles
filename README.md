@@ -8,8 +8,7 @@ Can be used quickly.
 
 ### Prepear To Install
 ```
-sudo apt update
-sudo apt upgrade
+sudo apt update -y && sudo apt upgrade -y
 ```
 
 # git setting
@@ -36,6 +35,7 @@ ssh -T git@github.com
   lga = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 ```
 
+# Clone & Install
 ```
 1. `git clone xxx`
 
