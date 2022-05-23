@@ -78,11 +78,11 @@ vnoremap v $h
 nnoremap <Tab> %
 vnoremap <Tab> %
 
-" 括弧補完
-inoremap { {}<Left>
-inoremap {<Enter> {}<Left><CR><ESC><S-o>
-inoremap ( ()<ESC>i
-inoremap (<Enter> ()<Left><CR><ESC><S-o>
+" 括弧補完 プラグイン対応へ
+"inoremap { {}<Left>
+"inoremap {<Enter> {}<Left><CR><ESC><S-o>
+"inoremap ( ()<ESC>i
+"inoremap (<Enter> ()<Left><CR><ESC><S-o>
 
 " 入力モード中に素早くJJと入力した場合はESCとみなす
 inoremap jj <ESC>
@@ -149,6 +149,7 @@ Plug 'vim-jp/vimdoc-ja'
 Plug 'junegunn/fzf', {'dir': '~/.fzf_bin', 'do': './install --all'}
 Plug 'ellisonleao/glow.nvim', {'branch':'main'}
 Plug 'tpope/vim-fugitive'
+Plug 'jiangmiao/auto-pairs'
 
 " https://zenn.dev/yano/articles/vim_frontend_development_2021
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
