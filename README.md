@@ -25,6 +25,7 @@ git config --global color.branch auto
 # GitHub connection setting
 ```
 ssh-keygen
+# Copy .ssh/id_rsa.pub to Github
 ssh -T git@github.com
 ```
 
