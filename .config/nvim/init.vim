@@ -78,6 +78,11 @@ vnoremap v $h
 nnoremap <Tab> %
 vnoremap <Tab> %
 
+" 括弧補完
+inoremap { {}<Left>
+inoremap {<Enter> {}<Left><CR><ESC><S-o>
+inoremap ( ()<ESC>i
+inoremap (<Enter> ()<Left><CR><ESC><S-o>
 
 " 入力モード中に素早くJJと入力した場合はESCとみなす
 inoremap jj <ESC>

@@ -9,7 +9,7 @@
 
 ###### not ignore list ######
 !/.bashrc
-!/.bashrc
+!/.gitconfig
 !/.bash_profile
 !/.dircolors
 !/.inputrc

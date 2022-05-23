@@ -69,3 +69,11 @@ done
 anyenv install --init
 ```
 
+# After node.js Installed.
+```
+npm install -g commitizen
+```
+
+https://github.com/commitizen/cz-cli
+
+
