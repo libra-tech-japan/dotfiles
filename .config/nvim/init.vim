@@ -26,8 +26,6 @@ set mouse=a
 set belloff=all
 
 
-nnoremap <Space>q :<C-u>q!<Return>
-
 " ESC*2 でハイライトやめる
 nnoremap <silent><Esc><Esc> :<C-u>set nohlsearch<Return>
 
@@ -48,6 +46,8 @@ let mapleader="\<Space>"
 nnoremap <leader><leader> :source ~/.config/nvim/init.vim<cr>
 "  上書き保存"
 nnoremap <C-s> :w<CR>
+" 上書きしないで終了
+nnoremap <Space>q :<C-u>q!<Return>
 
 "x キー削除でデフォルトレジスタに入れない
 nnoremap x "_x
@@ -74,8 +74,8 @@ nnoremap k gk
 vnoremap v $h
 
 " TABにて対応ペアにジャンプ
-nnoremap &lt;Tab&gt; %
-vnoremap &lt;Tab&gt; %
+nnoremap <Tab> %
+vnoremap <Tab> %
 
 
 " 入力モード中に素早くJJと入力した場合はESCとみなす
@@ -149,7 +149,7 @@ Plug 'lambdalisue/fern.vim'
 Plug 'lambdalisue/fern-git-status.vim'
 Plug 'lambdalisue/fern-renderer-nerdfont.vim'
 Plug 'lambdalisue/fern-hijack.vim'
-Plug 'yuki-yano/fern-preview.vim'
+Plug 'yuki-yano/fzf-preview.vim'
 Plug 'lambdalisue/gina.vim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'sainnhe/sonokai'
