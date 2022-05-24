@@ -15,8 +15,9 @@
 !/.inputrc
 !/.zshrc
 !/.p10k.zsh
+!/.czrc
 # vim setting file
-!/.vim/
+!/.vim
 !/.vimrc
 # zprezeto 
 !/.zpreztorc

@@ -56,6 +56,7 @@ brew install fzf
 brew install glow
 brew install anyenv
 brew install nodenv
+brew install tig
 
 # CasheDirectory
 CACHE=~/.cache
