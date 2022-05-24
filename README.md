@@ -16,9 +16,6 @@ sudo apt update -y && sudo apt upgrade -y
 git config --global user.email "*******@example.com"
 git config --global user.name "USER NAME"
 git config --global core.editor 'vim -c "set fenc=utf-8"'  
-git config --global color.diff auto 
-git config --global color.status auto
-git config --global color.branch auto
 ```
 
 
@@ -78,5 +75,7 @@ npm install -g cz-conventional-changelog-ja
 ```
 
 https://github.com/commitizen/cz-cli
+
+
 
 
