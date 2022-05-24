@@ -67,6 +67,8 @@ inoremap <C-f> <Right>
 inoremap <C-h> <BS>
 inoremap <C-d> <Del>
 
+inoremap <C-l> <Right>
+
 " j, k による移動を折り返されたテキストでも自然に振る舞うように変更
 nnoremap j gj
 nnoremap k gk
