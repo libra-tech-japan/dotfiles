@@ -70,6 +70,7 @@ anyenv install --init
 ```
 
 # After node.js Installed.
+## commitizen install
 ```
 npm install commitizen -g
 npm install -g cz-conventional-changelog
