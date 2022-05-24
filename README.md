@@ -73,6 +73,7 @@ anyenv install --init
 ```
 npm install commitizen -g
 npm install -g cz-conventional-changelog
+npm install -g cz-conventional-changelog-ja
 ```
 
 https://github.com/commitizen/cz-cli
