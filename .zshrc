@@ -98,7 +98,8 @@ alias lta=eta
 alias g='git'
 alias gs='git status'
 alias ga='git add . && git status '
-alias gc='git commit -m'
+alias t='tig'
+alias tg=t
 
 alias cat='bat'
 

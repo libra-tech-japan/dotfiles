@@ -16,8 +16,6 @@
     a = "!git status --short | peco | awk '{print $2}' | xargs git add"
     d = diff
     co = checkout
-    ci = commit
-    ca = commit -a
     ps = "!git push origin $(git rev-parse --abbrev-ref HEAD)"
     pl = "!git pull origin $(git rev-parse --abbrev-ref HEAD)"
     st = status
@@ -53,3 +51,5 @@
     conflictstyle = diff3
 [mergetool]
     prompt = false
+[rebase]
+	autosquash = true

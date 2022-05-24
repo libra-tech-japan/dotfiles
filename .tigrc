@@ -1,1 +1,24 @@
-bind status C !git cz
+bind main  C ?!git cz
+bind main  R ?!git rebase -i %(commit)
+bind main  F ?!git cz --fixup %(commit)
+bind main  S ?!git cz --squash %(commit)
+
+bind status C ?!git cz
+
+bind diff  C ?!git cz
+bind diff  R ?!git rebase -i %(commit)
+bind diff  F ?!git cz --fixup %(commit)
+bind diff  S ?!git cz --squash %(commit)
+bind diff  B @hub browse -- commit/%(commit)
+bind diff  <Ctrl-n> :/^@@
+bind diff  <Ctrl-p> :?^@@
+
+bind blob  B @hub browse -- tree/%(commit)/%(file)
+
+bind tree  B @hub browse -- tree/%(commit)/%(directory)
+
+bind log  <Ctrl-n> :/^commit
+bind log  <Ctrl-p> :?^commit
+
+bind stage  <Ctrl-n> :/^@@
+bind stage  <Ctrl-p> :?^@@
