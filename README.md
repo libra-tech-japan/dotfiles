@@ -71,7 +71,8 @@ anyenv install --init
 
 # After node.js Installed.
 ```
-npm install -g commitizen
+npm install commitizen -g
+npm install -g cz-conventional-changelog
 ```
 
 https://github.com/commitizen/cz-cli
