@@ -11,6 +11,8 @@ if [ $ISLINUX ]; then
 	sudo apt-add-repository ppa:fish-shell/release-3 -y
 	sudo apt update
 
+	sudo apt install manpages-ja      -y
+	sudo apt install manpages-ja-dev  -y
 	sudo apt install tree             -y
 	sudo apt install ninja-build      -y
 	sudo apt install gettext          -y
