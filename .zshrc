@@ -76,6 +76,7 @@ alias gre="grep --color=auto -n -H -i -I"
 alias vi='nvim'
 alias v='nvim'
 alias vim='nvim'
+alias ex='exit'
 alias jutf='export LANG=ja_JP.UTF-8'
 alias jeuc='export LANG=ja_JP.euc-jp'
 alias findall="find / -type d -name 'mnt' -prune -o "

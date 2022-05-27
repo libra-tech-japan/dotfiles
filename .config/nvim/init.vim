@@ -89,7 +89,7 @@ inoremap jj <ESC>
 inoremap ZZ <ESC>:wq!<CR>
 
 " json成型（jqコマンド）
-nnoremap jq :%!jq '.'<CR>
+nnoremap <leader>jq :%!jq '.'<CR>
 
 
 set shellslash              " Windowsでディレクトリパスの区切り文字に / を使えるようにする
@@ -131,9 +131,6 @@ filetype plugin on " ファイルタイプごとのプラグインを使う
 "highlight PmenuThumb ctermbg=lightgray
 highlight Comment ctermfg=blue
 
-" 行番号のハイライト
-highlight clear CursorLine
-
 
 " ==================== スペルチェック  ==================== "
 augroup GitSpellCheck
@@ -160,6 +157,7 @@ Plug 'junegunn/fzf', {'dir': '~/.fzf_bin', 'do': './install --all'}
 Plug 'ellisonleao/glow.nvim', {'branch':'main'}
 Plug 'tpope/vim-fugitive'
 Plug 'jiangmiao/auto-pairs'
+Plug 'thinca/vim-quickrun'
 
 " https://zenn.dev/yano/articles/vim_frontend_development_2021
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -220,7 +218,7 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 augroup coc_ts
   autocmd!
-  autocmd FileType typescript,typescriptreact call <SID>coc_typescript_settings()
+  autocmd FileType typescript,typescriptreact,javascript call <SID>coc_typescript_settings()
 augroup END
 
 function! s:show_documentation() abort
@@ -234,6 +232,11 @@ endfunction
 "" -- glow         ----------------------
 let g:glow_border = "rounded"
 noremap <leader>p :Glow<CR>
+
+"" -- vim-quickrun -------------------
+" 水平分割
+let g:quickrun_config={'*': {'split':''}}
+nnoremap <leader>r :QuickRun<CR>
 
 "" -- fzf-preview  ----------------------
 let $BAT_THEME                     = 'gruvbox-dark'
@@ -279,3 +282,7 @@ EOF
 
 "" -- sonokai -------------------
 colorscheme sonokai
+
+
+" 行番号のハイライト
+highlight clear CursorLine
