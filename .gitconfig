@@ -2,7 +2,7 @@
 	email = shindo.akira@viva-eureka.co.jp
 	name = SHINDO Akira
 [core]
-	editor = vim -c \"set fenc=utf-8\"
+	editor = nvim -c \"set fenc=utf-8\"
 [color]
 	diff = auto
 	status = auto
@@ -31,7 +31,7 @@
     dump = cat-file -p
     find = "!f() { git log --pretty=format:\"%h %cd [%cn] %s%d\" --date=relative -S'pretty' -S\"$@\" | peco | awk '{print $1}' | xargs -I {} git diff {}^ {}; }; f"
     # edit conflicted file on merge
-    edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+    edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; nvim `f`"
     # add conflicted file on merge
     add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
     mt = mergetool
@@ -53,7 +53,7 @@
     prompt = false
 [diff]
     tool = vimdiff
-[rebase]
-	autosquash = true
 [difftool]
 	prompt = false
+[rebase]
+	autosquash = true
