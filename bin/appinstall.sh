@@ -48,6 +48,7 @@ brew install --HEAD neovim
 brew install --HEAD tree-sitter
 brew install --HEAD luajit
 brew install go
+brew install jq
 brew install rust
 brew install exa
 brew install bat
@@ -59,6 +60,7 @@ brew install glow
 brew install anyenv
 brew install nodenv
 brew install tig
+brew install imagemagick
 
 # CasheDirectory
 CACHE=~/.cache
