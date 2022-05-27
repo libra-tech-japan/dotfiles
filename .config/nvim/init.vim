@@ -11,13 +11,11 @@ set termguicolors
 
 set ruler
 set number
-set clipboard+=unnamedplus
 set scrolloff=5
 
 " 動作環境との統合
 " OSのクリップボードをレジスタ指定無しで Yank, Put 出来るようにする
 set clipboard=unnamed,unnamedplus
-
 
 " マウスの入力を受け付ける
 set mouse=a
@@ -132,6 +130,12 @@ highlight Comment ctermfg=blue
 " 行番号のハイライト
 highlight clear CursorLine
 
+
+" ==================== スペルチェック  ==================== "
+augroup GitSpellCheck
+    autocmd!
+    autocmd FileType gitcommit setlocal spell
+augroup END
 
 " ==================== エンコーディング関連 ==================== "
 set encoding=utf-8
