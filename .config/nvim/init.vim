@@ -41,7 +41,7 @@ set cindent
 let mapleader="\<Space>"
 
 " reload vimrc
-nnoremap <leader><leader> :source ~/.config/nvim/init.vim<cr>
+nnoremap <leader>sc :source ~/.config/nvim/init.vim<cr>
 nnoremap <leader>i :e ~/.config/nvim/init.vim<cr>
 "  上書き保存"
 nnoremap <C-s> :w<CR>
@@ -71,9 +71,6 @@ inoremap <C-l> <Right>
 nnoremap j gj
 nnoremap k gk
 
-" vを二回で行末まで選択
-vnoremap v $h
-
 " TABにて対応ペアにジャンプ
 nnoremap <Tab> %
 vnoremap <Tab> %
@@ -87,6 +84,12 @@ vnoremap <Tab> %
 " 入力モード中に素早くJJと入力した場合はESCとみなす
 inoremap jj <ESC>
 inoremap ZZ <ESC>:wq!<CR>
+
+" バッファ移動
+nnoremap [b :bprevious<CR>
+nnoremap ]b :bnext<CR>
+nnoremap [B :bfirst<CR>
+nnoremap ]B :blast<CR>
 
 " json成型（jqコマンド）
 nnoremap <leader>jq :%!jq '.'<CR>
@@ -194,8 +197,8 @@ nmap <C-n> <Plug>AirlineSelectNextTab
 
 nnoremap [coc]    <Nop>
 xnoremap [coc]    <Nop>
-nmap     ,        [coc]
-xmap     ,        [coc]
+nmap     <leader>c   [coc]
+xmap     <leader>c   [coc]
 nnoremap [fzf]     <Nop>
 xnoremap [fzf]     <Nop>
 nmap     z        [fzf]
