@@ -81,6 +81,8 @@ alias jutf='export LANG=ja_JP.UTF-8'
 alias jeuc='export LANG=ja_JP.euc-jp'
 alias findall="find / -type d -name 'mnt' -prune -o "
 
+alias tsinit='npm init --yes && npm install -D typescript eslint @types/node && ./node_modules/.bin/tsc --init --outDir "dist"  && ./node_modules/.bin/eslint --init'
+
 alias e='exa --icons'
 alias l=e
 alias ls=e
