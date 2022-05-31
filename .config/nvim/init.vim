@@ -75,12 +75,6 @@ nnoremap k gk
 nnoremap <Tab> %
 vnoremap <Tab> %
 
-" 括弧補完 プラグイン対応へ
-"inoremap { {}<Left>
-"inoremap {<Enter> {}<Left><CR><ESC><S-o>
-"inoremap ( ()<ESC>i
-"inoremap (<Enter> ()<Left><CR><ESC><S-o>
-
 " 入力モード中に素早くJJと入力した場合はESCとみなす
 inoremap jj <ESC>
 inoremap ZZ <ESC>:wq!<CR>
