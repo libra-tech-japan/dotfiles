@@ -34,7 +34,6 @@ if [ $ISLINUX ]; then
 	sudo apt install gem              -y
 	sudo apt install ruby-dev         -y
 	sudo apt install build-essential  -y
-	sudo apt install zsh    		  -y
 
 	# Homebrew Install
 	PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
@@ -62,6 +61,8 @@ brew install anyenv
 brew install nodenv
 brew install tig
 brew install imagemagick
+brew install docker
+brew install docker-compose
 
 # CasheDirectory
 CACHE=~/.cache
@@ -101,12 +102,3 @@ if [ ! -f $HOME/.local/bin ]; then
     mkdir -p  $HOME/.local/bin
 fi
 
-# docker for Linux
-if [ $ISLINUX ]; then
-    # set docker package repository
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    # install docker
-    sudo apt update
-    sudo apt install docker-ce docker-ce-cli containerd.io -y
-fi
