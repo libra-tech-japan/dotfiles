@@ -61,8 +61,6 @@ brew install anyenv
 brew install nodenv
 brew install tig
 brew install imagemagick
-brew install docker
-brew install docker-compose
 
 # CasheDirectory
 CACHE=~/.cache
@@ -102,3 +100,17 @@ if [ ! -f $HOME/.local/bin ]; then
     mkdir -p  $HOME/.local/bin
 fi
 
+# Docker for Linux
+if [ $ISLINUX ]; then
+    # Add Docker's official GPG key
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    # Install Docker
+    sudo apt update
+    sudo apt install docker-ce -y
+    # Install Dockder-Compose
+    mkdir -p ~/.docker/cli-plugins/
+    sudo curl -L https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-`uname -s`-`uname -m` -o ~/.docker/cli-plugins/docker-compose
+    sudo chmod +x ~/.docker/cli-plugins/docker-compose
+    sudo usermod -aG docker $USER
+fi
