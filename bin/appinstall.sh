@@ -11,6 +11,7 @@ if [ $ISLINUX ]; then
 	sudo apt-add-repository ppa:fish-shell/release-3 -y
 	sudo apt update
 
+    sudo apt install apt-transport-https -y
 	sudo apt install manpages-ja      -y
 	sudo apt install manpages-ja-dev  -y
 	sudo apt install tree             -y
@@ -100,3 +101,12 @@ if [ ! -f $HOME/.local/bin ]; then
     mkdir -p  $HOME/.local/bin
 fi
 
+# docker for Linux
+if [ $ISLINUX ]; then
+    # set docker package repository
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    # install docker
+    sudo apt update
+    sudo apt install docker-ce docker-ce-cli containerd.io -y
+fi
