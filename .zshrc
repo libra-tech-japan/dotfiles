@@ -38,9 +38,9 @@ export EDITOR=nvim
 export VISUAL=$EDITOR
 
 # Docker start
-if [ $(service docker status | awk '{print $4}') = "not" ]; then
-    sudo service docker start > /dev/null
-fi
+#if [ $(service docker status | awk '{print $4}') = "not" ]; then
+#    sudo service docker start > /dev/null
+#fi
 
 ############################
 ### Function definitions ###
@@ -113,9 +113,9 @@ alias cat='bat'
 # 現在の作業リポジトリをブラウザで表示する
 alias hb='hub browse'
 # リポジトリの一覧の中からブラウザで表示したい対象を検索・表示する
-alias hbrl='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
+alias hbrl='hub browse $(ghq list | fzf | cut -d "/" -f 2,3)'
 # リポジトリのディレクトリへ移動
-alias gcd='cd $(ghq root)/$(ghq list | peco)'
+alias gcd='cd $(ghq root)/$(ghq list | fzf)'
 
 ###############################
 ## 初回シェル時のみ tmux実行

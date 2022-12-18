@@ -8,7 +8,6 @@ set hlsearch
 set smartcase
 set pumblend=10
 set termguicolors
-
 set ruler
 set number
 set scrolloff=5
@@ -23,15 +22,17 @@ set mouse=a
 " ビープ音を消す"
 set belloff=all
 
-
 " ESC*2 でハイライトやめる
-nnoremap <silent><Esc><Esc> :<C-u>set nohlsearch<Return>
+nnoremap <silent><Esc><Esc> :noh<Return>
+" 改行時のコメント継続無効
+set formatoptions-=o
+set formatoptions-=r
 
 "tab/indentの設定
 set shellslash
 set expandtab "タブ入力を複数の空白入力に置き換える
-set tabstop=4 "画面上でタブ文字が占める幅
-set shiftwidth=4 "自動インデントでずれる幅
+set tabstop=2 "画面上でタブ文字が占める幅
+set shiftwidth=2 "自動インデントでずれる幅
 set softtabstop=2 "連続した空白に対してタブキーやバックスペースキーでカーソルが動く幅
 set autoindent "改行時に前の行のインデントを継続する
 set smartindent "改行時に入力された行の末尾に合わせて次の行のインデントを増減する
@@ -43,17 +44,17 @@ let mapleader="\<Space>"
 " reload vimrc
 nnoremap <leader>sc :source ~/.config/nvim/init.vim<cr>
 nnoremap <leader>i :e ~/.config/nvim/init.vim<cr>
-"  上書き保存"
-nnoremap <C-s> :w<CR>
-" 上書きしないで終了
-nnoremap <Space>q :<C-u>q!<Return>
 
 "x キー削除でデフォルトレジスタに入れない
 nnoremap x "_x
 vnoremap x "_x
 
+"0レジスタ
+noremap <leader>p "0p
+noremap <leader>P "0P
+
 "vv で行末まで選択
-vnoremap v ^$h
+vnoremap v $h
 
 "選択範囲のインデントを連続して変更
 vnoremap < <gv
@@ -75,9 +76,16 @@ nnoremap k gk
 nnoremap <Tab> %
 vnoremap <Tab> %
 
-" 入力モード中に素早くJJと入力した場合はESCとみなす
-inoremap jj <ESC>
-inoremap ZZ <ESC>:wq!<CR>
+" 入力モード中に素早くjj jkと入力した場合はESCとみなす
+inoremap <silent>jj <ESC>
+inoremap <silent>jk <ESC>
+
+"  上書き保存"
+nnoremap <C-s> :w<CR>
+" 上書きしないで終了
+nnoremap <Space>q :<C-u>q!<Return>
+inoremap ZZ <ESC>:q!<CR>
+nnoremap ZZ <ESC>:q!<CR>
 
 " バッファ移動
 nnoremap [b :bprevious<CR>
@@ -117,17 +125,6 @@ set vb t_vb=
 set splitbelow
 set splitright
 
-" ==================== カラー ==================== "
-syntax on " シンタックスカラーリングオン
-filetype indent on " ファイルタイプによるインデントを行う
-filetype plugin on " ファイルタイプごとのプラグインを使う
-" ポップアップメニューの色変える
-"highlight Pmenu ctermbg=lightcyan ctermfg=black
-"highlight PmenuSel ctermbg=blue ctermfg=black
-"highlight PmenuSbar ctermbg=darkgray
-"highlight PmenuThumb ctermbg=lightgray
-highlight Comment ctermfg=blue
-
 
 " ==================== スペルチェック  ==================== "
 augroup GitSpellCheck
@@ -140,47 +137,78 @@ set encoding=utf-8
 set fileencodings=utf-8,euc-jp,iso-2022-jp,cp932,sjis
 set fileformats=unix,dos,mac
 
-
 " ==================== プラグイン ==================== "
 call plug#begin('~/.config/nvim/plugged')
 
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'terryma/vim-multiple-cursors'
-Plug 'easymotion/vim-easymotion'
-Plug 'tpope/vim-commentary'
 Plug 'vim-jp/vimdoc-ja'
-Plug 'junegunn/fzf', {'dir': '~/.fzf_bin', 'do': './install --all'}
-Plug 'ellisonleao/glow.nvim', {'branch':'main'}
-Plug 'tpope/vim-fugitive'
-Plug 'jiangmiao/auto-pairs'
-Plug 'thinca/vim-quickrun'
 
-" https://zenn.dev/yano/articles/vim_frontend_development_2021
+" 編集支援
+Plug 'machakann/vim-highlightedyank'
+" インデント着色
+Plug 'nathanaelkane/vim-indent-guides'
+" 複数行同時編集
+Plug 'terryma/vim-multiple-cursors'
+" 検索・移動支援
+Plug 'rhysd/clever-f.vim'
+Plug 'easymotion/vim-easymotion'
+Plug 'haya14busa/vim-asterisk'
+Plug 'haya14busa/vim-edgemotion'
+" コメント
+Plug 'tpope/vim-commentary'
+" 括弧補完
+Plug 'jiangmiao/auto-pairs'
+Plug 'machakann/vim-sandwich'
+Plug 'tpope/vim-surround'
+" C-a C-x拡張(その依存プラグイン )
+Plug 'monaqa/dps-dial.vim'
+Plug 'vim-denops/denops.vim'
+
+"--------------------------------------------------
+" Nerdフォント・色
+Plug 'lambdalisue/nerdfont.vim'
+Plug 'lambdalisue/glyph-palette.vim'
+" Git支援 
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+Plug 'lambdalisue/gina.vim'
+" FuzzyFinder
+Plug 'junegunn/fzf', {'dir': '~/.fzf_bin', 'do': './install --all'}
+Plug 'yuki-yano/fzf-preview.vim'
+" Markdown プレビュー
+Plug 'ellisonleao/glow.nvim', {'branch':'main'}
+" タスクランナー
+Plug 'thinca/vim-quickrun'
+" 編集箇所リスト
+Plug 'itchyny/vim-qfedit'
+" アウトラインウィンドウ
+Plug 'stevearc/aerial.nvim'
+
+"https://zenn.dev/yano/articles/vim_frontend_development_2021
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" ファイラ
 Plug 'lambdalisue/fern.vim'
 Plug 'lambdalisue/fern-git-status.vim'
 Plug 'lambdalisue/fern-renderer-nerdfont.vim'
-Plug 'lambdalisue/nerdfont.vim'
 Plug 'lambdalisue/fern-hijack.vim'
-Plug 'lambdalisue/glyph-palette.vim'
-Plug 'yuki-yano/fzf-preview.vim'
-Plug 'lambdalisue/gina.vim'
+
+" シンタックスハイライト
 Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'sainnhe/sonokai'
-Plug 'sainnhe/gruvbox-material'
+
+" カラーテーマ
+Plug 'arcticicestudio/nord-vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
 
+colorscheme nord
 
-" -- vim-sasymotion -----------------
+" -- vim-easymotion -----------------
 " <Leader>f{char} to move to {char}
 map  <Leader>f <Plug>(easymotion-bd-f)
 nmap <Leader>f <Plug>(easymotion-overwin-f)
 
-
-" -- NERDTree SETTINGS --------------
-" nmap <C-f> :NERDTreeToggle<CR>
 
 " -- Airline SETTINGS -------------
 let g:airline_powerline_fonts = 1
@@ -193,22 +221,27 @@ nnoremap [coc]    <Nop>
 xnoremap [coc]    <Nop>
 nmap     <leader>c   [coc]
 xmap     <leader>c   [coc]
-nnoremap [fzf]     <Nop>
-xnoremap [fzf]     <Nop>
-nmap     z        [fzf]
-xmap     z        [fzf]
 
 
-"" -- coc.nvim -----------------
+""" -- coc.nvim -----------------
 let g:coc_global_extensions = ['coc-tsserver', 'coc-eslint8', 'coc-prettier', 'coc-git', 'coc-fzf-preview', 'coc-lists']
 
 inoremap <silent> <expr> <C-Space> coc#refresh()
 nnoremap <silent> K       :<C-u>call <SID>show_documentation()<CR>
+nmap     <silent> [coc]l :<C-u>CocList<cr>
+nmap     <silent> [coc]h :<C-u>call CocAction('doHover')<cr>
+"スペースdfでDefinition
+nmap     <silent> [coc]df <Plug>(coc-definition)
+"スペースrfでReferences
+nmap     <silent> [coc]rf <Plug>(coc-references)
+"スペースrnでRename
 nmap     <silent> [coc]rn <Plug>(coc-rename)
-nmap     <silent> [coc]a  <Plug>(coc-codeaction-selected)iw
+"スペースfmtでFormat
+nmap     <silent> [coc]f :<C-u>CocCommand eslint.executeAutofix<CR>
+" nmap     <silent> [coc]f <Plug>(coc-format)
 
 function! s:coc_typescript_settings() abort
-  nnoremap <silent> <buffer> [coc]f :<C-u>CocCommand eslint.executeAutofix<CR>:CocCommand prettier.formatFile<CR>
+  nnoremap <silent> <buffer> [coc]fmt :<C-u>CocCommand eslint.executeAutofix<CR>:CocCommand prettier.formatFile<CR>
 endfunction
 
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
@@ -226,19 +259,64 @@ function! s:show_documentation() abort
   endif
 endfunction
 
+
 "" -- glow         ----------------------
 let g:glow_border = "rounded"
-noremap <leader>p :Glow<CR>
+noremap <leader>md :Glow<CR>
 
 "" -- vim-quickrun -------------------
 " 水平分割
 let g:quickrun_config={'*': {'split':''}}
-nnoremap <leader>r :QuickRun<CR>
+nnoremap <leader>rn :QuickRun<CR>
 
 "" -- fzf-preview  ----------------------
-let $BAT_THEME                     = 'gruvbox-dark'
-let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'gruvbox-dark'
+nnoremap [fzf]     <Nop>
+xnoremap [fzf]     <Nop>
+nmap <leader>z  [fzf]
+xmap <leader>z  [fzf]
 
+"" fzf.vim --------------------------
+" Ctrl+pでファイル検索を開く
+" git管理されていれば:GFiles、そうでなければ:Filesを実行する
+fun! FzfOmniFiles()
+  let is_git = system('git status')
+  if v:shell_error
+    :Files
+  else
+    :GFiles
+  endif
+endfun
+nnoremap <C-p> :call FzfOmniFiles()<CR>
+
+" Ctrl+gで文字列検索を開く
+" <S-?>でプレビューを表示/非表示する
+command! -bang -nargs=* Rg
+\ call fzf#vim#grep(
+\ 'rg --column --line-number --hidden --ignore-case --no-heading --color=always '.shellescape(<q-args>), 1,
+\ <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 3..'}, 'up:60%')
+\ : fzf#vim#with_preview({'options': '--exact --delimiter : --nth 3..'}, 'right:50%:hidden', '?'),
+\ <bang>0)
+nnoremap <C-g> :Rg<CR>
+
+" frでカーソル位置の単語をファイル検索する
+nnoremap [fzf]r vawy:Rg <C-R>"<CR>
+" frで選択した単語をファイル検索する
+xnoremap [fzf]r y:Rg <C-R>"<CR>
+
+" fbでバッファ検索を開く
+nnoremap [fzf]b :Buffers<CR>
+" fpでバッファの中で1つ前に開いたファイルを開く
+nnoremap [fzf]p :Buffers<CR><CR>
+" flで開いているファイルの文字列検索を開く
+nnoremap [fzf]l :BLines<CR>
+" fmでマーク検索を開く
+nnoremap [fzf]m :Marks<CR>
+" fhでファイル閲覧履歴検索を開く
+nnoremap [fzf]h :History<CR>
+" fcでコミット履歴検索を開く
+nnoremap [fzf]c :Commits<CR>
+
+" fzf with coc
 nnoremap <silent> <C-p>  :<C-u>CocCommand fzf-preview.FromResources buffer project_mru project<CR>
 nnoremap <silent> [fzf]s  :<C-u>CocCommand fzf-preview.GitStatus<CR>
 nnoremap <silent> [fzf]gg :<C-u>CocCommand fzf-preview.GitActions<CR>
@@ -254,8 +332,9 @@ nnoremap <silent> [fzf]o  :<C-u>CocCommand fzf-preview.CocOutline --add-fzf-arg=
 
 "" -- fern -------------------------
 let g:fern#renderer="nerdfont"
-nnoremap <silent> <Leader>e :<C-u>Fern . -drawer<CR>
-nnoremap <silent> <Leader>E :<C-u>Fern . -drawer -reveal=%<CR>
+nnoremap <silent> <Leader>e :<C-u>Fern . -drawer -toggle -reveal=%<CR>
+let g:fern#default_hidden=1
+let g:fern#renderer#nerdfont#indent_markers=1
 " colord Icon
 " アイコンに色をつける
 augroup my-glyph-palette
@@ -264,12 +343,19 @@ augroup my-glyph-palette
   autocmd FileType nerdtree,startify call glyph_palette#apply()
 augroup END
 
-"" -- treesitter ---------------------
+" Clever-f
+let g:clever_f_ignore_case = 1
+
+" -- treesitter ---------------------
 lua <<EOF
 require('nvim-treesitter.configs').setup {
   ensure_installed = {
     "typescript",
+    "javascript",
     "tsx",
+    "python",
+    "vue",
+    "haskell",
   },
   highlight = {
     enable = true,
@@ -277,9 +363,55 @@ require('nvim-treesitter.configs').setup {
 }
 EOF
 
-"" -- sonokai -------------------
-colorscheme sonokai
+syntax on 
+filetype indent on 
+filetype plugin on  
 
+" -- dps-dial ------------------------
+nmap  <C-a>  <Plug>(dps-dial-increment)
+nmap  <C-x>  <Plug>(dps-dial-decrement)
+xmap  <C-a>  <Plug>(dps-dial-increment)
+xmap  <C-x>  <Plug>(dps-dial-decrement)
+xmap g<C-a> g<Plug>(dps-dial-increment)
+xmap g<C-x> g<Plug>(dps-dial-decrement)
 
-" 行番号のハイライト
+"cポップアップメニューの色変える
+highlight Pmenu ctermbg=lightcyan ctermfg=black
+highlight PmenuSel ctermbg=blue ctermfg=black
+highlight PmenuSbar ctermbg=darkgray
+highlight PmenuThumb ctermbg=lightgray
+highlight Comment ctermfg=blue
 highlight clear CursorLine
+
+" vim-asterisk
+map *  <Plug>(asterisk-z*)
+map #  <Plug>(asterisk-z#)
+map g* <Plug>(asterisk-gz*)
+map g# <Plug>(asterisk-gz#)
+
+" vim-adgemotion
+map <C-j> <Plug>(edgemotion-j)
+map <C-k> <Plug>(edgemotion-k)
+
+" yank-highlit
+let g:highlightedyank_highlight_duration = 150
+
+" indent_guides
+let g:indent_guides_enable_on_vim_startup = 1"" git操作
+
+" GitGutter --
+" g]で前の変更箇所へ移動する
+nnoremap g[ :GitGutterPrevHunk<CR>
+" g[で次の変更箇所へ移動する
+nnoremap g] :GitGutterNextHunk<CR>
+" ghでdiffをハイライトする
+nnoremap gh :GitGutterLineHighlightsToggle<CR>
+" gpでカーソル行のdiffを表示する
+nnoremap gp :GitGutterPreviewHunk<CR>
+" 記号の色を変更する
+highlight GitGutterAdd ctermfg=green
+highlight GitGutterChange ctermfg=blue
+highlight GitGutterDelete ctermfg=red
+
+"" 反映時間を短くする(デフォルトは4000ms)
+set updatetime=250

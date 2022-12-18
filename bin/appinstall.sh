@@ -6,54 +6,56 @@ elif [ "`uname`" == "Linux" ]; then
   ISLINUX=true
 fi
 
-if [ $ISLINUX ]; then
+#if [ $ISLINUX ]; then ----------- Linux can use brew
+# 
+#	sudo apt-add-repository ppa:fish-shell/release-3 -y
+#	sudo apt update
+#
+#    sudo apt install apt-transport-https -y
+#	sudo apt install manpages-ja      -y
+#	sudo apt install manpages-ja-dev  -y
+#	sudo apt install tree             -y
+#	sudo apt install ninja-build      -y
+#	sudo apt install gettext          -y
+#	sudo apt install libtool          -y
+#	sudo apt install libtool-bin      -y
+#	sudo apt install autoconf         -y
+#	sudo apt install automake         -y
+#	sudo apt install cmake            -y
+#	sudo apt install g++              -y
+#	sudo apt install pkg-config       -y
+#	sudo apt install unzip            -y
+#	sudo apt install curl             -y
+#	sudo apt install doxygen          -y
+#	sudo apt install tmux             -y
+#	sudo apt install fonts-powerline  -y
+#	sudo apt install python3-pip      -y
+#	sudo apt install ruby             -y 
+#	sudo apt install gem              -y
+#	sudo apt install ruby-dev         -y
+#	sudo apt install build-essential  -y
+#
+#	# Homebrew Install
+#	PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+#	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#	# sudo ln -s -f /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/
+#fi
 
-	sudo apt-add-repository ppa:fish-shell/release-3 -y
-	sudo apt update
 
-    sudo apt install apt-transport-https -y
-	sudo apt install manpages-ja      -y
-	sudo apt install manpages-ja-dev  -y
-	sudo apt install tree             -y
-	sudo apt install ninja-build      -y
-	sudo apt install gettext          -y
-	sudo apt install libtool          -y
-	sudo apt install libtool-bin      -y
-	sudo apt install autoconf         -y
-	sudo apt install automake         -y
-	sudo apt install cmake            -y
-	sudo apt install g++              -y
-	sudo apt install pkg-config       -y
-	sudo apt install unzip            -y
-	sudo apt install curl             -y
-	sudo apt install doxygen          -y
-	sudo apt install tmux             -y
-	sudo apt install fonts-powerline  -y
-	sudo apt install python3-pip      -y
-	sudo apt install ruby             -y 
-	sudo apt install gem              -y
-	sudo apt install ruby-dev         -y
-	sudo apt install build-essential  -y
-
-	# Homebrew Install
-	PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	sudo ln -s -f /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/
-fi
-
-
-
+brew update
+brew install doxygen
+brew install tmux
+brew install tree
 brew install zsh
 brew install --HEAD neovim
 brew install --HEAD tree-sitter
 brew install --HEAD luajit
 brew install go
 brew install jq
-brew install rust
+brew install rusut
 brew install exa
 brew install bat
 brew install ghq
-brew install peco
 brew install hub
 brew install fzf
 brew install glow
@@ -61,6 +63,8 @@ brew install anyenv
 brew install nodenv
 brew install tig
 brew install imagemagick
+brew install deno
+brew install lazygit
 
 # CasheDirectory
 CACHE=~/.cache
@@ -99,6 +103,9 @@ git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$H
 if [ ! -f $HOME/.local/bin ]; then
     mkdir -p  $HOME/.local/bin
 fi
+
+#tpx -- Tmux Plugin Manager 
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Docker for Linux
 if [ $ISLINUX ]; then
