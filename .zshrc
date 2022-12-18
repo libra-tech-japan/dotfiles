@@ -107,6 +107,7 @@ alias gs='git status'
 alias ga='git add . && git status '
 alias t='tig'
 alias tg=t
+alias lg='lazygit'
 
 alias cat='bat'
 
