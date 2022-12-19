@@ -29,7 +29,6 @@ set formatoptions-=o
 set formatoptions-=r
 
 "tab/indentの設定
-set shellslash
 set expandtab "タブ入力を複数の空白入力に置き換える
 set tabstop=2 "画面上でタブ文字が占める幅
 set shiftwidth=2 "自動インデントでずれる幅
@@ -97,7 +96,6 @@ nnoremap ]B :blast<CR>
 nnoremap <leader>jq :%!jq '.'<CR>
 
 
-set shellslash              " Windowsでディレクトリパスの区切り文字に / を使えるようにする
 set lazyredraw              " マクロなどを実行中は描画を中断
 set complete+=k             " 補完に辞書ファイル追加
 set history=500
