@@ -42,7 +42,7 @@ let mapleader="\<Space>"
 
 " reload vimrc
 nnoremap <leader>sc :source ~/.config/nvim/init.vim<cr>
-nnoremap <leader>i :e ~/.config/nvim/init.vim<cr>
+nnoremap <leader>in :e ~/.config/nvim/init.vim<cr>
 
 "x キー削除でデフォルトレジスタに入れない
 nnoremap x "_x
@@ -70,6 +70,13 @@ inoremap <C-l> <Right>
 " j, k による移動を折り返されたテキストでも自然に振る舞うように変更
 nnoremap j gj
 nnoremap k gk
+
+" 行頭・行末ジャンプ
+nnoremap <C-h> ^
+nnoremap <C-l> $
+vnoremap <C-h> ^
+vnoremap <C-l> $
+
 
 " TABにて対応ペアにジャンプ
 nnoremap <Tab> %
