@@ -11,6 +11,11 @@ set termguicolors
 set ruler
 set number
 set scrolloff=5
+" Coc ----
+set hidden
+set shortmess+=c
+set signcolumn=yes
+
 
 " 動作環境との統合
 " OSのクリップボードをレジスタ指定無しで Yank, Put 出来るようにする
@@ -39,6 +44,10 @@ set cindent
 
 " リーダー設定"
 let mapleader="\<Space>"
+
+" コマンドモードへ;も利用可とする
+nnoremap ; :
+vnoremap ; :
 
 " reload vimrc
 nnoremap <leader>sc :source ~/.config/nvim/init.vim<cr>
@@ -241,9 +250,46 @@ nmap     <silent> [coc]df <Plug>(coc-definition)
 nmap     <silent> [coc]rf <Plug>(coc-references)
 "スペースrnでRename
 nmap     <silent> [coc]rn <Plug>(coc-rename)
-"スペースfmtでFormat
 nmap     <silent> [coc]f :<C-u>CocCommand eslint.executeAutofix<CR>
-" nmap     <silent> [coc]f <Plug>(coc-format)
+
+
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <C-TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Or use `complete_info` if your vim support it, like:
+" inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+command! -nargs=0 Fmt :call CocAction('format')
+
 
 function! s:coc_typescript_settings() abort
   nnoremap <silent> <buffer> [coc]fmt :<C-u>CocCommand eslint.executeAutofix<CR>:CocCommand prettier.formatFile<CR>
