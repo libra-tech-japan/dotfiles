@@ -158,8 +158,11 @@ Plug 'vim-jp/vimdoc-ja'
 
 " 編集支援
 Plug 'machakann/vim-highlightedyank'
-" インデント着色
-Plug 'nathanaelkane/vim-indent-guides'
+if exists('g:vscode')
+else
+  " インデント着色
+  Plug 'nathanaelkane/vim-indent-guides'
+endif
 " 複数行同時編集
 Plug 'terryma/vim-multiple-cursors'
 " 検索・移動支援
@@ -406,6 +409,7 @@ require('nvim-treesitter.configs').setup {
     "tsx",
     "python",
     "vue",
+    "html",
     "haskell",
   },
   highlight = {
