@@ -1,55 +1,64 @@
-dotfiles
+# dotfiles
+
 ===============
 
 Include a no plugin dotfiles.
 Can be used quickly.
 
-## HOWTO ##
+## HOWTO
 
 ### Prepear To Install
+
 ```
 sudo apt update -y && sudo apt upgrade -y
 ```
 
-# git setting
+## git setting
+
 ```
 git config --global user.email "*******@example.com"
 git config --global user.name "USER NAME"
 git config --global core.editor 'vim -c "set fenc=utf-8"'  
 ```
 
+## GitHub connection setting
 
-# GitHub connection setting
 ```
 ssh-keygen
 # Copy .ssh/id_rsa.pub to Github
 ssh -T git@github.com
 ```
 
-# Add .gitconfig
+## Add .gitconfig
+
 ```
 [alias]
-  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative -n15
   lga = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 ```
 
-# Clone & Install
+## Clone & Install
+
 ```
 1. `git clone xxx`
 
-2. `./bin/sh applnstall.sh
+2. `/bin/sh applnstall.sh
 
-3. `./bin/dotsinstall.sh`
+3. `/bin/dotsinstall.sh`
 ```
 
-# Change Zsh
+## Change Zsh
+
 ```
 cat /etc/shells
 
-chsh
+sudo chsh -s $(which zsh) ユーザー名
+
+echo $SHELL
 ```
 
-# Create a new Zsh configuration by copying/linking the Zsh configuration files provided:
+## Create a new Zsh configuration by copying/linking the Zsh configuration files provided
+
 ```
 setopt EXTENDED_GLOB
 for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
@@ -62,20 +71,25 @@ done
 `p10k configure`
 
 # SetUp anyenv
+
 ```
 anyenv install --init
+
+mkdir -p $(anyenv root)/plugins
+git clone https://github.com/znz/anyenv-update.git $(anyenv root)/plugins/anyenv-update
+
+nodenv install -l 18.xx.xx
+nodenv global 18.xx.xx
 ```
 
-# After node.js Installed.
+# After node.js Installed
+
 ## commitizen install
+
 ```
 npm install commitizen -g
 npm install -g cz-conventional-changelog
 npm install -g cz-conventional-changelog-ja
 ```
 
-https://github.com/commitizen/cz-cli
-
-
-
-
+<https://github.com/commitizen/cz-cli>
