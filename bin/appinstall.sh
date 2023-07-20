@@ -6,7 +6,7 @@ elif [ "`uname`" == "Linux" ]; then
   ISLINUX=true
 fi
 
-#if [ $ISLINUX ]; then
+if [ $ISLINUX ]; then
 
 	sudo apt update
   sudo apt install apt-transport-https -y
