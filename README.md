@@ -78,8 +78,14 @@ anyenv install --init
 mkdir -p $(anyenv root)/plugins
 git clone https://github.com/znz/anyenv-update.git $(anyenv root)/plugins/anyenv-update
 
-nodenv install -l 18.xx.xx
-nodenv global 18.xx.xx
+```
+
+# SetUp node.js by Volta
+
+```
+volta install node@18.xx.x
+
+
 ```
 
 # After node.js Installed
