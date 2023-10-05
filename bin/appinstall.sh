@@ -9,10 +9,10 @@ fi
 if [ $ISLINUX ]; then
 
 	sudo apt update
-  sudo apt install apt-transport-https -y
+  	sudo apt install apt-transport-https -y
 	sudo apt install manpages-ja      -y
 	sudo apt install manpages-ja-dev  -y
-  sudo apt install ninja-build      -y
+  	sudo apt install ninja-build      -y
 	sudo apt install gettext          -y
 	sudo apt install libtool          -y
 	sudo apt install libtool-bin      -y
@@ -51,7 +51,7 @@ brew install hub
 brew install fzf
 brew install glow
 brew install anyenv
-brew install nodenv
+brew install volta
 brew install tig
 brew install imagemagick
 brew install deno
@@ -111,7 +111,7 @@ if [ $ISLINUX ]; then
     sudo apt install docker-ce -y
     # Install Dockder-Compose
     mkdir -p ~/.docker/cli-plugins/
-    sudo curl -L https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-`uname -s`-`uname -m` -o ~/.docker/cli-plugins/docker-compose
+    sudo curl -L https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-`uname -s`-`uname -m` -o ~/.docker/cli-plugins/docker-compose
     sudo chmod +x ~/.docker/cli-plugins/docker-compose
     sudo usermod -aG docker $USER
 fi
