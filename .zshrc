@@ -151,7 +151,7 @@ export PATH="$HOME/.anyenv/bin:$PATH"
 eval "$(anyenv init - )"
 
 # nodenv
-export NODENV_ROOT="$HOME/.nodenv"
-export PATH="$NODENV_ROOT/bin:$PATH"
-eval "$(nodenv init - )"
+#export NODENV_ROOT="$HOME/.nodenv"
+#export PATH="$NODENV_ROOT/bin:$PATH"
+#eval "$(nodenv init - )"
 
