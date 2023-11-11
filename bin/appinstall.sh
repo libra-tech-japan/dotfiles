@@ -9,10 +9,10 @@ fi
 if [ $ISLINUX ]; then
 
 	sudo apt update
-  	sudo apt install apt-transport-https -y
+ 	sudo apt install apt-transport-https -y
 	sudo apt install manpages-ja      -y
 	sudo apt install manpages-ja-dev  -y
-  	sudo apt install ninja-build      -y
+  sudo apt install ninja-build      -y
 	sudo apt install gettext          -y
 	sudo apt install libtool          -y
 	sudo apt install libtool-bin      -y
@@ -51,7 +51,6 @@ brew install hub
 brew install fzf
 brew install glow
 brew install anyenv
-brew install volta
 brew install tig
 brew install imagemagick
 brew install deno
@@ -59,6 +58,9 @@ brew install lazygit
 brew install neovim
 brew install tree-sitter
 brew install luajit
+
+#Install Volta
+curl https://get.volta.sh/ | bash
 
 # CasheDirectory
 CACHE=~/.cache

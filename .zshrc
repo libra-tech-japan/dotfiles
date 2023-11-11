@@ -5,6 +5,11 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+setopt EXTENDED_GLOB
+#for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+#  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+#done
+
 #
 # Executes commands at the start of an interactive session.
 #
@@ -155,3 +160,5 @@ eval "$(anyenv init - )"
 #export PATH="$NODENV_ROOT/bin:$PATH"
 #eval "$(nodenv init - )"
 
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
