@@ -58,6 +58,7 @@ brew install lazygit
 brew install neovim
 brew install tree-sitter
 brew install luajit
+brew install cfn-lint
 
 #Install Volta
 curl https://get.volta.sh/ | bash
