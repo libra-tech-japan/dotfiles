@@ -168,7 +168,6 @@ Plug 'machakann/vim-sandwich'
 Plug 'tpope/vim-surround'
 " C-a C-x拡張(その依存プラグイン )
 Plug 'monaqa/dps-dial.vim'
-Plug 'vim-denops/denops.vim'
 
 
 call plug#end()
