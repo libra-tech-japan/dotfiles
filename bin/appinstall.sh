@@ -122,19 +122,24 @@ fi
 
 # --- Docker Setup for Linux ---
 # On macOS, Docker Desktop is installed via Brewfile (cask)
-if [ "$ISLINUX" = true ] && ! command -v docker &> /dev/null; then
-    echo "Setting up Docker for Linux..."
-    sudo apt-get update
-    sudo apt-get install ca-certificates curl gnupg -y
-    sudo install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    sudo chmod a+r /etc/apt/keyrings/docker.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    sudo apt-get update
-    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-    # Add user to the docker group to run docker without sudo
-    sudo usermod -aG docker "$USER"
-    echo "Docker for Linux installed. You may need to log out and log back in for group changes to take effect."
+# Devcontainerの中ではDocker Engineのインストールは不要なため、その場合を除外する
+# $REMOTE_CONTAINERS はVS CodeのDevcontainer内で自動的に設定される環境変数
+if [ "$ISLINUX" = true ] && [ -z "$REMOTE_CONTAINERS" ] && ! command -v docker &> /dev/null; then
+    echo "Setting up Docker for Host Linux (e.g. WSL2)..."
+    # この処理はDebian/Ubuntu系での実行を想定
+    if [ -f /etc/debian_version ]; then
+        sudo apt-get update
+        sudo apt-get install ca-certificates curl gnupg -y
+        sudo install -m 0755 -d /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        sudo chmod a+r /etc/apt/keyrings/docker.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt-get update
+        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+        # Add user to the docker group to run docker without sudo
+        sudo usermod -aG docker "$USER"
+        echo "Docker for Linux installed. You may need to log out and log back in for group changes to take effect."
+    fi
 fi
 
 # --- Add Zsh to /etc/shells ---
