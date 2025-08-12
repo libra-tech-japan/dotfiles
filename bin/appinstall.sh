@@ -42,6 +42,18 @@ if [ "$ISLINUX" = true ]; then
     else
         echo "Debian/Ubuntu based Linux detected. Using apt-get."
         sudo apt-get update
+
+        # GitHub CLIの公式リポジトリを追加
+        # (apt-getでghをインストールするために必要)
+        if ! command -v gh &> /dev/null; then
+            echo "Adding GitHub CLI repository..."
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt-get update
+        fi
+
+        # 必要なツールをapt-getで一括インストール
         sudo apt-get install -y \
             build-essential \
             curl \
@@ -49,14 +61,26 @@ if [ "$ISLINUX" = true ]; then
             git \
             unzip \
             manpages-ja \
-            manpages-ja-dev
+            manpages-ja-dev \
+            jq \
+            gh \
+            fzf \
+            tig \
+            bat \
+            ripgrep \
+            fd-find
+
+        # fdコマンドを使えるようにシンボリックリンクを作成
+        if ! command -v fd &> /dev/null && command -v fdfind &> /dev/null; then
+            sudo ln -s $(which fdfind) /usr/local/bin/fd
+        fi
     fi
 fi
 
 # --- Homebrew Installation ---
 if ! command -v brew &> /dev/null; then
     echo "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 # --- Add Homebrew to PATH (for this script's session) ---
@@ -67,11 +91,10 @@ else # macOS
 fi
 
 # --- Install packages via Brewfile ---
-# Use a script-relative path for robustness
 BASE_DIR=$(cd "$(dirname "$0")/.." && pwd)
 BREWFILE_PATH="${BASE_DIR}/Brewfile"
 if [ -f "$BREWFILE_PATH" ]; then
-    echo "Installing packages from Brewfile..."
+    echo "Installing packages from (lightweight) Brewfile..."
     brew bundle --file="$BREWFILE_PATH"
 else
     echo "Warning: Brewfile not found at $BREWFILE_PATH. Skipping package installation."
@@ -105,7 +128,6 @@ if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
 fi
 
 # --- Docker Setup for Linux (Host only) ---
-# Skips this step if inside a Dev Container
 if [ "$ISLINUX" = true ] && [ -z "$REMOTE_CONTAINERS" ] && ! command -v docker &> /dev/null; then
     echo "Setting up Docker for Host Linux (e.g. WSL2)..."
     if [ -f /etc/debian_version ]; then
