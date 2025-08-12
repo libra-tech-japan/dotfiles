@@ -38,9 +38,7 @@ if [ "$ISLINUX" = true ]; then
             git \
             unzip \
             man-db \
-            man-pages \
-            ruby \
-            ruby-dev
+            man-pages
     else
         echo "Debian/Ubuntu based Linux detected. Using apt-get."
         sudo apt-get update
@@ -51,9 +49,7 @@ if [ "$ISLINUX" = true ]; then
             git \
             unzip \
             manpages-ja \
-            manpages-ja-dev \
-            ruby \
-            ruby-dev
+            manpages-ja-dev
     fi
 fi
 
