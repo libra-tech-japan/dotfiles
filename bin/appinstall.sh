@@ -1,121 +1,145 @@
 #!/bin/bash
 
-if [ "`uname`" == "Darwin" ]; then
-  ISMAC=true
-elif [ "`uname`" == "Linux" ]; then
-  ISLINUX=true
+# ===============================================================
+# Universal Dev Environment Setup Script (2025)
+# Target OS: macOS / WSL2 (Ubuntu)
+# ===============================================================
+
+set -e # Exit immediately if a command exits with a non-zero status.
+
+# --- Keep sudo alive ---
+# Ask for the administrator password upfront and run a loop to keep it alive.
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# --- OS Detection ---
+ISMAC=false
+ISLINUX=false
+if [ "$(uname)" == "Darwin" ]; then
+    ISMAC=true
+    echo "macOS detected."
+elif [ "$(uname)" == "Linux" ]; then
+    ISLINUX=true
+    echo "Linux detected."
+else
+    echo "Unsupported OS."
+    exit 1
 fi
 
-if [ $ISLINUX ]; then
-
-	sudo apt update
- 	sudo apt install apt-transport-https -y
-	sudo apt install manpages-ja      -y
-	sudo apt install manpages-ja-dev  -y
-  sudo apt install ninja-build      -y
-	sudo apt install gettext          -y
-	sudo apt install libtool          -y
-	sudo apt install libtool-bin      -y
-	sudo apt install autoconf         -y
-	sudo apt install automake         -y
-	sudo apt install cmake            -y
-	sudo apt install g++              -y
-	sudo apt install pkg-config       -y
-	sudo apt install unzip            -y
-	sudo apt install curl             -y
-	sudo apt install fonts-powerline  -y
-	sudo apt install ruby             -y
-	sudo apt install gem              -y
-	sudo apt install ruby-dev         -y
-	sudo apt install build-essential  -y
-
-	# Homebrew Install
-	PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	 sudo ln -s -f /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/
+# --- Linux Environment Setup ---
+if [ "$ISLINUX" = true ]; then
+    echo "Setting up Linux environment..."
+    sudo apt-get update
+    sudo apt-get install -y \
+        build-essential \
+        curl \
+        file \
+        git \
+        unzip \
+        manpages-ja \
+        manpages-ja-dev \
+        ruby \
+        ruby-dev
 fi
 
-
-brew update
-brew install doxygen
-
-brew install tree
-brew install zsh
-brew install go
-brew install jq
-brew install rusut
-brew install exa
-brew install bat
-brew install ghq
-brew install hub
-brew install fzf
-brew install glow
-brew install anyenv
-brew install tig
-brew install imagemagick
-brew install deno
-brew install lazygit
-brew install neovim
-brew install tree-sitter
-brew install luajit
-brew install cfn-lint
-brew install wget
-
-#Install Volta
-curl https://get.volta.sh/ | bash
-
-# CreateLocalBin
-if [ ! -f $HOME/.local/bin ]; then
-    mkdir -p  $HOME/.local/bin
+# --- Homebrew Installation ---
+if ! command -v brew &> /dev/null; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# CasheDirectory
-CACHE=~/.cache
-rm -rf $CACHE
-mkdir $CACHE
+# --- Add Homebrew to PATH ---
+# Detects the correct path for both macOS and Linuxbrew
+if [ "$ISLINUX" = true ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+else
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
-#Install shell-safe-rm
-SAFE_RM=$CACHE/shell-safe-rm
-git clone https://github.com/kaelzhang/shell-safe-rm.git $SAFE_RM
-sudo cp $SAFE_RM/bin/rm.sh /usr/local/bin/safe-rm
-mkdir -p ~/.local/share/Trash/files
-ln -s -f ~/.local/share/Trash/files ~/.trash
+# --- Install packages via Brewfile ---
+# Assumes your Brewfile is in a dotfiles repo cloned to ~/.dotfiles
+BREWFILE_PATH="${HOME}/.dotfiles/Brewfile"
+if [ -f "$BREWFILE_PATH" ]; then
+    echo "Installing packages from Brewfile..."
+    brew bundle --file="$BREWFILE_PATH"
+else
+    echo "Warning: Brewfile not found at $BREWFILE_PATH. Skipping package installation."
+fi
 
-# Install git-secrets
-SECRET=$CACHE/git-secrets
-git clone https://github.com/awslabs/git-secrets.git $SECRET
-sudo chmod +x $SECRET/git-secrets
-sudo cp $SECRET/git-secrets /usr/local/bin/
+# --- asdf Setup (Language Version Manager) ---
+# Add plugins and install default language versions
+if command -v asdf &> /dev/null; then
+    echo "Setting up asdf plugins..."
+
+    # Node.js
+    if ! asdf plugin-list | grep -q "nodejs"; then
+        asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+    fi
+    asdf install nodejs latest
+    asdf global nodejs latest
+
+    # You can add other languages here
+    # Example for Go
+    # if ! asdf plugin-list | grep -q "golang"; then
+    #   asdf plugin-add golang https://github.com/asdf-community/asdf-golang.git
+    # fi
+    # asdf install golang latest
+    # asdf global golang latest
+fi
+
+# --- git-secrets Setup ---
+if [ ! -d ~/.git-secrets ]; then
+    echo "Installing git-secrets..."
+    git clone https://github.com/awslabs/git-secrets.git ~/.git-secrets
+    (cd ~/.git-secrets && sudo make install)
+fi
+# Register AWS hooks globally for all repositories
 git secrets --register-aws --global
-git secrets --install
 
-
-# vim plugin manager
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-
-# Install prezto
-git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
-
-
-
-# Docker for Linux
-if [ $ISLINUX ]; then
-    # Add Docker's official GPG key
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    # Install Docker
-    sudo apt update
-    sudo apt install docker-ce -y
-    # Install Dockder-Compose
-    mkdir -p ~/.docker/cli-plugins/
-    sudo curl -L https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-`uname -s`-`uname -m` -o ~/.docker/cli-plugins/docker-compose
-    sudo chmod +x ~/.docker/cli-plugins/docker-compose
-    sudo usermod -aG docker $USER
+# --- Zsh (Prezto) Setup ---
+if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
+    echo "Installing Prezto for Zsh..."
+    git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+    # Note: You need to manually link your .zshrc, .zpreztorc etc. from your dotfiles
 fi
 
-# Change default shell to zsh
-if [ "$SHELL" != "$(which zsh)" ]; then
-  echo "Changing default shell to zsh. You might be asked for your password."
-  chsh -s $(which zsh)
+# --- Docker Setup for Linux ---
+# On macOS, Docker Desktop is installed via Brewfile (cask)
+if [ "$ISLINUX" = true ] && ! command -v docker &> /dev/null; then
+    echo "Setting up Docker for Linux..."
+    sudo apt-get update
+    sudo apt-get install ca-certificates curl gnupg -y
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+    # Add user to the docker group to run docker without sudo
+    sudo usermod -aG docker "$USER"
+    echo "Docker for Linux installed. You may need to log out and log back in for group changes to take effect."
 fi
+
+# --- Add Zsh to /etc/shells ---
+# Set path to Homebrew Zsh
+if [ "$ISLINUX" = true ]; then
+    ZSH_PATH="/home/linuxbrew/.linuxbrew/bin/zsh"
+else # macOS
+    ZSH_PATH="/opt/homebrew/bin/zsh"
+fi
+
+# Add the Zsh path to /etc/shells if it's not already there
+if ! grep -qFx "$ZSH_PATH" /etc/shells; then
+    echo "Adding $ZSH_PATH to /etc/shells..."
+    echo "$ZSH_PATH" | sudo tee -a /etc/shells
+fi
+
+# --- Set Zsh as Default Shell ---
+# Change shell only if it's not already Zsh
+if [ "$SHELL" != "$ZSH_PATH" ]; then
+    echo "Changing default shell to Zsh..."
+    chsh -s "$ZSH_PATH"
+    echo "Default shell changed to Zsh. Please log out and log back in to apply the changes."
+fi
+
+echo -e "\n✅ Setup complete!"
