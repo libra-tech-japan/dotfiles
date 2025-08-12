@@ -1,6 +1,9 @@
 # =============================================================================
 # Powerlevel10k Instant Prompt
 # =============================================================================
+if [[ -s "${ZDOTDIR:-$HOME}/.p10k/powerlevel10k.zsh-theme" ]]; then
+  source "${ZDOTDIR:-$HOME}/.p10k/powerlevel10k.zsh-theme"
+fi
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
