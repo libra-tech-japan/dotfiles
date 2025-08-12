@@ -91,9 +91,6 @@ vnoremap <C-l> $
 nnoremap <Tab> %
 vnoremap <Tab> %
 
-" 入力モード中に素早くjj jkと入力した場合はESCとみなす
-inoremap <silent>jj <ESC>
-inoremap <silent>jk <ESC>
 
 "  上書き保存"
 nnoremap <C-s> :w<CR>

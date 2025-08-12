@@ -1,3 +1,6 @@
+# =============================================================================
+# Powerlevel10k Instant Prompt
+# =============================================================================
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -5,160 +8,135 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-setopt EXTENDED_GLOB
-#for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
-#  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
-#done
-
-#
-# Executes commands at the start of an interactive session.
-#
-# Authors:
-#   Sorin Ionescu <sorin.ionescu@gmail.com>
-#
-
+# =============================================================================
+# Prezto
+# =============================================================================
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
-# Customize to your needs...
-
-# Lines configured by zsh-newuser-install
-HISTFILE=~/.histfile
-HISTSIZE=1000
-SAVEHIST=1000
-setopt autocd
-unsetopt beep
-bindkey -e
-# End of lines configured by zsh-newuser-install
-# The following lines were added by compinstall
-zstyle :compinstall filename '/Users/akira/.zshrc'
-
-autoload -Uz compinit
-compinit
-# End of lines added by compinstall
-
+# =============================================================================
+# Environment Variables
+# =============================================================================
 export EDITOR=nvim
 export VISUAL=$EDITOR
 
-# Docker start
-#if [ $(service docker status | awk '{print $4}') = "not" ]; then
-#    sudo service docker start > /dev/null
-#fi
+export HISTFILE=~/.histfile
+export HISTSIZE=1000
+export SAVEHIST=1000
 
-############################
-### Function definitions ###
-############################
+# PATH adjustments
+export PATH="$PATH:$HOME/.bin"
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+# anyenv
+export PATH="$HOME/.anyenv/bin:$PATH"
+eval "$(anyenv init - )"
+
+# Volta
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+# GHCup
+[ -f "/Users/akira/.ghcup/env" ] && source "/Users/akira/.ghcup/env" # ghcup-env
+
+# =============================================================================
+# Shell Options
+# =============================================================================
+setopt autocd
+setopt EXTENDED_GLOB
+unsetopt beep
+bindkey -e
+
+# =============================================================================
+# Functions
+# =============================================================================
 function cdls() {
-    # cdがaliasでループするので\をつける
-    \cd "$@";
-    if [ "$?" -eq 0 ];then
-        exa --icons
+    # Use `command cd` to avoid alias loop
+    command cd "$@"
+    if [ "$?" -eq 0 ]; then
+        eza --icons
     fi
 }
 
-
-#############
-### Alias ###
-#############
+# =============================================================================
+# Aliases
+# =============================================================================
+# General
 alias src='source ~/.zshrc'
-
-alias cd="cdls"
-
-alias ls='ls --color=auto'
-alias l='ls'
-alias ll='ls -l'
-alias la='ls -a'
-alias lla='ls -al'
-alias lal='ls -al'
-
 alias cl='clear'
+alias ex='exit'
+alias jutf='export LANG=ja_JP.UTF-8'
+alias jeuc='export LANG=ja_JP.euc-jp'
+
+# Navigation & File Operations
+alias cd="cdls"
 alias rm="safe-rm"
 alias mkdir="mkdir -p"
 alias Trash="~/.trash"
 alias cp="cp -ip"
 alias mv='mv -i'
 alias scp="scp -p"
-alias sc="screen"
-alias gre="grep --color=auto -n -H -i -I"
+alias findall="find / -type d -name 'mnt' -prune -o "
+
+# eza (ls replacement)
+alias e='eza --icons'
+alias l='e'
+alias ls='e'
+alias ee='eza -l -h -@ -m --icons --git --time-style=long-iso --color=automatic --group-directories-first'
+alias ll='ee'
+alias ea='eza -l -aa -h -@ -m --icons --git --time-style=long-iso --color=automatic --group-directories-first'
+alias lla='ea'
+alias et='eza -T -L 3 -a -I "node_modules|.git|.cache" --icons'
+alias lt='et'
+alias eta='eza -T -a -I "node_modules|.git|.cache" --color=always --icons | less -r'
+alias lta='eta'
+
+# Git
+alias g='git'
+alias gs='git status'
+alias ga='git add . && git status'
+alias gcm='git commit -m'
+alias gca='git commit --amend'
+alias t='tig'
+alias tg='tig'
+alias lg='lazygit'
+
+# GitHub
+alias hb='hub browse'
+alias hbrl='hub browse $(ghq list | fzf | cut -d "/" -f 2,3)'
+alias gcd='cd $(ghq root)/$(ghq list | fzf)'
+
+# Development
 alias vi='nvim'
 alias v='nvim'
 alias vim='nvim'
-alias ex='exit'
-alias jutf='export LANG=ja_JP.UTF-8'
-alias jeuc='export LANG=ja_JP.euc-jp'
-alias findall="find / -type d -name 'mnt' -prune -o "
-
+alias cat='bat'
+alias dt='dotnet'
 alias tsinit='npm init --yes && npm install -D typescript eslint @types/node && ./node_modules/.bin/tsc --init --outDir "dist"  && ./node_modules/.bin/eslint --init'
 
-alias e='exa --icons'
-alias l=e
-alias ls=e
+# Docker
+alias dcu='docker-compose up -d '
+alias dcd='docker-compose down '
 
-alias ee='exa -l -h -@ -m --icons --git --time-style=long-iso --color=automatic --group-directories-first'
-alias ll=ee
+# =============================================================================
+# Initializations
+# =============================================================================
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-alias ea='exa -l -aa -h -@ -m --icons --git --time-style=long-iso --color=automatic --group-directories-first'
-alias lla=ea
+# Completions
+# The following lines were added by compinstall
+zstyle :compinstall filename '/Users/akira/.zshrc'
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/akira/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
 
-alias et='exa -T -L 3 -a -I "node_modules|.git|.cache" --icons'
-alias lt=et
-alias eta='exa -T -a -I "node_modules|.git|.cache" --color=always --icons | less -r'
-alias lta=eta
-
-alias g='git'
-alias gs='git status'
-alias ga='git add . && git status '
-alias t='tig'
-alias tg=t
-alias lg='lazygit'
-
-alias cat='bat'
-
-# 現在の作業リポジトリをブラウザで表示する
-alias hb='hub browse'
-# リポジトリの一覧の中からブラウザで表示したい対象を検索・表示する
-alias hbrl='hub browse $(ghq list | fzf | cut -d "/" -f 2,3)'
-# リポジトリのディレクトリへ移動
-alias gcd='cd $(ghq root)/$(ghq list | fzf)'
-
-###############################
-## 初回シェル時のみ tmux実行
-###############################
-#alias tmux="tmux -u2"
-#
-## tmuxの自動起動
-#count=`ps aux | grep tmux | grep -v grep | wc -l`
-#if test $count -eq 0; then
-#    echo `tmux`
-#elif test $count -eq 1; then
-#    echo `tmux a`
-#fi
-
+# Powerlevel10k Prompt
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 autoload -Uz promptinit
 promptinit
 prompt powerlevel10k
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-##############################
-# Path
-##############################
-export PATH="$PATH:$HOME/.bin"
-export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-
-
-# anyenv
-export PATH="$HOME/.anyenv/bin:$PATH"
-eval "$(anyenv init - )"
-
-# nodenv
-#export NODENV_ROOT="$HOME/.nodenv"
-#export PATH="$NODENV_ROOT/bin:$PATH"
-#eval "$(nodenv init - )"
-
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"

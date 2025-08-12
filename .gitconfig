@@ -59,3 +59,5 @@
 	prompt = false
 [rebase]
 	autosquash = true
+[init]
+	defaultBranch = main
