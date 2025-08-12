@@ -40,7 +40,7 @@ if [ "$ISLINUX" = true ]; then
             file \
             git \
             unzip \
-            man \
+            man-db \
             man-pages \
             ruby \
             ruby-dev
