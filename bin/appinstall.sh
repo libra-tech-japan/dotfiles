@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # ===============================================================
-# Universal Dev Environment Setup Script (2025)
-# Target OS: macOS / WSL2 (Ubuntu)
+# Universal Dev Environment Setup Script (2025) - Final Version
+# Target OS: macOS / WSL2 (Ubuntu) / Alpine Linux
 # ===============================================================
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
 # --- Keep sudo alive ---
-# Ask for the administrator password upfront and run a loop to keep it alive.
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
@@ -29,12 +28,10 @@ fi
 # --- Linux Environment Setup ---
 if [ "$ISLINUX" = true ]; then
     echo "Setting up Linux environment..."
-    # /etc/alpine-releaseファイルの存在でAlpine Linuxか判定
     if [ -f /etc/alpine-release ]; then
         echo "Alpine Linux detected. Using apk."
-        # Alpineでは 'build-essential' の代わりに 'build-base' を使う
-        # また、manpages-jaはないため、基本的なmanをインストール
         sudo apk add --no-cache \
+            shadow \
             build-base \
             curl \
             file \
@@ -44,7 +41,6 @@ if [ "$ISLINUX" = true ]; then
             man-pages \
             ruby \
             ruby-dev
-    # それ以外のLinux (Debian/Ubuntu系を想定)
     else
         echo "Debian/Ubuntu based Linux detected. Using apt-get."
         sudo apt-get update
@@ -67,17 +63,17 @@ if ! command -v brew &> /dev/null; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# --- Add Homebrew to PATH ---
-# Detects the correct path for both macOS and Linuxbrew
+# --- Add Homebrew to PATH (for this script's session) ---
 if [ "$ISLINUX" = true ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-else
+else # macOS
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 # --- Install packages via Brewfile ---
-# Assumes your Brewfile is in a dotfiles repo cloned to ~/.dotfiles
-BREWFILE_PATH="${HOME}/.dotfiles/Brewfile"
+# Use a script-relative path for robustness
+BASE_DIR=$(cd "$(dirname "$0")/.." && pwd)
+BREWFILE_PATH="${BASE_DIR}/Brewfile"
 if [ -f "$BREWFILE_PATH" ]; then
     echo "Installing packages from Brewfile..."
     brew bundle --file="$BREWFILE_PATH"
@@ -86,22 +82,16 @@ else
 fi
 
 # --- asdf Setup (Language Version Manager) ---
-# Add plugins and install default language versions
 if command -v asdf &> /dev/null; then
     echo "Setting up asdf plugins..."
-
-    # Node.js
     if ! asdf plugin list | grep -q "nodejs"; then
-        asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+        asdf plugin add nodejs
     fi
+    echo "Installing latest Node.js via asdf..."
     asdf install nodejs latest
-
-    # You can add other languages here
-    # Example for Go
-    # if ! asdf plugin list | grep -q "golang"; then
-    #   asdf plugin add golang https://github.com/asdf-community/asdf-golang.git
-    # fi
-    # asdf install golang latest
+    LATEST_NODE_VERSION=$(asdf latest nodejs)
+    echo "Setting global Node.js version to $LATEST_NODE_VERSION..."
+    # asdf global nodejs "$LATEST_NODE_VERSION"
 fi
 
 # --- git-secrets Setup ---
@@ -110,54 +100,45 @@ if [ ! -d ~/.git-secrets ]; then
     git clone https://github.com/awslabs/git-secrets.git ~/.git-secrets
     (cd ~/.git-secrets && sudo make install)
 fi
-# Register AWS hooks globally for all repositories
 git secrets --register-aws --global
 
 # --- Zsh (Prezto) Setup ---
 if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
     echo "Installing Prezto for Zsh..."
     git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
-    # Note: You need to manually link your .zshrc, .zpreztorc etc. from your dotfiles
 fi
 
-# --- Docker Setup for Linux ---
-# On macOS, Docker Desktop is installed via Brewfile (cask)
-# Devcontainerの中ではDocker Engineのインストールは不要なため、その場合を除外する
-# $REMOTE_CONTAINERS はVS CodeのDevcontainer内で自動的に設定される環境変数
+# --- Docker Setup for Linux (Host only) ---
+# Skips this step if inside a Dev Container
 if [ "$ISLINUX" = true ] && [ -z "$REMOTE_CONTAINERS" ] && ! command -v docker &> /dev/null; then
     echo "Setting up Docker for Host Linux (e.g. WSL2)..."
-    # この処理はDebian/Ubuntu系での実行を想定
     if [ -f /etc/debian_version ]; then
         sudo apt-get update
-        sudo apt-get install ca-certificates curl gnupg -y
+        sudo apt-get install -y ca-certificates curl gnupg
         sudo install -m 0755 -d /etc/apt/keyrings
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
         sudo chmod a+r /etc/apt/keyrings/docker.gpg
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
         sudo apt-get update
-        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-        # Add user to the docker group to run docker without sudo
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
         sudo usermod -aG docker "$USER"
         echo "Docker for Linux installed. You may need to log out and log back in for group changes to take effect."
     fi
 fi
 
 # --- Add Zsh to /etc/shells ---
-# Set path to Homebrew Zsh
 if [ "$ISLINUX" = true ]; then
     ZSH_PATH="/home/linuxbrew/.linuxbrew/bin/zsh"
 else # macOS
     ZSH_PATH="/opt/homebrew/bin/zsh"
 fi
 
-# Add the Zsh path to /etc/shells if it's not already there
 if ! grep -qFx "$ZSH_PATH" /etc/shells; then
     echo "Adding $ZSH_PATH to /etc/shells..."
     echo "$ZSH_PATH" | sudo tee -a /etc/shells
 fi
 
 # --- Set Zsh as Default Shell ---
-# Change shell only if it's not already Zsh
 if [ "$SHELL" != "$ZSH_PATH" ]; then
     echo "Changing default shell to Zsh..."
     chsh -s "$ZSH_PATH"
