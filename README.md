@@ -7,59 +7,41 @@ Can be used quickly.
 
 ## HOWTO
 
-### Prepear To Install
+### Prepare To Install
 
-```
+```bash
 sudo apt update -y && sudo apt upgrade -y
 ```
 
-## git setting
+## Git setting
 
-```
-git config --global user.email "*******@example.com"
-git config --global user.name "USER NAME"
-git config --global core.editor 'vim -c "set fenc=utf-8"'  
+create `~/.gitconfig.local` file
+
+```toml
+[user]
+  email=xxx@example.com
+  name=username
 ```
 
 ## GitHub connection setting
 
-```
+```bash
 ssh-keygen
 # Copy .ssh/id_rsa.pub to Github
 ssh -T git@github.com
 ```
 
-## Add .gitconfig
-
-```
-[alias]
-  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative -n15
-  lga = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-```
-
 ## Clone & Install
 
-```
+```bash
 1. `git clone xxx`
+2. `/bin/sh install.sh
 
-2. `/bin/sh applnstall.sh
-
-3. `/bin/dotsinstall.sh`
-```
-
-## Change Zsh
-
-```
-cat /etc/shells
-
-sudo chsh -s $(which zsh) ユーザー名
-
-echo $SHELL
 ```
 
 ## Create a new Zsh configuration by copying/linking the Zsh configuration files provided
 
-```
+```bash
 setopt EXTENDED_GLOB
 for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
   ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
@@ -70,29 +52,11 @@ done
 
 `p10k configure`
 
-# SetUp anyenv
-
-```
-anyenv install --init
-
-mkdir -p $(anyenv root)/plugins
-git clone https://github.com/znz/anyenv-update.git $(anyenv root)/plugins/anyenv-update
-
-```
-
-# SetUp node.js by Volta
-
-```
-volta install node@18.xx.x
-
-
-```
-
 # After node.js Installed
 
 ## commitizen install
 
-```
+```npm
 npm install commitizen -g
 npm install -g cz-conventional-changelog
 npm install -g cz-conventional-changelog-ja

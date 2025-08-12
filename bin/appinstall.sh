@@ -72,19 +72,17 @@ if command -v asdf &> /dev/null; then
     echo "Setting up asdf plugins..."
 
     # Node.js
-    if ! asdf plugin-list | grep -q "nodejs"; then
-        asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+    if ! asdf plugin list | grep -q "nodejs"; then
+        asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
     fi
     asdf install nodejs latest
-    asdf global nodejs latest
 
     # You can add other languages here
     # Example for Go
-    # if ! asdf plugin-list | grep -q "golang"; then
-    #   asdf plugin-add golang https://github.com/asdf-community/asdf-golang.git
+    # if ! asdf plugin list | grep -q "golang"; then
+    #   asdf plugin add golang https://github.com/asdf-community/asdf-golang.git
     # fi
     # asdf install golang latest
-    # asdf global golang latest
 fi
 
 # --- git-secrets Setup ---

@@ -10,6 +10,7 @@
 ###### not ignore list ######
 !/.bashrc
 !/Brewfile
+!/install.sh
 !/.gitconfig
 !/.bash_profile
 !/.dircolors

@@ -6,8 +6,8 @@
 # ===============================================================
 
 # Homebrew Taps (if necessary)
-tap "homebrew/bundle"
-tap "homebrew/cask-fonts" # For fonts
+# tap "homebrew/bundle"
+# tap "homebrew/cask-fonts" # For fonts
 
 # --- Core CLI Tools ---
 # Shell & System
@@ -55,6 +55,6 @@ brew "deno" # Or manage via asdf-deno plugin
 # macOS Specific Packages (Casks for GUI Apps & Fonts)
 # These will be skipped on Linux.
 # ===============================================================
-cask "docker"
-cask "visual-studio-code"
-cask "font-hack-nerd-font" # Powerline/Nerd Fonts for better terminal UI
+# cask "docker"
+# cask "visual-studio-code"
+# cask "font-hack-nerd-font" # Powerline/Nerd Fonts for better terminal UI
