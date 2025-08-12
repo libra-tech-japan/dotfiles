@@ -28,9 +28,16 @@ export SAVEHIST=1000
 # User-local scripts
 export PATH="$HOME/.bin:$PATH"
 
-# Homebrew (macOS & Linux)
-# This handles setting the correct path for Homebrew on any system.
-eval "$(brew shellenv)"
+# ==============================================================================
+# Homebrew PATH Setup (macOS & Linux)
+# ==============================================================================
+# for Apple Silicon Mac
+if [ -f "/opt/homebrew/bin/brew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+# for Linux
+elif [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
 
 # asdf (Language version manager)
 . "$(brew --prefix asdf)/libexec/asdf.sh"
