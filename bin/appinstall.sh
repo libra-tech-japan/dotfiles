@@ -29,17 +29,36 @@ fi
 # --- Linux Environment Setup ---
 if [ "$ISLINUX" = true ]; then
     echo "Setting up Linux environment..."
-    sudo apt-get update
-    sudo apt-get install -y \
-        build-essential \
-        curl \
-        file \
-        git \
-        unzip \
-        manpages-ja \
-        manpages-ja-dev \
-        ruby \
-        ruby-dev
+    # /etc/alpine-releaseファイルの存在でAlpine Linuxか判定
+    if [ -f /etc/alpine-release ]; then
+        echo "Alpine Linux detected. Using apk."
+        # Alpineでは 'build-essential' の代わりに 'build-base' を使う
+        # また、manpages-jaはないため、基本的なmanをインストール
+        sudo apk add --no-cache \
+            build-base \
+            curl \
+            file \
+            git \
+            unzip \
+            man \
+            man-pages \
+            ruby \
+            ruby-dev
+    # それ以外のLinux (Debian/Ubuntu系を想定)
+    else
+        echo "Debian/Ubuntu based Linux detected. Using apt-get."
+        sudo apt-get update
+        sudo apt-get install -y \
+            build-essential \
+            curl \
+            file \
+            git \
+            unzip \
+            manpages-ja \
+            manpages-ja-dev \
+            ruby \
+            ruby-dev
+    fi
 fi
 
 # --- Homebrew Installation ---
