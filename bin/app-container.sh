@@ -110,19 +110,25 @@ if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
 fi
 
 # --- Set Zsh as Default Shell ---
+# --- Set Zsh as Default Shell ---
 ZSH_PATH=$(which zsh)
 if [ -n "$ZSH_PATH" ] && [ -f "$ZSH_PATH" ]; then
-    # Add Zsh to /etc/shells if it's not there
+    # /etc/shells に zsh のパスがなければ追記する
     if ! grep -qFx "$ZSH_PATH" /etc/shells; then
         echo "Adding $ZSH_PATH to /etc/shells..."
         echo "$ZSH_PATH" | sudo tee -a /etc/shells
     fi
-
-    # Change shell if not already Zsh
-    if [ "$SHELL" != "$ZSH_PATH" ]; then
-        echo "Changing default shell to Zsh for user $USER..."
-        sudo chsh -s "$ZSH_PATH" "$USER"
+    # sudo実行前のユーザー名を取得する
+    TARGET_USER=$(whoami)
+    # ターゲットユーザーの現在のデフォルトシェルを取得して比較
+    CURRENT_DEFAULT_SHELL=$(getent passwd "$TARGET_USER" | cut -d: -f7)
+    if [ "$CURRENT_DEFAULT_SHELL" != "$ZSH_PATH" ]; then
+        echo "Changing default shell to Zsh for user $TARGET_USER..."
+        # 取得したユーザー名を指定してusermodを実行
+        sudo usermod --shell "$ZSH_PATH" "$TARGET_USER"
         echo "Default shell changed. Changes will apply on the next login/session."
+    else
+        echo "Default shell is already set to Zsh for user $TARGET_USER."
     fi
 else
     echo "Warning: Zsh not found. Could not set default shell." >&2
