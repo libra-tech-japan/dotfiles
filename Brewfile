@@ -29,7 +29,7 @@ brew "direnv"
 brew "asdf"
 
 # LLM
-brew "gemini"
+brew "gemini-cli"
 
 # ===============================================================
 # macOS Specific Packages (Casks for GUI Apps & Fonts)
