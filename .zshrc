@@ -107,7 +107,7 @@ alias lt='eza -T -L 2 -I "node_modules|.git|.cache"'
 alias g='git'
 alias gs='git status'
 alias ga='git add . && git status'
-alias gcm='git commit -m'
+alias gc='git commit -m'
 alias gca='git commit --amend'
 alias t='tig'
 
@@ -118,8 +118,10 @@ alias vim='nvim'
 alias cat='bat'
 
 # Docker
+alias dc='docker compose'
 alias dcu='docker compose up -d'
 alias dcd='docker compose down'
+alias dcl='docker compose logs -f'
 alias dps='docker ps'
 alias dpsa='docker ps -a'
 
