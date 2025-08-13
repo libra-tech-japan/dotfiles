@@ -65,19 +65,6 @@ else
     echo "Please create a Brewfile with your required packages (e.g., asdf, git-secrets, neovim)."
 fi
 
-# --- asdf Setup ---
-if command -v asdf &> /dev/null; then
-    echo "Setting up asdf plugins..."
-    if ! asdf plugin list | grep -q "nodejs"; then
-        asdf plugin add nodejs
-    fi
-    echo "Installing latest Node.js via asdf..."
-    asdf install nodejs latest
-    LATEST_NODE_VERSION=$(asdf latest nodejs)
-    # echo "Setting global Node.js version to $LATEST_NODE_VERSION..."
-    # asdf global nodejs "$LATEST_NODE_VERSION"
-fi
-
 # --- git-secrets Setup (Global AWS Hooks) ---
 # Assumes git-secrets is installed via Homebrew
 if command -v git-secrets &> /dev/null; then
