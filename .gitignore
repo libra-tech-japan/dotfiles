@@ -57,6 +57,8 @@
 # etc
 !/.gdbinit
 !/README.md
+!/.vscode/
+!/.vscode/settings.json
 
 ###### ignore list ######
 *.swp
