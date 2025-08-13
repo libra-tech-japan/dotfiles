@@ -28,25 +28,29 @@ export SAVEHIST=1000
 # User-local scripts
 export PATH="$HOME/.bin:$PATH"
 
-# ==============================================================================
-# Homebrew PATH Setup (macOS & Linux)
-# ==============================================================================
-# for Apple Silicon Mac
+# =============================================================================
+# Tool Initializations (Homebrew, asdf, direnv)
+# =============================================================================
+# --- Homebrew PATH Setup (macOS & Linux) ---
+# Apple Silicon Mac
 if [ -f "/opt/homebrew/bin/brew" ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
-# for Linux
+# Linux (or Intel Mac default)
 elif [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-# asdf (Language version manager)
-. "$(brew --prefix asdf)/libexec/asdf.sh"
+# --- asdf (Language version manager) ---
+# Homebrewでインストールされたasdfを読み込む (asdf.shが存在する場合のみ)
+if [ -f "$(brew --prefix asdf 2>/dev/null)/libexec/asdf.sh" ]; then
+  . "$(brew --prefix asdf)/libexec/asdf.sh"
+fi
 
-# direnv (Directory-based environment manager)
-eval "$(direnv hook zsh)"
-
-# GHCup (Haskell)
-[ -f "${HOME}/.ghcup/env" ] && source "${HOME}/.ghcup/env"
+# --- direnv (Directory-based environment manager) ---
+# direnv コマンドが存在する場合のみフックを有効化
+if command -v direnv &> /dev/null; then
+  eval "$(direnv hook zsh)"
+fi
 
 # =============================================================================
 # Shell Options
@@ -59,8 +63,9 @@ bindkey -e
 # =============================================================================
 # Functions
 # =============================================================================
+# cd したら自動で eza を実行
 function cdls() {
-  builtin cd "$@" && eza --icons
+  builtin cd "$@" && eza --icons --group-directories-first
 }
 
 # =============================================================================
@@ -73,7 +78,7 @@ alias ex='exit'
 
 # Navigation & File Operations
 alias cd="cdls"
-alias rm="rm -i" # safe-rm is not a default command, using standard -i
+alias rm="rm -i"
 alias mkdir="mkdir -p"
 alias cp="cp -ip"
 alias mv='mv -i'
@@ -92,8 +97,6 @@ alias ga='git add . && git status'
 alias gcm='git commit -m'
 alias gca='git commit --amend'
 alias t='tig'
-alias lg='lazygit'
-alias gcd='cd $(ghq root)/$(ghq list | fzf)'
 
 # Development
 alias v='nvim'
@@ -108,30 +111,30 @@ alias dps='docker ps'
 alias dpsa='docker ps -a'
 
 # =============================================================================
-# Initializations
+# Completions
 # =============================================================================
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Completions
 autoload -Uz compinit
 
-# Add asdf completions
-fpath=(${ASDF_DIR}/completions $fpath)
-
-# Add docker completions if they exist
-if [ -d "${HOME}/.docker/completions" ]; then
-  fpath=(${HOME}/.docker/completions/zsh $fpath)
+# Add completions path if they exist
+# asdf completions (if asdf was loaded)
+if [ -n "$ASDF_DIR" ]; then
+  fpath=(${ASDF_DIR}/completions $fpath)
 fi
 
+# docker completions (generic path)
+if [ -d "${HOME}/.docker/completions" ]; then
+  fpath=(${HOME}/.docker/completions $fpath)
+fi
+
+# Initialize completions system
 zstyle :compinstall filename "${ZDOTDIR:-$HOME}/.zshrc"
 compinit
 
+# =============================================================================
 # Powerlevel10k Prompt
+# =============================================================================
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/akira/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
