@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # ===============================================================
-# Universal Dev Environment Setup Script (2025) - Final Version
-# Target OS: macOS / WSL2 (Ubuntu) / Alpine Linux
+# Local Development Environment Setup Script (macOS / Ubuntu)
+#
+# Sets up a development environment using Homebrew as the primary
+# package manager. Installs Docker, asdf, and other essential tools.
 # ===============================================================
 
 set -e # Exit immediately if a command exits with a non-zero status.
@@ -25,56 +27,11 @@ else
     exit 1
 fi
 
-# --- Linux Environment Setup ---
+# --- Prerequisite installation for Homebrew on Linux ---
 if [ "$ISLINUX" = true ]; then
-    echo "Setting up Linux environment..."
-    if [ -f /etc/alpine-release ]; then
-        echo "Alpine Linux detected. Using apk."
-        sudo apk add --no-cache \
-            shadow \
-            build-base \
-            curl \
-            file \
-            git \
-            unzip \
-            man-db \
-            man-pages
-    else
-        echo "Debian/Ubuntu based Linux detected. Using apt-get."
-        sudo apt-get update
-
-        # GitHub CLIの公式リポジトリを追加
-        # (apt-getでghをインストールするために必要)
-        if ! command -v gh &> /dev/null; then
-            echo "Adding GitHub CLI repository..."
-            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-            sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-            sudo apt-get update
-        fi
-
-        # 必要なツールをapt-getで一括インストール
-        sudo apt-get install -y \
-            build-essential \
-            curl \
-            file \
-            git \
-            unzip \
-            manpages-ja \
-            manpages-ja-dev \
-            jq \
-            gh \
-            fzf \
-            tig \
-            bat \
-            ripgrep \
-            fd-find
-
-        # fdコマンドを使えるようにシンボリックリンクを作成
-        if ! command -v fd &> /dev/null && command -v fdfind &> /dev/null; then
-            sudo ln -s $(which fdfind) /usr/local/bin/fd
-        fi
-    fi
+    echo "Installing prerequisites for Homebrew on Linux..."
+    sudo apt-get update
+    sudo apt-get install -y build-essential curl file git procps
 fi
 
 # --- Homebrew Installation ---
@@ -90,17 +47,25 @@ else # macOS
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# --- Install packages via Brewfile ---
+# --- Install packages via a single Brewfile ---
 BASE_DIR=$(cd "$(dirname "$0")/.." && pwd)
 BREWFILE_PATH="${BASE_DIR}/Brewfile"
+
 if [ -f "$BREWFILE_PATH" ]; then
-    echo "Installing packages from (lightweight) Brewfile..."
+    echo "Installing packages from unified Brewfile..."
     brew bundle --file="$BREWFILE_PATH"
 else
     echo "Warning: Brewfile not found at $BREWFILE_PATH. Skipping package installation."
 fi
 
-# --- asdf Setup (Language Version Manager) ---
+if [ -f "$BREWFILE_PATH" ]; then
+    brew bundle --file="$BREWFILE_PATH"
+else
+    echo "Warning: Brewfile not found at $BREWFILE_PATH. Skipping package installation."
+    echo "Please create a Brewfile with your required packages (e.g., asdf, git-secrets, neovim)."
+fi
+
+# --- asdf Setup ---
 if command -v asdf &> /dev/null; then
     echo "Setting up asdf plugins..."
     if ! asdf plugin list | grep -q "nodejs"; then
@@ -109,17 +74,16 @@ if command -v asdf &> /dev/null; then
     echo "Installing latest Node.js via asdf..."
     asdf install nodejs latest
     LATEST_NODE_VERSION=$(asdf latest nodejs)
-    echo "Setting global Node.js version to $LATEST_NODE_VERSION..."
+    # echo "Setting global Node.js version to $LATEST_NODE_VERSION..."
     # asdf global nodejs "$LATEST_NODE_VERSION"
 fi
 
-# --- git-secrets Setup ---
-if [ ! -d ~/.git-secrets ]; then
-    echo "Installing git-secrets..."
-    git clone https://github.com/awslabs/git-secrets.git ~/.git-secrets
-    (cd ~/.git-secrets && sudo make install)
+# --- git-secrets Setup (Global AWS Hooks) ---
+# Assumes git-secrets is installed via Homebrew
+if command -v git-secrets &> /dev/null; then
+    echo "Registering AWS git-secrets hooks..."
+    git secrets --register-aws --global
 fi
-git secrets --register-aws --global
 
 # --- Zsh (Prezto) Setup ---
 if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
@@ -127,9 +91,9 @@ if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
     git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
 fi
 
-# --- Docker Setup for Linux (Host only) ---
+# --- Docker Setup for Linux (Host only, e.g., WSL2) ---
 if [ "$ISLINUX" = true ] && [ -z "$REMOTE_CONTAINERS" ] && ! command -v docker &> /dev/null; then
-    echo "Setting up Docker for Host Linux (e.g. WSL2)..."
+    echo "Setting up Docker for Host Linux..."
     if [ -f /etc/debian_version ]; then
         sudo apt-get update
         sudo apt-get install -y ca-certificates curl gnupg
@@ -144,23 +108,26 @@ if [ "$ISLINUX" = true ] && [ -z "$REMOTE_CONTAINERS" ] && ! command -v docker &
     fi
 fi
 
-# --- Add Zsh to /etc/shells ---
+# --- Add Homebrew Zsh to /etc/shells and set as default ---
 if [ "$ISLINUX" = true ]; then
     ZSH_PATH="/home/linuxbrew/.linuxbrew/bin/zsh"
 else # macOS
     ZSH_PATH="/opt/homebrew/bin/zsh"
 fi
 
-if ! grep -qFx "$ZSH_PATH" /etc/shells; then
-    echo "Adding $ZSH_PATH to /etc/shells..."
-    echo "$ZSH_PATH" | sudo tee -a /etc/shells
+if [ -f "$ZSH_PATH" ]; then
+    if ! grep -qFx "$ZSH_PATH" /etc/shells; then
+        echo "Adding $ZSH_PATH to /etc/shells..."
+        echo "$ZSH_PATH" | sudo tee -a /etc/shells
+    fi
+
+    if [ "$SHELL" != "$ZSH_PATH" ]; then
+        echo "Changing default shell to Zsh ($ZSH_PATH)..."
+        chsh -s "$ZSH_PATH"
+        echo "Default shell changed. Please log out and log back in to apply the changes."
+    fi
+else
+    echo "Warning: Zsh not found at $ZSH_PATH. Shell not changed."
 fi
 
-# --- Set Zsh as Default Shell ---
-if [ "$SHELL" != "$ZSH_PATH" ]; then
-    echo "Changing default shell to Zsh..."
-    chsh -s "$ZSH_PATH"
-    echo "Default shell changed to Zsh. Please log out and log back in to apply the changes."
-fi
-
-echo -e "\n✅ Setup complete!"
+echo -e "\n✅ Local environment setup complete!"

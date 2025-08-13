@@ -9,7 +9,7 @@
 
 ###### not ignore list ######
 !/.bashrc
-!/Brewfile
+!/Brewfile.*
 !/install.sh
 !/.gitconfig
 !/.bash_profile
