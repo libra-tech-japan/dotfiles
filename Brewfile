@@ -25,8 +25,11 @@ brew "fd"      # find alternative
 brew "neovim"
 brew "direnv"
 
-# --- Language Version Manager ---
+# Language Version Manager
 brew "asdf"
+
+# LLM
+brew "gemini"
 
 # ===============================================================
 # macOS Specific Packages (Casks for GUI Apps & Fonts)
