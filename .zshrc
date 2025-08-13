@@ -71,11 +71,11 @@ function cdls() {
 # rm コマンドを一時ディレクトリへの移動に置き換える
 # 実行時の時刻を付加してファイル名の重複を回避
 function saferm() {
-    local tmp_dir="$HOME/.trash"
+    local tmp_dir="$HOME/.safe-trash"
     mkdir -p "$tmp_dir"
     for file in "$@"; do
         if [ -e "$file" ]; then
-            mv -i "$file" "$tmp_dir/$(basename "$file")_$(date +"%Y%m%d%H%M%S")"
+            command mv -i "$file" "$tmp_dir/$(basename "$file")_$(date +"%Y%m%d%H%M%S")"
         else
             echo "saferm: $file: No such file or directory"
         fi
