@@ -1,0 +1,39 @@
+# --- Libratech Lab. Ghostty Config (v4: Font Corrected) ---
+
+# Font Settings
+font-family = "HackGenNerd Console"
+font-style = "Regular"
+
+# フォントサイズ
+font-size = 16
+font-thicken = true
+# font-feature = "-calt"
+
+# Theme & Colors
+theme = tokyonight
+background-opacity = 0.90
+background-blur-radius = 20
+
+# Cursor
+cursor-style = block
+cursor-style-blink = false
+
+# Window Layout
+fullscreen = false
+window-width = 120
+window-height = 40
+window-padding-x = 12
+window-padding-y = 12
+
+# macOS Specific
+# 移動可能な透明タイトルバー
+macos-titlebar-style = transparent
+macos-option-as-alt = true
+
+# Shell Integration
+shell-integration = zsh
+shell-integration-features = no-cursor
+
+# Clipboard
+clipboard-read = allow
+clipboard-write = allow
