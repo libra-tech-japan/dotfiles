@@ -34,7 +34,12 @@ if command -v eza &> /dev/null; then
   alias ls='eza'
   alias ll='eza -l'
   alias la='eza -la'
-  alias lt='eza -T'
+  # 基本のTree表示 (lt)
+  alias lt='eza --tree --level=2 --icons --git'
+  # 深い階層まで見る (ltt)
+  alias ltt='eza --tree --level=4 --icons --git'
+  # 全て見る (lta)
+  alias lta='eza --tree --level=2 --icons --git -a'
 fi
 
 # cat -> bat

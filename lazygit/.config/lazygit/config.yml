@@ -1,18 +1,16 @@
 gui:
   nerdFontsVersion: "3"
-
 git:
-  paging:
-    pager: delta --dark --paging=never
-
+  pagers:
+    - pager: delta --dark --paging=never
 customCommands:
   - key: 'D'
     description: "View structural diff (Difftastic)"
     context: files
     command: 'difft --color=always --display=side-by-side-show-both "{{.SelectedFile.Name}}"'
-    subprocess: true
+    output: terminal
   - key: 'D'
     description: "View commit diff (Difftastic)"
-    context: localCommits
+    context: commits
     command: 'git dft {{.SelectedLocalCommit.Sha}}~1 {{.SelectedLocalCommit.Sha}}'
-    subprocess: true
+    output: terminal
