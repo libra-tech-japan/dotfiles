@@ -30,3 +30,6 @@ __pycache__/
 
 # iTerm2 Noise
 .config/iterm2/
+
+# --- Tmux Plugins (Managed by TPM) ---
+tmux/.config/tmux/plugins/
