@@ -1,68 +1,32 @@
-###### all ignore ######
-/*
-/.*
-/.*/*
-/.*/*/*
-/.*/*/*/*
-/.*/*/*/*/*
-/.*/*/*/*/*/*
-
-###### not ignore list ######
-!/.bashrc
-!/Brewfile.*
-!/install.sh
-!/.gitconfig
-!/.bash_profile
-!/.dircolors
-!/.inputrc
-!/.zshrc
-!/.p10k.zsh
-!/.czrc
-!/.tigrc
-# vim setting file
-!/.vim
-!/.vimrc
-!/init.vim
-# zprezeto
-!/.zpreztorc
-# exec directory
-!/.bin/
-!/.bin/*
-!/.bin/completion/
-!/.bin/completion/*
-!/.bin/bash_completion.d/
-!/.bin/bash_completion.d/*
-!/bin/
-!/bin/*
-!/bin/completion/
-!/bin/completion/*
-!/bin/bash_completion.d/
-!/bin/bash_completion.d/*
-# pplication setting file
-!/.screenrc
-!/.screen/
-!/.tmux.conf
-!/.tmux.conf.local
-# config
-!/.config/
-!/.config/nvim/
-!/.config/nvim/*
-!/.config/nvim/colors/
-!/.config/nvim/colors/*
-!/.config/nvim/plugged/
-!/.config/nvim/ftplugin/
-!/.config/nvim/ftplugin/*
-!/.config/anyenv/
-
-# etc
-!/.gdbinit
-!/README.md
-!/.vscode/
-!/.vscode/settings.json
-
-###### ignore list ######
+# --- System & Logs ---
+.DS_Store
 *.swp
+*.bak
+*.log
+.history/
 
-###### final not ignore list ######
-!.gitignore
-!.gitkeep
+# --- Private Configs ---
+.user_config/
+.ssh/
+.netrc
+.gitconfig.local
+
+# --- Editor & IDE ---
+.idea/
+
+# --- Language & Runtime Caches ---
+node_modules/
+dist/
+build/
+.mise/
+.python-version
+__pycache__/
+
+# --- Application Caches (Noise) ---
+.config/configstore/
+.config/gh/
+.config/coc/
+.config/yarn/
+
+# iTerm2 Noise
+.config/iterm2/

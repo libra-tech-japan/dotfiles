@@ -1,39 +1,34 @@
-# ===============================================================
-# Universal Brewfile for macOS & Linux
-# ===============================================================
+# Core
+brew "git"
+brew "stow"
+brew "mise"
+brew "wget"
+brew "curl"
+brew "git-secrets"
 
-# --- Core CLI Tools ---
-# Shell & System
-brew "zsh"
-
-# Development & Build
+# Shell Tools (Rust-based)
+brew "starship"
+brew "zoxide"
+brew "bat"
+brew "eza"
+brew "ripgrep"
+brew "fd"
 brew "jq"
+brew "fzf"
 
-# Git & GitHub
-brew "gh"      # GitHub CLI
-brew "ghq"     # Local repository management
-brew "fzf"     # Command-line fuzzy finder
-brew "tig"     # Text-mode interface for git
-
-# Modern CLI Alternatives (DX Improvement)
-brew "eza"     # A modern replacement for 'ls'
-brew "bat"     # A cat(1) clone with wings
-brew "ripgrep" # grep alternative
-brew "fd"      # find alternative
-
-# Utilities
+# Editor & Terminal
 brew "neovim"
-brew "direnv"
+brew "tmux"
 
-# Language Version Manager
-brew "asdf"
+# Git & Review
+brew "lazygit"
+brew "git-delta"
+brew "difftastic"
 
-# LLM
-brew "gemini-cli"
-
-# ===============================================================
-# macOS Specific Packages (Casks for GUI Apps & Fonts)
-# ===============================================================
-cask "docker-desktop"
-cask "visual-studio-code"
-cask "font-hack-nerd-font"
+# macOS Specifics
+if OS.mac?
+  cask "orbstack"
+  cask "font-hack-nerd-font"
+  cask "visual-studio-code"
+  cask "google-chrome"
+end

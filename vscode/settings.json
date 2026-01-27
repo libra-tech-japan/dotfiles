@@ -1,0 +1,217 @@
+{
+  // =================================================================
+  // 1. General UI & Workbench
+  // =================================================================
+  "workbench.colorTheme": "Dracula Theme",
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.editorAssociations": {
+    "{git,gitlens,conflictResolution,vscode-local-history}:/**/*.tc.json": "default",
+  },
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#5f0000",
+    "statusBar.noFolderBackground": "#5f0000",
+    "statusBar.debuggingBackground": "#5f0000"
+  },
+  "update.showReleaseNotes": false,
+  // =================================================================
+  // 2. Editor: Appearance & Behavior
+  // =================================================================
+  "editor.fontFamily": "'HackGenNerd Console','JetBrains Mono','Andale Mono',Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontSize": 16,
+  "editor.tabSize": 2,
+  "editor.minimap.enabled": false,
+  "editor.stickyScroll.enabled": false,
+  "editor.hover.enabled": "on",
+  "editor.suggestSelection": "first",
+  "editor.wordWrapColumn": 100,
+  "editor.unicodeHighlight.nonBasicASCII": false,
+  "diffEditor.renderSideBySide": false,
+  "diffEditor.codeLens": true,
+  // =================================================================
+  // 3. Editor: Formatting & Actions on Save
+  // =================================================================
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  // =================================================================
+  // 4. File & Explorer Settings
+  // =================================================================
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "security.workspace.trust.untrustedFiles": "open",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  // =================================================================
+  // 5. Language Specific Settings
+  // =================================================================
+  "[astro]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[dockercompose]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  // =================================================================
+  // 6. Terminal Settings
+  // =================================================================
+  "terminal.integrated.fontSize": 16,
+  "terminal.integrated.defaultProfile.windows": "Ubuntu (WSL)",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    },
+    "Command Prompt": {
+      "path": [
+        "${env:windir}\\Sysnative\\cmd.exe",
+        "${env:windir}\\System32\\cmd.exe"
+      ],
+      "args": [],
+      "icon": "terminal-cmd"
+    },
+    "Git Bash": {
+      "source": "Git Bash"
+    },
+    "Ubuntu (WSL)": {
+      "path": "C:\\WINDOWS\\System32\\wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu"
+      ]
+    }
+  },
+  // =================================================================
+  // 7. Extension Specific Settings
+  // =================================================================
+  // --- Prettier ---
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
+  "prettier.jsxSingleQuote": true,
+  "prettier.arrowParens": "avoid",
+  "prettier.singleAttributePerLine": true,
+  "prettier.vueIndentScriptAndStyle": true,
+  "prettier.documentSelectors": [
+    "**/*.astro"
+  ],
+  // --- ESLint ---
+  "eslint.format.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "astro",
+    "typescript",
+    "typescriptreact",
+    "vue"
+  ],
+  // --- NeoVim ---
+  "vscode-neovim.useWSL": true,
+  "vscode-neovim.neovimExecutablePaths.linux": "/home/linuxbrew/.linuxbrew/bin/nvim",
+  "vscode-neovim.neovimInitVimPaths.linux": "/home/akira/.config/nvim/init.vim",
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+  // --- Other Extensions ---
+  "emmet.triggerExpansionOnTab": true,
+  "php.validate.executablePath": "/opt/homebrew/bin/php",
+  "geminicodeassist.inlineSuggestions.enableAuto": true,
+  // =================================================================
+  // 8. VS Code Core, Git & Sync
+  // =================================================================
+  "git.autofetch": true,
+  "extensions.ignoreRecommendations": true,
+  "settingsSync.ignoredExtensions": [
+    "asvetliakov.vscode-neovim",
+    "ms-ceintl.vscode-language-pack-ja"
+  ],
+  "workbench.settings.applyToAllProfiles": [
+    "editor.fontFamily"
+  ],
+  // --- Dotfiles Integration ---
+  "dotfiles.repository": "https://github.com/libra-tech-japan/dotfiles.git",
+  "dotfiles.targetPath": "~/dotfiles",
+  "dotfiles.installCommand": "install.sh",
+  // =================================================================
+  // 9. Spell Checker & Custom Dictionaries
+  // =================================================================
+  "cSpell.userWords": [
+    "awscli",
+    "elif",
+    "filesize",
+    "fontawesome",
+    "fortawesome",
+    "frontmatter",
+    "gsap",
+    "healthcheck",
+    "initdb",
+    "Matsumoto",
+    "microcms",
+    "mysqld",
+    "NOPASSWD",
+    "Noto",
+    "Nuxt",
+    "OIDC",
+    "openapi",
+    "parsererror",
+    "Playfair"
+  ],
+  "cSpell.customDictionaries": {
+    "custom-dictionary-user": {
+      "name": "custom-dictionary-user",
+      "path": "~/.cspell/custom-dictionary-user.txt",
+      "addWords": true,
+      "scope": "user"
+    }
+  },
+  "vsicons.dontShowNewVersionMessage": true,
+  "aws.cloudformation.telemetry.enabled": true,
+  "claudeCode.preferredLocation": "panel",
+  "remote.autoForwardPortsSource": "hybrid",
+  "terminal.integrated.stickyScroll.enabled": false,
+}

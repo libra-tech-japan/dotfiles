@@ -1,65 +1,34 @@
-# dotfiles
+# Dotfiles (Libratech Lab. 2026)
 
-===============
+Thin Host & AI-Native Architecture based on **LazyVim**, **Tmux**, **Zsh (Starship)**, and **Docker**.
 
-Include a no plugin dotfiles.
-Can be used quickly.
+## 🚀 Installation
 
-## HOWTO
+### 1. Requirements
+- macOS (OrbStack recommended) or Linux (Debian/Ubuntu)
+- Git
 
-### Prepare To Install
+### 2. Setup
 
 ```bash
-sudo apt update -y && sudo apt upgrade -y
+git clone https://github.com/libra-tech-japan/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+chmod +x install.sh
+./install.sh
 ```
 
-## Git setting
+### 3. Post Install
+Create local git config:
 
-create `~/.gitconfig.local` file
-
-```toml
+```bash
+# ~/.gitconfig.local
 [user]
-  email=xxx@example.com
-  name=username
+    name = Your Name
+    email = your@email.com
 ```
 
-## GitHub connection setting
-
-```bash
-ssh-keygen
-# Copy .ssh/id_rsa.pub to Github
-ssh -T git@github.com
-```
-
-## Clone & Install
-
-```bash
-1. `git clone xxx`
-2. `/bin/sh install.sh
-
-```
-
-## Create a new Zsh configuration by copying/linking the Zsh configuration files provided
-
-```bash
-setopt EXTENDED_GLOB
-for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
-  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
-done
-```
-
-## prezto is PowerLevel10k
-
-`p10k configure`
-
-# After node.js Installed
-
-## commitizen install
-
-```npm
-npm install commitizen -g
-npm install -g cz-conventional-changelog
-npm install -g cz-conventional-changelog-ja
-```
-
-<https://github.com/commitizen/cz-cli>
+## 🛠 Tech Stack
+- **Shell:** Zsh + Starship + Mise + Zoxide
+- **Editor:** Neovim (LazyVim)
+- **Terminal:** Tmux + Alacritty/WezTerm ready
+- **Audit:** Lazygit + Difftastic (AI Code Review optimized)

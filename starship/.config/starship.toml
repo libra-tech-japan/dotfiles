@@ -1,0 +1,110 @@
+# Starship プロンプト設定
+# シンプルで高速、実用性重視（P10kのような装飾過多を避ける）
+
+# フォーマット: 必要最小限の情報のみ表示
+format = """
+[╭](bold green)$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$nodejs\
+$python\
+$aws\
+$docker_context\
+[╰](bold green)$character"""
+
+# プロンプトの継続行
+continuation_prompt = "[▶](bold green) "
+
+# ユーザー名（SSH接続時のみ表示）
+[username]
+show_always = false
+format = "[$user]($style) "
+style_user = "bold blue"
+style_root = "bold red"
+
+# ホスト名（SSH接続時のみ表示）
+[hostname]
+ssh_only = true
+format = "@[$hostname]($style) "
+style = "bold yellow"
+
+# ディレクトリ
+[directory]
+format = " [$path]($style)[$read_only]($read_only_style) "
+style = "bold cyan"
+truncation_length = 3
+truncation_symbol = "…/"
+read_only = " 🔒"
+read_only_style = "red"
+truncate_to_repo = true
+
+# Git ブランチ
+[git_branch]
+format = " [$symbol$branch(:$remote_branch)]($style) "
+symbol = " "
+style = "bold purple"
+truncation_length = 20
+
+# Git 状態
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bold yellow"
+rebase = "REBASING"
+merge = "MERGING"
+revert = "REVERTING"
+cherry_pick = "CHERRY-PICKING"
+bisect = "BISECTING"
+am = "AM"
+am_or_rebase = "AM/REBASE"
+
+# Git ステータス
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+style = "bold red"
+conflicted = "🏳 "
+up_to_date = "✓"
+untracked = "🤷"
+ahead = "⇡${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+behind = "⇣${count}"
+
+# Node.js
+[nodejs]
+format = " via [$symbol($version )]($style) "
+symbol = " "
+style = "bold green"
+detect_files = ["package.json", ".node-version"]
+detect_folders = ["node_modules"]
+
+# Python
+[python]
+format = ' via [$symbol$pyenv_prefix($version )(\($virtualenv\))]($style) '
+symbol = " "
+style = "bold yellow"
+detect_files = [".python-version", "Pipfile", "__pycache__", "pyproject.toml", "requirements.txt", "setup.py", "tox.ini"]
+detect_folders = []
+
+# AWS
+[aws]
+format = ' on [$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
+symbol = "☁️  "
+style = "bold yellow"
+disabled = false
+
+# Docker Context
+[docker_context]
+format = " via [$symbol$context]($style) "
+symbol = "🐳 "
+style = "bold blue"
+only_with_files = true
+detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"]
+detect_folders = []
+
+# 文字（プロンプト記号）
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
