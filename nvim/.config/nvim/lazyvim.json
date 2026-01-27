@@ -1,6 +1,11 @@
 {
   "extras": [
-
+    "coding.blink",
+    "lang.json",
+    "lang.typescript",
+    "lang.vue",
+    "linting.eslint",
+    "formatting.prettier"
   ],
   "install_version": 8,
   "news": {
