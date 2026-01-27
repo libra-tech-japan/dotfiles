@@ -87,5 +87,24 @@ function t() {
   tmux attach-session -t main 2>/dev/null || tmux new-session -s main
 }
 
+# --- Git & Lazygit Aliases (Defensive) ---
+# Git 本体がある場合のみ定義
+if command -v git &> /dev/null; then
+  alias ga='git add .'
+  alias gau='git add -u'
+  alias gc='git commit -v'
+  alias gp='git push'
+  alias gpf='git push --force-with-lease'
+  alias gl='git lg'
+  alias gs='git status'
+  alias gd='git diff'
+fi
+
+# Lazygit がある場合のみ定義
+if command -v lazygit &> /dev/null; then
+  alias g='lazygit'
+fi
+
+
 # Enable comments in interactive shell
 setopt interactive_comments

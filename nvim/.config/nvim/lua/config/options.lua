@@ -1,7 +1,7 @@
 -- オプション設定
 
 -- 行番号
-vim.opt.relativenumber = true
+vim.opt.relativenumber = false
 vim.opt.number = true
 
 -- タブ設定

@@ -34,4 +34,7 @@ vim.keymap.set("n", "<Esc><Esc>", "<cmd>nohlsearch<cr>", { desc = "ハイライ�
 -- JSON整形
 vim.keymap.set("n", "<leader>jq", ":%!jq '.'<cr>", { desc = "JSON整形" })
 
+-- Normal mode で 'vv' を押すと 'VG' (Visual Line + Go to End) が走ります
+vim.keymap.set("n", "vv", "VG", { desc = "Select to end of file" })
+
 -- 選択行のインデント維持（<, > をそのまま使用、LazyVim のデフォルト動作を維持）
