@@ -31,4 +31,5 @@ if OS.mac?
   cask "font-hack-nerd-font"
   cask "visual-studio-code"
   cask "google-chrome"
+  cask "ghostty"
 end
