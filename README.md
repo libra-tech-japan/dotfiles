@@ -1,14 +1,15 @@
 # Dotfiles (Libratech Lab. 2026)
 
-Thin Host & AI-Native Architecture based on **LazyVim**, **Tmux**, **Zsh (Starship)**, and **Docker**.
+**LazyVim**、**Tmux**、**Zsh (Starship)**、**Docker** をベースとした Thin Host & AI-Native Architecture の dotfiles リポジトリです。
 
-## 🚀 Installation
+## 🚀 インストール
 
-### 1. Requirements
-- macOS (OrbStack recommended) or Linux (Debian/Ubuntu)
+### 1. 必要な環境
+
+- macOS（OrbStack 推奨）または Linux（Debian/Ubuntu）
 - Git
 
-### 2. Setup
+### 2. セットアップ
 
 ```bash
 git clone https://github.com/libra-tech-japan/dotfiles.git ~/dotfiles
@@ -17,8 +18,56 @@ chmod +x install.sh
 ./install.sh
 ```
 
-### 3. Post Install
-Create local git config:
+### 2.1 Docker 導入ガイド
+
+#### macOS（OrbStack）
+
+- OrbStack を起動していることを確認してください
+- `docker` コマンドが通れば OK です
+
+#### WSL2 Ubuntu（Docker Engine / Desktop 不使用）
+
+1. WSL 側で systemd を有効化  
+   `/etc/wsl.conf` の例:
+
+   ```
+   [boot]
+   systemd=true
+   ```
+
+2. Windows 側で WSL を再起動  
+   PowerShell:
+   ```
+   wsl --shutdown
+   ```
+
+3. Ubuntu 側で Docker Engine を導入  
+   推奨は公式の APT リポジトリ方式です（長期運用向け）。
+
+4. ユーザーを docker グループに追加  
+   ```
+   sudo usermod -aG docker $USER
+   ```
+   追加後は一度ログインし直してください。
+
+#### Bare Ubuntu（Docker Engine / Desktop 不使用）
+
+- 公式 APT リポジトリ方式で導入してください
+- `docker compose`（plugin）と `buildx` が有効なことを確認
+
+#### 動作確認
+
+```
+docker version
+docker info
+docker run --rm hello-world
+```
+
+問題があれば `systemctl status docker` で状態確認を推奨します。
+
+### 3. インストール後の設定
+
+ローカルの Git 設定ファイルを作成してください:
 
 ```bash
 # ~/.gitconfig.local
@@ -27,7 +76,8 @@ Create local git config:
     email = your@email.com
 ```
 
-## 🛠 Tech Stack
+## 🛠 技術スタック
+
 - **Shell:** Zsh + Starship + Mise + Zoxide
 - **Editor:** Neovim (LazyVim)
 - **Terminal:** Tmux + Alacritty/WezTerm ready

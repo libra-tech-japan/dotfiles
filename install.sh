@@ -15,6 +15,11 @@ fi
 echo "📦 Bundling packages..."
 brew bundle --file=./Brewfile
 
+# 2.1 Gitのグローバル除外ファイルを用意
+if [ ! -f "$HOME/.gitignore_global" ]; then
+    touch "$HOME/.gitignore_global"
+fi
+
 # 3. Docker & WSL Setup
 if [ "$(uname)" == "Darwin" ]; then
     echo "🍎 macOS detected. Ensure OrbStack is running."
@@ -28,8 +33,18 @@ elif [ -f /etc/debian_version ]; then
         echo "🪟 WSL2 detected. Setting up win32yank..."
         if ! command -v win32yank.exe &> /dev/null; then
             curl -sLo /tmp/win32yank.zip https://github.com/equalsraf/win32yank/releases/download/v0.0.4/win32yank-x64.zip
-            unzip -p /tmp/win32yank.zip win32yank.exe > ~/.local/bin/win32yank.exe
-            chmod +x ~/.local/bin/win32yank.exe
+            # 既定の配置先を作成
+            mkdir -p "$HOME/.local/bin"
+            if command -v unzip &> /dev/null; then
+                unzip -p /tmp/win32yank.zip win32yank.exe > "$HOME/.local/bin/win32yank.exe"
+            elif command -v bsdtar &> /dev/null; then
+                bsdtar -xOf /tmp/win32yank.zip win32yank.exe > "$HOME/.local/bin/win32yank.exe"
+            else
+                echo "⚠️  unzip/bsdtar が無いため win32yank を展開できません"
+                echo "    brew install unzip を実行してください"
+                exit 1
+            fi
+            chmod +x "$HOME/.local/bin/win32yank.exe"
         fi
     fi
 fi
@@ -73,7 +88,7 @@ if [ "$(uname)" == "Darwin" ] && [ -d "$HOME/Library/Application Support/Code/Us
     fi
 fi
 # 8. VS Code Setup (WSL2)
-if grep -q "microsoft" /proc/version; then
+if [ -f /proc/version ] && grep -q "microsoft" /proc/version; then
     echo "🪟 WSL2 detected. Linking VS Code settings to Windows side..."
     # Windowsの %APPDATA% パスを取得し、WSLパス形式 (/mnt/c/...) に変換
     # cmd.exe を経由して正確なパスを取得します

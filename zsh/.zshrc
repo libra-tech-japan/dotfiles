@@ -1,6 +1,10 @@
 # Zsh設定ファイル（フレームワーク排除、軽量化）
 
 # 履歴設定
+# XDGの履歴ディレクトリは対話シェルで作成（非対話の副作用を回避）
+if [[ ! -d "${XDG_DATA_HOME}/zsh" ]]; then
+  mkdir -p "${XDG_DATA_HOME}/zsh"
+fi
 HISTFILE="${XDG_DATA_HOME}/zsh/history"
 HISTSIZE=10000
 SAVEHIST=10000
@@ -92,12 +96,22 @@ function t() {
   tmux attach-session -t main 2>/dev/null || tmux new-session -s main
 }
 
+# tmuxinator の短縮
+if command -v tmuxinator &> /dev/null; then
+  alias mux="tmuxinator"
+fi
+
+# zshrc の再読み込み
+alias src='source ~/.zshrc'
+
 # --- Git & Lazygit Aliases (Defensive) ---
 # Git 本体がある場合のみ定義
 if command -v git &> /dev/null; then
   alias ga='git add .'
   alias gau='git add -u'
   alias gc='git commit -v'
+  alias gca='git commit --amend'
+  alias gcm='git commit -m'
   alias gp='git push'
   alias gpf='git push --force-with-lease'
   alias gl='git lg'

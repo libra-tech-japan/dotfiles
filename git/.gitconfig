@@ -1,6 +1,6 @@
 [core]
 	pager = delta
-	excludesfile = /Users/akira/.gitignore_global
+	excludesfile = ~/.gitignore_global
 
 [interactive]
 	diffFilter = delta --color-only
@@ -23,8 +23,14 @@
 	dft = difftool
 	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 	st = status
+	sw = switch
 	co = checkout
 	br = branch
+  ps = push
+  pl = pull
+  pf = pull --ff-only
+  ca = commit --amend
+  cm = commit -m
 
 [secrets]
 	providers = git secrets --aws-provider

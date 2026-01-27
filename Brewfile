@@ -5,6 +5,7 @@ brew "mise"
 brew "wget"
 brew "curl"
 brew "git-secrets"
+brew "unzip"
 
 # Shell Tools (Rust-based)
 brew "starship"
@@ -19,6 +20,7 @@ brew "fzf"
 # Editor & Terminal
 brew "neovim"
 brew "tmux"
+brew "tmuxinator"
 
 # Git & Review
 brew "lazygit"
