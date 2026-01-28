@@ -1,8 +1,9 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# 1. format内のハードコード部分を $os に変更しました
 format = """
 [░▒▓](#a3aed2)\
-[  ](bg:#a3aed2 fg:#090c0c)\
+$os\
 [](bg:#769ff0 fg:#a3aed2)\
 $directory\
 [](fg:#769ff0 bg:#394260)\
@@ -17,6 +18,23 @@ $php\
 $time\
 [ ](fg:#1d2230)\
 \n$character"""
+
+# 2. OSモジュールの設定を追加
+[os]
+disabled = false
+style = "bg:#a3aed2 fg:#090c0c"
+# 元の表示に合わせて左右にスペースを入れています
+format = '[ $symbol ]($style)'
+
+# 3. 各OSのアイコン定義
+[os.symbols]
+Macos = ""
+Ubuntu = ""
+Debian = ""
+Linux = ""
+Windows = "" # 念のため
+
+# --- 以下、既存の設定 ---
 
 [directory]
 style = "fg:#e3e5e5 bg:#769ff0"
