@@ -74,8 +74,8 @@ for package in "${STOW_DIRS[@]}"; do
     # 注意: 隠しファイルも含めるため find を使用
     find "$package" -maxdepth 1 -mindepth 1 | while read -r source_path; do
         # "zsh/.zshrc" -> ".zshrc"
-        local relative_path=$(basename "$source_path")
-        local target_path="$HOME/$relative_path"
+        relative_path=$(basename "$source_path")
+        target_path="$HOME/$relative_path"
         # 衝突チェックとバックアップ実行
         backup_if_exists "$target_path"
     done
@@ -90,10 +90,10 @@ fi
 
 # ni (npm i replacement)
 if ! command -v ni &> /dev/null; then
-    log "Installing ni (via npm)..."
-    npm install -g @antfu/ni || log_warning "Failed to install ni"
+    echo "Installing ni (via npm)..."
+    npm install -g @antfu/ni || echo "⚠️ Failed to install ni"
 else
-    log "ni is already installed, skipping"
+    echo "ni is already installed, skipping"
 fi
 
 
