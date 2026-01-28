@@ -64,18 +64,36 @@ if command -v nvim &> /dev/null; then
 fi
 
 # DevContainer 関数
+# dotfiles関連のオプション（共通）
+typeset -a devcontainer_dotfiles_opts=(
+  --dotfiles-repository "https://github.com/libra-tech-japan/dotfiles"
+  --dotfiles-target-path "~/dotfiles"
+  --dotfiles-install-command "./install.sh"
+)
+
 # devup: DevContainerにdotfilesを注入して起動
 function devup() {
   local workspace="${1:-.}"
   echo "🚀 Starting DevContainer with Dotfiles Injection..."
   devcontainer up \
     --workspace-folder "$workspace" \
-    --dotfiles-repository "https://github.com/libra-tech-japan/dotfiles" \
-    --dotfiles-target-path "~/dotfiles" \
-    --dotfiles-install-command "./install.sh"
+    ${devcontainer_dotfiles_opts[@]}
 
   if [ $? -eq 0 ]; then
     echo "✅ Container Ready. Run 'devshell' to enter."
+  fi
+}
+
+# devbuild: DevContainerにdotfilesを注入してビルド
+function devbuild() {
+  local workspace="${1:-.}"
+  echo "🔨 Building DevContainer with Dotfiles Injection..."
+  devcontainer build \
+    --workspace-folder "$workspace" \
+    ${devcontainer_dotfiles_opts[@]}
+
+  if [ $? -eq 0 ]; then
+    echo "✅ Container Built. Run 'devup' to start."
   fi
 }
 
