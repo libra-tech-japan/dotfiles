@@ -41,10 +41,18 @@ if command -v mise &> /dev/null; then
 fi
 
 # npm グローバル bin を PATH に追加（devcontainer CLI 等が使えるようにする）
-if command -v npm &> /dev/null; then
-  npm_bin=$(npm bin -g 2>/dev/null)
-  [[ -n "$npm_bin" && ":$PATH:" != *":$npm_bin:"* ]] && export PATH="${PATH}:${npm_bin}"
-fi
+# mise 等は cd ごとに PATH を変えるため、chpwd でも再追加してディレクトリに依存しないようにする
+_add_npm_global_bin_to_path() {
+  if command -v npm &> /dev/null; then
+    local npm_bin
+    npm_bin=$(npm bin -g 2>/dev/null)
+    if [[ -n "$npm_bin" && ":$PATH:" != *":$npm_bin:"* ]]; then
+      export PATH="${PATH}:${npm_bin}"
+    fi
+  fi
+}
+_add_npm_global_bin_to_path
+chpwd_functions+=(_add_npm_global_bin_to_path)
 
 # starship プロンプト
 if command -v starship &> /dev/null; then
