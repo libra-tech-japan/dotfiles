@@ -1,40 +1,63 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# 1. format内のハードコード部分を $os に変更しました
+# format: AWSを削除済み、OSとUsernameは継続
 format = """
 [░▒▓](#a3aed2)\
 $os\
+$username\
 [](bg:#769ff0 fg:#a3aed2)\
 $directory\
 [](fg:#769ff0 bg:#394260)\
 $git_branch\
 $git_status\
 [](fg:#394260 bg:#212736)\
+$docker_context\
 $nodejs\
+$python\
 $rust\
 $golang\
 $php\
 [](fg:#212736 bg:#1d2230)\
+$memory_usage\
 $time\
 [ ](fg:#1d2230)\
 \n$character"""
 
-# 2. OSモジュールの設定を追加
+# --- 1. ユーザー名設定 ---
+[username]
+show_always = true
+style_user = "bg:#a3aed2 fg:#090c0c bold"
+style_root = "bg:#a3aed2 fg:#ff0000 bold"
+format = '[$user ]($style)' # ユーザー名の後ろにスペース維持
+disabled = false
+
+# --- 2. OS設定 (余白修正) ---
 [os]
 disabled = false
 style = "bg:#a3aed2 fg:#090c0c"
-# 元の表示に合わせて左右にスペースを入れています
+# 修正: $symbol の後ろにスペースを追加しました
 format = '[ $symbol ]($style)'
 
-# 3. 各OSのアイコン定義
 [os.symbols]
 Macos = ""
 Ubuntu = ""
 Debian = ""
 Linux = ""
-Windows = "" # 念のため
+Windows = ""
 
-# --- 以下、既存の設定 ---
+# --- 3. Docker設定 ---
+[docker_context]
+style = "bg:#212736"
+format = '[[ $symbol$context ](fg:#8be9fd bg:#212736)]($style)'
+symbol = " "
+
+# --- 4. メモリ使用率 ---
+[memory_usage]
+disabled = false
+threshold = 75
+style = "bg:#1d2230"
+format = '[[ $symbol${ram_pct} ](fg:#ff5555 bg:#1d2230)]($style)'
+symbol = "󰍛 "
 
 [directory]
 style = "fg:#e3e5e5 bg:#769ff0"
@@ -72,6 +95,11 @@ symbol = ""
 style = "bg:#212736"
 format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
 
+[python]
+symbol = ""
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+
 [php]
 symbol = ""
 style = "bg:#212736"
@@ -79,6 +107,6 @@ format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
 
 [time]
 disabled = false
-time_format = "%R" # Hour:Minute Format
+time_format = "%R"
 style = "bg:#1d2230"
 format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'

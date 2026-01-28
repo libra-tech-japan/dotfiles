@@ -27,9 +27,6 @@ brew "lazygit"
 brew "git-delta"
 brew "difftastic"
 
-# Package Manager
-brew "ni"
-
 # macOS Specifics
 if OS.mac?
   cask "orbstack"

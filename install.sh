@@ -55,17 +55,48 @@ eval "$(mise activate bash)"
 mise use --global node@lts
 mise use --global python@3.12
 
-# 5. Stow Linking
+# 5. Smart Stow Linking (with Auto-Backup)
 echo "🔗 Linking dotfiles..."
 STOW_DIRS=("git" "lazygit" "nvim" "starship" "tmux" "zsh")
-for dir in "${STOW_DIRS[@]}"; do
-    stow -v --restow "$dir"
+
+# バックアップ関数
+backup_if_exists() {
+    local target="$1"
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+        local backup_name="${target}.backup.$(date +%Y%m%d_%H%M%S)"
+        echo "⚠️  Conflict detected: Moving existing $target to $backup_name"
+        mv "$target" "$backup_name"
+    fi
+}
+
+for package in "${STOW_DIRS[@]}"; do
+    # パッケージ内のトップレベルファイル/ディレクトリに対してチェックを行う
+    # 注意: 隠しファイルも含めるため find を使用
+    find "$package" -maxdepth 1 -mindepth 1 | while read -r source_path; do
+        # "zsh/.zshrc" -> ".zshrc"
+        local relative_path=$(basename "$source_path")
+        local target_path="$HOME/$relative_path"
+        # 衝突チェックとバックアップ実行
+        backup_if_exists "$target_path"
+    done
+    # 安全に Stow を実行
+    stow -v --restow "$package"
 done
 
 # 6. TPM Setup
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
+
+# ni (npm i replacement)
+if ! command -v ni &> /dev/null; then
+    log "Installing ni (via npm)..."
+    npm install -g @antfu/ni || log_warning "Failed to install ni"
+else
+    log "ni is already installed, skipping"
+fi
+
+
 
 # 7. VS Code Setup (macOS)
 if [ "$(uname)" == "Darwin" ] && [ -d "$HOME/Library/Application Support/Code/User" ]; then
