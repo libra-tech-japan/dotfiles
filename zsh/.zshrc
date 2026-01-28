@@ -40,6 +40,12 @@ if command -v mise &> /dev/null; then
   eval "$(mise activate zsh)"
 fi
 
+# npm グローバル bin を PATH に追加（devcontainer CLI 等が使えるようにする）
+if command -v npm &> /dev/null; then
+  npm_bin=$(npm bin -g 2>/dev/null)
+  [[ -n "$npm_bin" && ":$PATH:" != *":$npm_bin:"* ]] && export PATH="${PATH}:${npm_bin}"
+fi
+
 # starship プロンプト
 if command -v starship &> /dev/null; then
   eval "$(starship init zsh)"
@@ -121,55 +127,57 @@ fi
 # 関数定義
 # ============================================================================
 
-# --- DevContainer 関数 ---
-# dotfiles関連のオプション（共通）
-typeset -a devcontainer_dotfiles_opts=(
-  --dotfiles-repository "https://github.com/libra-tech-japan/dotfiles"
-  --dotfiles-target-path "~/dotfiles"
-  --dotfiles-install-command "./install.sh"
-)
+# --- DevContainer 関数（devcontainer コマンドがある場合のみ定義）---
+if command -v devcontainer &> /dev/null; then
+  # dotfiles関連のオプション（共通）
+  typeset -a devcontainer_dotfiles_opts=(
+    --dotfiles-repository "https://github.com/libra-tech-japan/dotfiles"
+    --dotfiles-target-path "~/dotfiles"
+    --dotfiles-install-command "./install.sh"
+  )
 
-# devup: DevContainerにdotfilesを注入して起動
-function devup() {
-  local workspace="${1:-.}"
-  echo "🚀 Starting DevContainer with Dotfiles Injection..."
-  devcontainer up \
-    --workspace-folder "$workspace" \
-    ${devcontainer_dotfiles_opts[@]}
+  # devup: DevContainerにdotfilesを注入して起動
+  function devup() {
+    local workspace="${1:-.}"
+    echo "🚀 Starting DevContainer with Dotfiles Injection..."
+    devcontainer up \
+      --workspace-folder "$workspace" \
+      ${devcontainer_dotfiles_opts[@]}
 
-  if [ $? -eq 0 ]; then
-    echo "✅ Container Ready. Run 'devshell' to enter."
-  fi
-}
+    if [ $? -eq 0 ]; then
+      echo "✅ Container Ready. Run 'devshell' to enter."
+    fi
+  }
 
-# devbuild: DevContainerをビルド
-# 注: dotfilesの注入はdevcontainer upの段階で行われる
-function devbuild() {
-  local workspace="${1:-.}"
-  echo "🔨 Building DevContainer..."
-  devcontainer build \
-    --workspace-folder "$workspace"
+  # devbuild: DevContainerをビルド
+  # 注: dotfilesの注入はdevcontainer upの段階で行われる
+  function devbuild() {
+    local workspace="${1:-.}"
+    echo "🔨 Building DevContainer..."
+    devcontainer build \
+      --workspace-folder "$workspace"
 
-  if [ $? -eq 0 ]; then
-    echo "✅ Container Built. Run 'devup' to start with dotfiles injection."
-  fi
-}
+    if [ $? -eq 0 ]; then
+      echo "✅ Container Built. Run 'devup' to start with dotfiles injection."
+    fi
+  }
 
-# devdotfiles: コンテナ内でdotfilesを更新（git pull & install）
-function devdotfiles() {
-  local workspace="${1:-.}"
-  echo "🔄 Updating dotfiles inside DevContainer..."
-  devcontainer exec \
-    --workspace-folder "$workspace" \
-    zsh -c "cd ~/dotfiles && git pull && ./install.sh"
-}
+  # devdotfiles: コンテナ内でdotfilesを更新（git pull & install）
+  function devdotfiles() {
+    local workspace="${1:-.}"
+    echo "🔄 Updating dotfiles inside DevContainer..."
+    devcontainer exec \
+      --workspace-folder "$workspace" \
+      zsh -c "cd ~/dotfiles && git pull && ./install.sh"
+  }
 
-# devshell: コンテナ内に入るショートカット
-function devshell() {
-  local workspace="${1:-.}"
-  devcontainer exec --workspace-folder "$workspace" zsh || \
-  devcontainer exec --workspace-folder "$workspace" bash
-}
+  # devshell: コンテナ内に入るショートカット
+  function devshell() {
+    local workspace="${1:-.}"
+    devcontainer exec --workspace-folder "$workspace" zsh || \
+    devcontainer exec --workspace-folder "$workspace" bash
+  }
+fi
 
 # --- tmux 関数 ---
 # t: tmuxセッション 'main' にアタッチ、なければ作成
