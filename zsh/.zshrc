@@ -63,6 +63,11 @@ if command -v nvim &> /dev/null; then
   alias vim='nvim'
 fi
 
+# c -> claude (Claude Code)
+if command -v claude &> /dev/null; then
+  alias c='claude'
+fi
+
 # DevContainer 関数
 # dotfiles関連のオプション（共通）
 typeset -a devcontainer_dotfiles_opts=(
