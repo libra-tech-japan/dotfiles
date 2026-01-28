@@ -84,17 +84,26 @@ function devup() {
   fi
 }
 
-# devbuild: DevContainerにdotfilesを注入してビルド
+# devbuild: DevContainerをビルド
+# 注: dotfilesの注入はdevcontainer upの段階で行われる
 function devbuild() {
   local workspace="${1:-.}"
-  echo "🔨 Building DevContainer with Dotfiles Injection..."
+  echo "🔨 Building DevContainer..."
   devcontainer build \
-    --workspace-folder "$workspace" \
-    ${devcontainer_dotfiles_opts[@]}
+    --workspace-folder "$workspace"
 
   if [ $? -eq 0 ]; then
-    echo "✅ Container Built. Run 'devup' to start."
+    echo "✅ Container Built. Run 'devup' to start with dotfiles injection."
   fi
+}
+
+# コンテナ内でdotfilesを更新（git pull & install）するコマンド例
+function devdotfiles() {
+  local workspace="${1:-.}"
+  echo "🔄 Updating dotfiles inside DevContainer..."
+  devcontainer exec \
+    --workspace-folder "$workspace" \
+    zsh -c "cd ~/dotfiles && git pull && ./install.sh"
 }
 
 # devshell: コンテナ内に入るショートカット
