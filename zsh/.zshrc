@@ -109,9 +109,33 @@ if command -v nvim &> /dev/null; then
   alias vim='nvim'
 fi
 
-# c -> claude (Claude Code)
+# -----------------------------------------------------------------------------
+# Claude Code (c) - Auto-Authentication Wrapper
+# -----------------------------------------------------------------------------
 if command -v claude &> /dev/null; then
-  alias c='claude'
+  function c() {
+    local PROFILE="bihada-dev"
+    local CREDENTIALS
+    # 1. クレデンシャル取得試行（期限切れならエラーになるため stderr は捨てる）
+    if ! CREDENTIALS=$(aws configure export-credentials --profile "$PROFILE" --format env 2>/dev/null); then
+      echo "⚠️  AWS SSO credentials expired for '$PROFILE'. Logging in..." >&2
+      # 2. ログイン実行（configの設定に従いデバイスコード等のフローが走る）
+      if ! aws sso login; then
+        echo "❌ Login failed or cancelled." >&2
+        return 1
+      fi
+      # 3. ログイン後の再取得
+      if ! CREDENTIALS=$(aws configure export-credentials --profile "$PROFILE" --format env); then
+        echo "❌ Failed to retrieve credentials after login." >&2
+        return 1
+      fi
+    fi
+    # 4. サブシェルで実行（親シェルを環境変数で汚染しないための隔離）
+    (
+      eval "$CREDENTIALS"
+      exec claude "$@"
+    )
+  }
 fi
 
 # ============================================================================
@@ -134,9 +158,11 @@ if command -v git &> /dev/null; then
   alias gca='git commit --amend'
   alias gcm='git commit -m'
   alias gp='git push'
+  alias gps='gp'
   alias gpf='git push --force-with-lease'
   alias gl='git lg'
   alias gs='git status'
+  alias gst='gs'
   alias gd='git diff'
 fi
 
