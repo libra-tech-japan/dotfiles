@@ -8,6 +8,7 @@ brew "git-secrets"
 brew "unzip"
 
 # Shell Tools (Rust-based)
+brew "devcontainer"
 brew "starship"
 brew "zoxide"
 brew "bat"

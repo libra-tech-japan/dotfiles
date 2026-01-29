@@ -150,13 +150,7 @@ if [ -f /proc/version ] && grep -q "microsoft" /proc/version; then
         echo "⚠️  VS Code User directory not found in Windows. Skipping."
     fi
 fi
-# 9. Global NPM Packages
-if command -v npm &> /dev/null; then
-    echo "📦 Installing global npm packages..."
-    npm install -g @devcontainers/cli
-fi
-
-# 10. Ghostty Configuration (Terminal Emulator)
+# 9. Ghostty Configuration (Terminal Emulator)
 echo "👻 Setting up Ghostty configuration..."
 mkdir -p "$HOME/.config/ghostty"
 ln -sf "$HOME/dotfiles/ghostty/config" "$HOME/.config/ghostty/config"
