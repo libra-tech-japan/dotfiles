@@ -12,6 +12,7 @@ $git_branch\
 $git_status\
 [](fg:#394260 bg:#212736)\
 $docker_context\
+$container\
 $nodejs\
 $python\
 $rust\
@@ -110,3 +111,11 @@ disabled = false
 time_format = "%R"
 style = "bg:#1d2230"
 format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
+
+# --- 5. コンテナ内表示 (DevContainer/Docker内でのみ出現) ---
+[container]
+disabled = false
+# 視認性向上のため、色はDockerと同じ水色系(fg:#8be9fd)を採用
+format = '[[ $symbol$name ](fg:#8be9fd bg:#212736)]($style)'
+symbol = "📦 "
+style = "bg:#212736"
