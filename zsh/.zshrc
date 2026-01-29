@@ -28,11 +28,25 @@ setopt interactive_comments
 # ツール初期化
 # ============================================================================
 
-# DevContainer環境検出 & Mise設定
-# コンテナ内ではMise管理バージョンではなく、システム標準(Dockerfile由来)のツールを優先する
+# --- Context-Aware Runtime Strategy ---
+
+# 1. Container Strategy (Pure System)
+# コンテナ内ではMise/Voltaを無効化し、システム標準(Dockerfile由来)を使用
 if [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f "/.dockerenv" ]]; then
   export MISE_NODE_VERSION="system"
   export MISE_PYTHON_VERSION="system"
+
+# 2. Volta Strategy (Client Environment)
+# Voltaがインストールされている場合、Node管理権限をVoltaに委譲する
+elif command -v volta &> /dev/null; then
+  export VOLTA_HOME="$HOME/.volta"
+  export PATH="$VOLTA_HOME/bin:$PATH"
+
+  # MiseはPython等のために起動させるが、Nodeについてはシステム(Volta管理下のNode)を通すように設定
+  export MISE_NODE_VERSION="system"
+
+# 3. Mise Strategy (Home Environment)
+# 上記以外(Mac等)では、Miseが全権を掌握する (特別な設定不要)
 fi
 
 # mise (asdf互換のランタイム管理)
@@ -195,4 +209,20 @@ function t() {
     return
   fi
   tmux attach-session -t main 2>/dev/null || tmux new-session -s main
+}
+
+# --- Build Helpers ---
+# tb: Turbo Build Shortcut
+# カレントディレクトリからプロジェクトルートのturboを呼び出し、ビルドを実行する
+function tb() {
+  if [ -f "pnpm-lock.yaml" ]; then
+    echo "🚀 Running: pnpm turbo run build $@"
+    pnpm turbo run build "$@"
+  elif [ -f "yarn.lock" ]; then
+    echo "🚀 Running: yarn turbo run build $@"
+    yarn turbo run build "$@"
+  else
+    echo "🚀 Running: npm run build $@"
+    npm run build "$@"
+  fi
 }

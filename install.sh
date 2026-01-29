@@ -52,7 +52,11 @@ fi
 # 4. Runtime Setup
 echo "🔧 Setting up Runtimes..."
 eval "$(mise activate bash)"
-mise use --global node@lts
+if command -v volta &> /dev/null; then
+    echo "⚡ Volta detected. Skipping global Node setup via Mise to respect local environment."
+else
+    mise use --global node@lts
+fi
 mise use --global python@3.12
 
 # 5. Smart Stow Linking (with Auto-Backup)
