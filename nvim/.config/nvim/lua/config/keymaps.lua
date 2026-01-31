@@ -1,6 +1,40 @@
 -- キーマップ設定
 -- LazyVim の標準キーマップに加えて、独自のキーマップを定義
 
+-- 同じインデント位置へのジャンプ（下方向）
+local jump_same_indent_down = function()
+  local current_lnum = vim.fn.line(".")
+  local current_indent = vim.fn.indent(current_lnum)
+  local last_line = vim.fn.line("$")
+
+  for lnum = current_lnum + 1, last_line do
+    if vim.fn.indent(lnum) == current_indent then
+      vim.fn.cursor(lnum, 1)
+      return
+    end
+  end
+end
+
+-- 同じインデント位置へのジャンプ（上方向）
+local jump_same_indent_up = function()
+  local current_lnum = vim.fn.line(".")
+  local current_indent = vim.fn.indent(current_lnum)
+
+  for lnum = current_lnum - 1, 1, -1 do
+    if vim.fn.indent(lnum) == current_indent then
+      vim.fn.cursor(lnum, 1)
+      return
+    end
+  end
+end
+
+-- 同じインデントの行へジャンプ
+vim.keymap.set("n", "<C-j>", jump_same_indent_down, { desc = "同じインデントの下の行へジャンプ" })
+vim.keymap.set("n", "<C-k>", jump_same_indent_up, { desc = "同じインデントの上の行へジャンプ" })
+
+-- 対となる括弧へジャンプ（ノーマルモードの Tab）
+vim.keymap.set("n", "<Tab>", "%", { desc = "対となる括弧へジャンプ" })
+
 -- コマンドモードのショートカット
 vim.keymap.set("n", ";", ":", { desc = "コマンドモード", remap = true })
 
