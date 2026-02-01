@@ -30,11 +30,24 @@ setopt interactive_comments
 
 # --- Context-Aware Runtime Strategy ---
 
-# 1. Container Strategy (Pure System)
-# コンテナ内ではMise/Voltaを無効化し、システム標準(Dockerfile由来)を使用
+# カレントまたは親ディレクトリに mise.toml があるか判定
+_has_mise_toml() {
+  local d="${1:-$PWD}"
+  while [[ -n "$d" && "$d" != "/" ]]; do
+    [[ -f "$d/mise.toml" ]] && return 0
+    d="${d%/*}"
+  done
+  return 1
+}
+
+# 1. Container Strategy
+# コンテナ内: mise.toml が無いときはシステム(Dockerfile由来)を使用。
+# mise.toml があるときは mise.toml を優先し、プロジェクト/リポジトリのバージョンを使う。
 if [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f "/.dockerenv" ]]; then
-  export MISE_NODE_VERSION="system"
-  export MISE_PYTHON_VERSION="system"
+  if ! _has_mise_toml 2>/dev/null; then
+    export MISE_NODE_VERSION="system"
+    export MISE_PYTHON_VERSION="system"
+  fi
 
 # 2. Volta Strategy (Client Environment)
 # Voltaがインストールされている場合、Node管理権限をVoltaに委譲する
@@ -47,6 +60,22 @@ elif command -v volta &> /dev/null; then
 
 # 3. Mise Strategy (Home Environment)
 # 上記以外(Mac等)では、Miseが全権を掌握する (特別な設定不要)
+fi
+
+# コンテナ内で cd したときに mise.toml の有無に応じて MISE_*_VERSION を更新
+_update_mise_system_in_container() {
+  if [[ -z "$REMOTE_CONTAINERS" && ! -f "/.dockerenv" ]]; then
+    return
+  fi
+  if _has_mise_toml 2>/dev/null; then
+    unset MISE_NODE_VERSION MISE_PYTHON_VERSION 2>/dev/null
+  else
+    export MISE_NODE_VERSION="system"
+    export MISE_PYTHON_VERSION="system"
+  fi
+}
+if [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f "/.dockerenv" ]]; then
+  chpwd_functions+=(_update_mise_system_in_container)
 fi
 
 # mise (asdf互換のランタイム管理)
