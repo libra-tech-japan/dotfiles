@@ -16,6 +16,9 @@ vim.opt.termguicolors = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
+-- スペルチェック無効化（LazyVim は一部 ft で有効にするため、日本語・コードで下線が出る場合は無効に）
+vim.opt.spell = false
+
 -- クリップボード設定（環境に応じて調整）
 local function setup_clipboard()
   -- WSL 環境の検出
