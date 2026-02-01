@@ -152,6 +152,7 @@ fi
 
 # Git エイリアス
 if command -v git &> /dev/null; then
+  alias g='git'
   alias ga='git add .'
   alias gau='git add -u'
   alias gc='git commit -v'
@@ -168,7 +169,7 @@ fi
 
 # Lazygit エイリアス
 if command -v lazygit &> /dev/null; then
-  alias g='lazygit'
+  alias lg='lazygit'
 fi
 
 # ============================================================================
