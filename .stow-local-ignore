@@ -1,3 +1,4 @@
-.DS_Store
+# macOS メタデータ（パッケージ内のどこにあっても無視）
+\.DS_Store$
 .git
 .gitignore

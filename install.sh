@@ -3,6 +3,13 @@ set -e
 
 echo "🚀 Starting Libratech Lab. Dotfiles Setup (2026)..."
 
+# 0. コードベース内の .DS_Store を削除（Stow 競合防止）
+DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if find "$DOTFILES_ROOT" -name '.DS_Store' -type f 2>/dev/null | grep -q .; then
+    echo "🧹 Removing .DS_Store files in dotfiles..."
+    find "$DOTFILES_ROOT" -name '.DS_Store' -type f -delete
+fi
+
 # 1. Homebrew Installation
 if ! command -v brew &> /dev/null; then
     echo "🍺 Installing Homebrew..."
