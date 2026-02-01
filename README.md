@@ -76,6 +76,14 @@ docker run --rm hello-world
     email = your@email.com
 ```
 
+### Neovim でキーマップ・プラグインが読み込まれない場合
+
+設定は **Stow によるリンク** で行います。dotfiles のルートで `./install.sh` を実行すると、`~/.config/nvim` が `nvim/.config/nvim` へのシンボリックリンクになります。
+
+- **確認**: `ls -la ~/.config/nvim` でリンク先が dotfiles の `nvim/.config/nvim` か確認してください。
+- **手動でリンクする場合**: dotfiles のルートで `stow nvim` を実行してください。
+- **設定パスの確認**: Neovim 起動後 `:lua print(vim.fn.stdpath("config"))` で、`~/.config/nvim`（またはその実体パス）が表示されることを確認してください。
+
 ## 🛠 技術スタック
 
 - **Shell:** Zsh + Starship + Mise + Zoxide

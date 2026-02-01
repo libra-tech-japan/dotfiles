@@ -3,8 +3,11 @@ set -e
 
 echo "🚀 Starting Libratech Lab. Dotfiles Setup (2026)..."
 
-# 0. コードベース内の .DS_Store を削除（Stow 競合防止）
+# リポジトリルートに移動（どこから実行しても Stow / 相対パスを正しく解決）
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$DOTFILES_ROOT"
+
+# 0. コードベース内の .DS_Store を削除（Stow 競合防止）
 if find "$DOTFILES_ROOT" -name '.DS_Store' -type f 2>/dev/null | grep -q .; then
     echo "🧹 Removing .DS_Store files in dotfiles..."
     find "$DOTFILES_ROOT" -name '.DS_Store' -type f -delete
@@ -67,6 +70,7 @@ fi
 mise use --global python@3.12
 
 # 5. Smart Stow Linking (with Auto-Backup)
+# カレントは既に DOTFILES_ROOT（Stow のベストプラクティス: リポジトリルートで stow 実行）
 echo "🔗 Linking dotfiles..."
 STOW_DIRS=("git" "lazygit" "nvim" "starship" "tmux" "zsh")
 
@@ -90,9 +94,26 @@ for package in "${STOW_DIRS[@]}"; do
         # 衝突チェックとバックアップ実行
         backup_if_exists "$target_path"
     done
-    # 安全に Stow を実行
+    # 安全に Stow を実行（カレントは DOTFILES_ROOT、ターゲットは $HOME）
     stow -v --restow "$package"
 done
+
+# Stow 後チェック: .config/nvim が無いと Neovim が設定を読まない
+if [[ ! -e "$HOME/.config/nvim" ]]; then
+    echo "⚠️  .config/nvim がありません。手動でリンクを作成しています..."
+    mkdir -p "$HOME/.config"
+    ln -sf "$DOTFILES_ROOT/nvim/.config/nvim" "$HOME/.config/nvim"
+fi
+if [[ ! -e "$HOME/.config/lazygit" ]]; then
+    echo "⚠️  .config/lazygit がありません。手動でリンクを作成しています..."
+    mkdir -p "$HOME/.config"
+    ln -sf "$DOTFILES_ROOT/lazygit/.config/lazygit" "$HOME/.config/lazygit"
+fi
+if [[ ! -e "$HOME/.config/mise" ]]; then
+    echo "⚠️  .config/mise がありません。手動でリンクを作成しています..."
+    mkdir -p "$HOME/.config"
+    ln -sf "$DOTFILES_ROOT/lazygit/.config/mise" "$HOME/.config/mise"
+fi
 
 # 6. TPM Setup
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
