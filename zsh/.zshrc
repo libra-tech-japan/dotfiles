@@ -260,3 +260,47 @@ function tb() {
     npm run build "$@"
   fi
 }
+
+# --- Bihada Connect Dev Control ---
+# 開発機を起動する
+function work-start() {
+    echo "🚀 Starting Bihada-Dev-Machine..."
+    INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Bihada-Dev-Machine" "Name=instance-state-name,Values=stopped" --query "Reservations[].Instances[].InstanceId" --output text)
+
+    if [ -z "$INSTANCE_ID" ]; then
+        echo "⚠️ Instance not found or already running."
+    else
+        aws ec2 start-instances --instance-ids $INSTANCE_ID
+        echo "⏳ Waiting for initialization..."
+        aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+        echo "✅ System Online! (ID: $INSTANCE_ID)"
+    fi
+}
+
+# 開発機にSSM接続する
+function work-connect() {
+    # running状態のインスタンスIDを特定
+    local INSTANCE_ID=$(aws ec2 describe-instances \
+        --filters "Name=tag:Name,Values=Bihada-Dev-Machine" "Name=instance-state-name,Values=running" \
+        --query "Reservations[].Instances[].InstanceId" \
+        --output text)
+
+    if [ -z "$INSTANCE_ID" ]; then
+        echo "⚠️ Instance is not running. Please run 'work-start' first."
+    else
+        echo "🔌 Connecting to Bihada-Dev-Machine ($INSTANCE_ID)..."
+        aws ssm start-session --target $INSTANCE_ID
+    fi
+}
+
+# 開発機を停止する（課金停止）
+function work-stop() {
+    echo "💤 Stopping Bihada-Dev-Machine..."
+    INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Bihada-Dev-Machine" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
+    if [ -z "$INSTANCE_ID" ]; then
+        echo "⚠️ Instance not found or already stopped."
+    else
+        aws ec2 stop-instances --instance-ids $INSTANCE_ID
+        echo "✅ Stop signal sent. Good night!"
+    fi
+}
