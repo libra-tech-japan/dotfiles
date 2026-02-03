@@ -4,6 +4,12 @@
 # 基本設定
 # ============================================================================
 
+# --- AI & Non-interactive Guard ---
+# 非対話モード、またはAIエージェントからの実行時は、カスタマイズを読み込まず終了
+if [[ $- != *i* ]] || [[ "$TERM" == "dumb" ]]; then
+  return
+fi
+
 # 履歴設定
 # XDGの履歴ディレクトリは対話シェルで作成（非対話の副作用を回避）
 if [[ ! -d "${XDG_DATA_HOME}/zsh" ]]; then
@@ -261,46 +267,52 @@ function tb() {
   fi
 }
 
-# --- Bihada Connect Dev Control ---
-# 開発機を起動する
-function work-start() {
-    echo "🚀 Starting Bihada-Dev-Machine..."
-    INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Bihada-Dev-Machine" "Name=instance-state-name,Values=stopped" --query "Reservations[].Instances[].InstanceId" --output text)
+# --- Dev Machine Control (EC2 + SSM) ---
+# タグ名は .zshrc-local で WORK_DEV_MACHINE_TAG を上書き可能（未設定時はデフォルト）
+WORK_DEV_MACHINE_TAG="${WORK_DEV_MACHINE_TAG:-Bihada-Dev-Machine}"
 
-    if [ -z "$INSTANCE_ID" ]; then
+# 開発機を起動する
+work-start() {
+    echo "🚀 Starting ${WORK_DEV_MACHINE_TAG}..."
+    local inst
+    inst=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${WORK_DEV_MACHINE_TAG}" "Name=instance-state-name,Values=stopped" --query "Reservations[].Instances[].InstanceId" --output text)
+    if [ -z "$inst" ]; then
         echo "⚠️ Instance not found or already running."
     else
-        aws ec2 start-instances --instance-ids $INSTANCE_ID
+        aws ec2 start-instances --instance-ids $inst
         echo "⏳ Waiting for initialization..."
-        aws ec2 wait instance-running --instance-ids $INSTANCE_ID
-        echo "✅ System Online! (ID: $INSTANCE_ID)"
+        aws ec2 wait instance-running --instance-ids $inst
+        echo "✅ System Online! (ID: $inst)"
     fi
 }
 
 # 開発機にSSM接続する
-function work-connect() {
-    # running状態のインスタンスIDを特定
-    local INSTANCE_ID=$(aws ec2 describe-instances \
-        --filters "Name=tag:Name,Values=Bihada-Dev-Machine" "Name=instance-state-name,Values=running" \
+work-connect() {
+    local inst
+    inst=$(aws ec2 describe-instances \
+        --filters "Name=tag:Name,Values=${WORK_DEV_MACHINE_TAG}" "Name=instance-state-name,Values=running" \
         --query "Reservations[].Instances[].InstanceId" \
         --output text)
-
-    if [ -z "$INSTANCE_ID" ]; then
+    if [ -z "$inst" ]; then
         echo "⚠️ Instance is not running. Please run 'work-start' first."
     else
-        echo "🔌 Connecting to Bihada-Dev-Machine ($INSTANCE_ID)..."
-        aws ssm start-session --target $INSTANCE_ID
+        echo "🔌 Connecting to ${WORK_DEV_MACHINE_TAG} ($inst)..."
+        aws ssm start-session --target $inst
     fi
 }
 
 # 開発機を停止する（課金停止）
-function work-stop() {
-    echo "💤 Stopping Bihada-Dev-Machine..."
-    INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Bihada-Dev-Machine" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
-    if [ -z "$INSTANCE_ID" ]; then
+work-stop() {
+    echo "💤 Stopping ${WORK_DEV_MACHINE_TAG}..."
+    local inst
+    inst=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${WORK_DEV_MACHINE_TAG}" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
+    if [ -z "$inst" ]; then
         echo "⚠️ Instance not found or already stopped."
     else
-        aws ec2 stop-instances --instance-ids $INSTANCE_ID
+        aws ec2 stop-instances --instance-ids $inst
         echo "✅ Stop signal sent. Good night!"
     fi
 }
+
+# --- Local Overrides (git管理外) ---
+[[ -f ~/.zshrc-local ]] && source ~/.zshrc-local

@@ -10,6 +10,7 @@
 .ssh/
 .netrc
 .gitconfig.local
+.zshrc-local
 
 # --- Editor & IDE ---
 .idea/
