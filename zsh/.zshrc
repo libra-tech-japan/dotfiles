@@ -186,6 +186,11 @@ if command -v claude &> /dev/null; then
   alias yolo="cc --dangerously-skip-permissions"
 fi
 
+# Docker
+if command -v docker &> /dev/null; then
+  alias d='docker'
+fi
+
 # ============================================================================
 # 関数定義
 # ============================================================================
@@ -234,8 +239,8 @@ if command -v devcontainer &> /dev/null; then
       zsh -c "cd ~/dotfiles && git pull && ./install.sh"
   }
 
-  # devshell: コンテナ内に入るショートカット
-  function devshell() {
+  # devsh: コンテナ内に入るショートカット
+  function devsh() {
     local workspace="${1:-.}"
     devcontainer exec --workspace-folder "$workspace" zsh || \
     devcontainer exec --workspace-folder "$workspace" bash
@@ -273,7 +278,7 @@ function tb() {
 WORK_DEV_MACHINE_TAG="${WORK_DEV_MACHINE_TAG:-Bihada-Dev-Machine}"
 
 # 開発機を起動する
-work-start() {
+dev-start() {
     echo "🚀 Starting ${WORK_DEV_MACHINE_TAG}..."
     local inst
     inst=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${WORK_DEV_MACHINE_TAG}" "Name=instance-state-name,Values=stopped" --query "Reservations[].Instances[].InstanceId" --output text)
@@ -288,7 +293,7 @@ work-start() {
 }
 
 # 開発機にSSM接続する
-work-connect() {
+dev-connect() {
     local inst
     inst=$(aws ec2 describe-instances \
         --filters "Name=tag:Name,Values=${WORK_DEV_MACHINE_TAG}" "Name=instance-state-name,Values=running" \
@@ -303,7 +308,7 @@ work-connect() {
 }
 
 # 開発機を停止する（課金停止）
-work-stop() {
+dev-stop() {
     echo "💤 Stopping ${WORK_DEV_MACHINE_TAG}..."
     local inst
     inst=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${WORK_DEV_MACHINE_TAG}" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
