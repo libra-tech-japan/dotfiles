@@ -32,6 +32,25 @@ compinit -d "${XDG_CACHE_HOME}/zsh/zcompdump-$ZSH_VERSION"
 setopt interactive_comments
 
 # ============================================================================
+# キーバインド（Emacs風）
+# ============================================================================
+# 履歴
+bindkey '^P' up-line-or-history              # 履歴を遡る（↑）
+bindkey '^N' down-line-or-history            # 履歴を進む（↓）
+bindkey '^R' history-incremental-search-backward  # 履歴をインクリメンタル検索
+# カーソル移動
+bindkey '^A' beginning-of-line               # 行頭へ
+bindkey '^E' end-of-line                      # 行末へ
+bindkey '^B' backward-char                   # 1文字左（←）
+bindkey '^F' forward-char                    # 1文字右（→）
+# 削除
+bindkey '^D' delete-char                     # カーソル下の1文字削除（行が空ならログアウト）
+bindkey '^H' backward-delete-char            # バックスペース（1文字削除）
+bindkey '^W' backward-kill-word              # カーソル前の単語を削除
+bindkey '^U' backward-kill-line              # 行頭まで削除
+bindkey '^K' kill-line                       # カーソルから行末まで削除
+
+# ============================================================================
 # ツール初期化
 # ============================================================================
 
