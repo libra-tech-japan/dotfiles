@@ -173,10 +173,6 @@
   "workbench.settings.applyToAllProfiles": [
     "editor.fontFamily"
   ],
-  // --- Dotfiles Integration ---
-  "dotfiles.repository": "https://github.com/libra-tech-japan/dotfiles.git",
-  "dotfiles.targetPath": "~/dotfiles",
-  "dotfiles.installCommand": "install.sh",
   // =================================================================
   // 9. Spell Checker & Custom Dictionaries
   // =================================================================

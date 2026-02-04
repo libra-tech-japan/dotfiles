@@ -1,10 +1,11 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# format: AWSを削除済み、OSとUsernameは継続
+# format: AWSを削除済み、OSとUsernameは継続。$hostname は SSH/リモート時のみ表示
 format = """
 [░▒▓](#a3aed2)\
 $os\
 $username\
+$hostname\
 [](bg:#769ff0 fg:#a3aed2)\
 $directory\
 [](fg:#769ff0 bg:#394260)\
@@ -32,7 +33,18 @@ style_root = "bg:#a3aed2 fg:#ff0000 bold"
 format = '[$user ]($style)' # ユーザー名の後ろにスペース維持
 disabled = false
 
-# --- 2. OS設定 (余白修正) ---
+# --- 2. Hostname（リモート時のみ: SSH は自動検出、SSM は EC2 側で STARSHIP_HOSTNAME_SHOW=1 を推奨）---
+[hostname]
+disabled = false
+ssh_only = true
+# SSM 接続時も表示したい場合は EC2 の SSM shell profile で export STARSHIP_HOSTNAME_SHOW=1 を設定
+detect_env_vars = ["STARSHIP_HOSTNAME_SHOW"]
+ssh_symbol = " "
+format = '[@$hostname ]($style)'
+style = "bg:#a3aed2 fg:#090c0c bold"
+trim_at = "."
+
+# --- 3. OS設定 (余白修正) ---
 [os]
 disabled = false
 style = "bg:#a3aed2 fg:#090c0c"
@@ -46,13 +58,13 @@ Debian = ""
 Linux = ""
 Windows = ""
 
-# --- 3. Docker設定 ---
+# --- 4. Docker設定 ---
 [docker_context]
 style = "bg:#212736"
 format = '[[ $symbol$context ](fg:#8be9fd bg:#212736)]($style)'
 symbol = " "
 
-# --- 4. メモリ使用率 ---
+# --- 5. メモリ使用率 ---
 [memory_usage]
 disabled = false
 threshold = 75
@@ -112,7 +124,7 @@ time_format = "%R"
 style = "bg:#1d2230"
 format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
 
-# --- 5. コンテナ内表示 (DevContainer/Docker内でのみ出現) ---
+# --- 6. コンテナ内表示 (DevContainer/Docker内でのみ出現) ---
 [container]
 disabled = false
 # 視認性向上のため、色はDockerと同じ水色系(fg:#8be9fd)を採用
