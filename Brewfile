@@ -22,6 +22,7 @@ brew "fzf"
 brew "neovim"
 brew "tmux"
 brew "tmuxinator"
+brew "ranger"
 
 # Git & Review
 brew "lazygit"
