@@ -28,6 +28,10 @@ brew "lazygit"
 brew "git-delta"
 brew "difftastic"
 
+# AWS
+brew "awscli"
+cask "session-manager-plugin"
+
 # macOS Specifics
 if OS.mac?
   cask "orbstack"
