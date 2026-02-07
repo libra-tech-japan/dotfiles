@@ -20,7 +20,7 @@ chmod +x install.sh install-container.sh
 ./install.sh
 ```
 
-**DevContainer で利用する場合:** 各リポジトリの devcontainer 設定で dotfiles の `installCommand` に `./install-container.sh` を指定してください。コンテナ内では brew や mise のグローバル導入は行わず、設定（Git・Starship・Neovim・zsh 等）のリンクのみ行います。
+**DevContainer で利用する場合:** 各リポジトリの devcontainer 設定で dotfiles の `installCommand` に `./install-container.sh` を指定してください。コンテナでは Linuxbrew を導入し、Brewfile.container でツールを一括インストールしたうえで、設定（Git・Starship・Neovim・zsh 等）を Stow でリンクします。
 
 ### 2.1 Docker 導入ガイド
 

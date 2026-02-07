@@ -6,6 +6,9 @@ export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 # エディタ設定
 export EDITOR=nvim
 
+# ユーザーロカル bin（コンテナで starship/lazygit を入れた場合など）
+export PATH="${HOME}/.local/bin:$PATH"
+
 # Homebrew パス設定（Mac/Linux共通化）
 if [[ "$(uname)" == "Darwin" ]]; then
   # macOS
@@ -15,9 +18,11 @@ if [[ "$(uname)" == "Darwin" ]]; then
     export PATH="/usr/local/bin:$PATH"
   fi
 else
-  # Linux
+  # Linux（Linuxbrew: システム導入またはユーザー導入）
   if [[ -d "/home/linuxbrew/.linuxbrew/bin" ]]; then
     export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+  elif [[ -d "$HOME/.linuxbrew/bin" ]]; then
+    export PATH="$HOME/.linuxbrew/bin:$PATH"
   elif [[ -d "/usr/local/bin" ]]; then
     export PATH="/usr/local/bin:$PATH"
   fi

@@ -1,4 +1,4 @@
-# ホスト用（install.sh の brew bundle で使用）。コンテナでは install-container.sh を使うため本ファイルは参照されない。
+# ホスト用（install.sh の brew bundle で使用）。コンテナでは Brewfile.container を install-container.sh が参照する。
 # Core
 brew "git"
 brew "stow"
@@ -24,6 +24,7 @@ brew "neovim"
 brew "tmux"
 brew "tmuxinator"
 brew "ranger"
+brew "htop"
 
 # Git & Review
 brew "lazygit"
