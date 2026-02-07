@@ -1,5 +1,6 @@
 # --- System & Logs ---
 .DS_Store
+.install.lock
 *.swp
 *.bak
 *.log

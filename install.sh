@@ -7,6 +7,14 @@ echo "🚀 Starting Libratech Lab. Dotfiles Setup (2026)..."
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_ROOT"
 
+# 単一実行のためロックを取得（二重実行による brew のロック競合を防止）
+INSTALL_LOCK="$DOTFILES_ROOT/.install.lock"
+exec 200>"$INSTALL_LOCK"
+if ! flock -n 200; then
+    echo "⚠️  Another install is already running. Wait for it to finish or remove $INSTALL_LOCK and retry."
+    exit 1
+fi
+
 # 0. コードベース内の .DS_Store を削除（Stow 競合防止）
 if find "$DOTFILES_ROOT" -name '.DS_Store' -type f 2>/dev/null | grep -q .; then
     echo "🧹 Removing .DS_Store files in dotfiles..."
@@ -20,10 +28,17 @@ if ! command -v brew &> /dev/null; then
     if [[ -f "/opt/homebrew/bin/brew" ]]; then eval "$(/opt/homebrew/bin/brew shellenv)"; fi
     if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; fi
 fi
+# Linux: 既に brew が入っていても PATH に入っていないことがあるため、bundle 前に確実に設定
+if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; fi
 
 # 2. Bundle Install
 echo "📦 Bundling packages..."
-brew bundle --file=./Brewfile
+brew bundle --file=./Brewfile || {
+    echo ""
+    echo "⚠️  brew bundle failed. If you saw 'already locked' errors:"
+    echo "   Another install or brew process may be running. Wait for it to finish, then run ./install.sh again."
+    exit 1
+}
 
 # 2.1 Gitのグローバル除外ファイルを用意
 if [ ! -f "$HOME/.gitignore_global" ]; then
