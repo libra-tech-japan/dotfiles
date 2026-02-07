@@ -118,7 +118,8 @@ command -v mise &> /dev/null && mise use --global python@3.12 2>/dev/null || tru
 # Smart Stow Linking (with Auto-Backup)（共通）
 # ---------------------------------------------------------------------------
 echo "🔗 Linking dotfiles..."
-STOW_DIRS=("git" "lazygit" "nvim" "starship" "tmux" "zsh")
+# tmux は .config 直下を Stow すると ~/.config 全体が上書きされるため手動リンクにする
+STOW_DIRS=("git" "lazygit" "nvim" "starship" "zsh")
 
 backup_if_exists() {
   local target="$1"
@@ -150,6 +151,10 @@ fi
 if [[ ! -e "$HOME/.config/mise" ]]; then
   mkdir -p "$HOME/.config"
   ln -sf "$DOTFILES_ROOT/lazygit/.config/mise" "$HOME/.config/mise"
+fi
+if [[ ! -e "$HOME/.config/tmux" ]]; then
+  mkdir -p "$HOME/.config"
+  ln -sf "$DOTFILES_ROOT/tmux/.config/tmux" "$HOME/.config/tmux"
 fi
 
 # TPM Setup
