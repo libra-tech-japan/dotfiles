@@ -1,3 +1,4 @@
+# ホスト用（install.sh の brew bundle で使用）。コンテナでは install-container.sh を使うため本ファイルは参照されない。
 # Core
 brew "git"
 brew "stow"

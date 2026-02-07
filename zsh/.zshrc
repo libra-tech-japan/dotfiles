@@ -220,7 +220,7 @@ if command -v devcontainer &> /dev/null; then
   typeset -a devcontainer_dotfiles_opts=(
     --dotfiles-repository "https://github.com/libra-tech-japan/dotfiles"
     --dotfiles-target-path "~/dotfiles"
-    --dotfiles-install-command "./install.sh"
+    --dotfiles-install-command "./install-container.sh"
   )
 
   # devup: DevContainerにdotfilesを注入して起動
@@ -232,7 +232,7 @@ if command -v devcontainer &> /dev/null; then
       ${devcontainer_dotfiles_opts[@]}
 
     if [ $? -eq 0 ]; then
-      echo "✅ Container Ready. Run 'devshell' to enter."
+      echo "✅ Container Ready. Run 'devsh' to enter."
     fi
   }
 

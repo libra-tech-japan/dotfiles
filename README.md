@@ -1,22 +1,26 @@
 # Dotfiles (Libratech Lab. 2026)
 
-**LazyVim**、**Tmux**、**Zsh (Starship)**、**Docker** をベースとした Thin Host & AI-Native Architecture の dotfiles リポジトリです。
+**LazyVim**、**Tmux**、**Zsh (Starship)**、**Docker** をベースとした Thin Host & AI-Native Architecture の dotfiles リポジトリです。開発ホストは **EC2（Ubuntu）** を想定し、macOS や WSL2 はオプションで利用できます。
 
 ## 🚀 インストール
 
 ### 1. 必要な環境
 
-- macOS（OrbStack 推奨）または Linux（Debian/Ubuntu）
+- Linux（Ubuntu/Debian）推奨（EC2 開発ホスト想定）、または macOS（OrbStack 推奨）・WSL2
 - Git
 
 ### 2. セットアップ
 
+**ホスト（EC2 / macOS / WSL）でフルインストールする場合:**
+
 ```bash
 git clone https://github.com/libra-tech-japan/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-chmod +x install.sh
+chmod +x install.sh install-container.sh
 ./install.sh
 ```
+
+**DevContainer で利用する場合:** 各リポジトリの devcontainer 設定で dotfiles の `installCommand` に `./install-container.sh` を指定してください。コンテナ内では brew や mise のグローバル導入は行わず、設定（Git・Starship・Neovim・zsh 等）のリンクのみ行います。
 
 ### 2.1 Docker 導入ガイド
 
