@@ -242,8 +242,8 @@ if command -v devcontainer &> /dev/null; then
     local workspace="${1:-.}"
     echo "🔨 Building DevContainer..."
     devcontainer build \
-      --workspace-folder "$workspace"
-
+      --workspace-folder "$workspace" \
+      --remove-existing-container \
     if [ $? -eq 0 ]; then
       echo "✅ Container Built. Run 'devup' to start with dotfiles injection."
     fi
