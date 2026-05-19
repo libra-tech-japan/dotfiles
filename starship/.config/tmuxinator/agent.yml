@@ -1,0 +1,27 @@
+# /home/ubuntu/.config/tmuxinator/agent.yml
+
+name: agent
+root: ~/
+
+atatch: true
+
+windows:
+  - agent-sandbox:
+      layout: main-vertical
+      panes:
+        - claude:
+            - cd ~/workspace/bihada-connect-monorepo/agent-sandbox
+            - devcontainer up --workspace-folder .
+            - devcontainer exec --workspace-folder . /bin/zsh
+  - monitor:
+      layout: even-vertical
+      panes:
+        - htop
+        - docker stats
+  - cursor:
+      layout: main-vertical
+      panes:
+        - cursor:
+            - cd ~/workspace/bihada-connect-monorepo/dev
+            - devcontainer up --workspace-folder .
+            - devcontainer exec --workspace-folder . /bin/zsh

@@ -1,3 +1,19 @@
+-- j/k を表示行移動（gj/gk）に固定（LazyVim 既定キーマップの上書き）
+local setup_display_line_jk = function()
+  for _, mode in ipairs({ "n", "v", "V", "x" }) do
+    pcall(vim.keymap.del, mode, "j")
+    pcall(vim.keymap.del, mode, "k")
+    vim.keymap.set(mode, "j", "gj", { desc = "表示行で下へ移動", silent = true })
+    vim.keymap.set(mode, "k", "gk", { desc = "表示行で上へ移動", silent = true })
+  end
+end
+
+vim.api.nvim_create_autocmd("User", {
+  pattern = "LazyDone",
+  once = true,
+  callback = setup_display_line_jk,
+})
+
 -- 非英語文字に波下線（スペルチェック）が出ないようにする
 
 -- LazyVim のスペル用 augroup を削除

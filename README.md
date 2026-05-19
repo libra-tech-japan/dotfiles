@@ -80,12 +80,19 @@ docker run --rm hello-world
     email = your@email.com
 ```
 
+### `~/.config` と Stow の方針
+
+`starship` パッケージを Stow すると `~/.config` 全体が `starship/.config` へのシンボリックリンクになり、htop や `gh` の生成物が **dotfiles リポジトリ内**に書き込まれることがあります。そのため `starship.toml` と `tmuxinator` は **手動リンク**し、`~/.config` は実ディレクトリのまま各エントリだけをリンクします。
+
+- **確認**: `./scripts/check-stow.sh` で `~/.config` が単一 symlink でないこと、各設定が個別にリンクされていることを確認してください。
+- **修復**: 上記の状態になっている場合は dotfiles のルートで `./install.sh` を再実行してください（`repair_config_dir` が壊れたリンクを直します）。
+
 ### Neovim でキーマップ・プラグインが読み込まれない場合
 
-設定は **Stow によるリンク** で行います。dotfiles のルートで `./install.sh` を実行すると、`~/.config/nvim` が `nvim/.config/nvim` へのシンボリックリンクになります。
+設定は **Stow + 手動リンク** で行います。dotfiles のルートで `./install.sh` を実行すると、`~/.config/nvim` が `nvim/.config/nvim` へのシンボリックリンクになります。
 
 - **確認**: `ls -la ~/.config/nvim` でリンク先が dotfiles の `nvim/.config/nvim` か確認してください。
-- **手動でリンクする場合**: dotfiles のルートで `stow nvim` を実行してください。
+- **手動でリンクする場合**: dotfiles のルートで `stow nvim` を実行するか、`./install.sh` を再実行してください。
 - **設定パスの確認**: Neovim 起動後 `:lua print(vim.fn.stdpath("config"))` で、`~/.config/nvim`（またはその実体パス）が表示されることを確認してください。
 
 ## 🛠 技術スタック

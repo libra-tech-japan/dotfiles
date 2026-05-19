@@ -24,14 +24,19 @@ build/
 .python-version
 __pycache__/
 
-# --- Application Caches (Noise) ---
-.config/configstore/
-.config/gh/
-.config/coc/
-.config/yarn/
+# --- Application Caches (any */.config/ under Stow packages) ---
+**/.config/configstore/
+**/.config/gh/
+**/.config/coc/
+**/.config/yarn/
+**/.config/iterm2/
+**/.config/htop/
 
-# iTerm2 Noise
-.config/iterm2/
+# install 誤配置の防止（starship/.config 内への symlink）
+starship/.config/lazygit
+starship/.config/mise
+starship/.config/nvim
+starship/.config/tmux
 
-# --- Tmux Plugins (Managed by TPM) ---
+# --- Tmux Plugins (TPM 既定は ~/.tmux/plugins。config 配下に入った場合の保険) ---
 tmux/.config/tmux/plugins/

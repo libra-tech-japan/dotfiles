@@ -9,8 +9,20 @@ echo "=== Dotfiles root ==="
 echo "$DOTFILES_ROOT"
 echo ""
 
+if [[ -L "$HOME/.config" ]]; then
+  config_link="$(readlink "$HOME/.config")"
+  if [[ "$config_link" == *"starship/.config"* ]]; then
+    echo "⚠️  WARN: ~/.config が starship/.config への単一シンボリックリンクです。"
+    echo "    ランタイム生成物が dotfiles リポジトリに混入します。./install.sh を再実行して修復してください。"
+    echo "    -> $config_link"
+  else
+    echo "ℹ️  ~/.config はシンボリックリンク: $config_link"
+  fi
+  echo ""
+fi
+
 echo "=== Stow でリンクされるはずのパス（存在・リンク先） ==="
-for name in .gitconfig .zshrc .zshenv .config/nvim .config/lazygit .config/starship.toml .config/tmux .config/mise; do
+for name in .gitconfig .zshrc .zshenv .config/nvim .config/lazygit .config/starship.toml .config/tmux .config/mise .config/tmuxinator; do
   path="$HOME/$name"
   if [[ -e "$path" ]]; then
     if [[ -L "$path" ]]; then

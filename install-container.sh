@@ -41,7 +41,7 @@ fi
 
 # brew bundle（Brewfile.container）
 echo "📦 Bundling packages (Brewfile.container)..."
-brew bundle --file="$DOTFILES_ROOT/Brewfile.container" --no-lock || {
+brew bundle --file="$DOTFILES_ROOT/Brewfile.container" || {
   echo ""
   echo "⚠️  brew bundle failed. Check the errors above."
   exit 1
@@ -57,7 +57,28 @@ backup_if_exists() {
   fi
 }
 
-STOW_DIRS=("git" "lazygit" "starship" "nvim" "zsh")
+# ~/.config が starship パッケージ全体へのリンクになっている場合は修復
+repair_config_dir() {
+  if [[ -L "${HOME}/.config" ]] && [[ "$(readlink "${HOME}/.config")" == *"starship/.config"* ]]; then
+    echo "🔧 Repairing ~/.config (was symlinked to starship/.config)..."
+    rm "${HOME}/.config"
+    mkdir -p "${HOME}/.config"
+  fi
+}
+
+link_config_entries() {
+  mkdir -p "${HOME}/.config"
+  ln -sf "${DOTFILES_ROOT}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
+  ln -sf "${DOTFILES_ROOT}/starship/.config/tmuxinator" "${HOME}/.config/tmuxinator"
+  ln -sf "${DOTFILES_ROOT}/nvim/.config/nvim" "${HOME}/.config/nvim"
+  ln -sf "${DOTFILES_ROOT}/lazygit/.config/lazygit" "${HOME}/.config/lazygit"
+  ln -sf "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
+}
+
+STOW_DIRS=("git" "lazygit" "nvim" "zsh")
+repair_config_dir
+stow -D starship 2>/dev/null || true
+
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 2>/dev/null | while read -r source_path; do
     relative_path=$(basename "$source_path")
@@ -67,16 +88,16 @@ for package in "${STOW_DIRS[@]}"; do
   stow -v --restow "$package"
 done
 
-# .config 配下の手動リンク（Stow がネストを扱わないため）
-mkdir -p "$HOME/.config"
-if [[ ! -e "$HOME/.config/nvim" ]]; then
-  ln -sf "$DOTFILES_ROOT/nvim/.config/nvim" "$HOME/.config/nvim"
-fi
-if [[ ! -e "$HOME/.config/lazygit" ]]; then
-  ln -sf "$DOTFILES_ROOT/lazygit/.config/lazygit" "$HOME/.config/lazygit"
-fi
-if [[ ! -e "$HOME/.config/mise" ]]; then
-  ln -sf "$DOTFILES_ROOT/lazygit/.config/mise" "$HOME/.config/mise"
+link_config_entries
+
+
+if ! command -v ni &> /dev/null; then
+  if command -v npm &> /dev/null; then
+    echo "Installing ni (via npm)..."
+    npm install -g @antfu/ni || echo "⚠️ Failed to install ni"
+  fi
+else
+  echo "ni is already installed, skipping"
 fi
 
 echo "✅ Container dotfiles ready. Run 'exec zsh' to reload."

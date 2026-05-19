@@ -118,8 +118,8 @@ command -v mise &> /dev/null && mise use --global python@3.12 2>/dev/null || tru
 # Smart Stow Linking (with Auto-Backup)（共通）
 # ---------------------------------------------------------------------------
 echo "🔗 Linking dotfiles..."
-# tmux は .config 直下を Stow すると ~/.config 全体が上書きされるため手動リンクにする
-STOW_DIRS=("git" "lazygit" "nvim" "starship" "zsh")
+# starship / tmux は .config 配下を Stow すると ~/.config 全体がリンク化するため手動リンクにする
+STOW_DIRS=("git" "lazygit" "nvim" "zsh")
 
 backup_if_exists() {
   local target="$1"
@@ -130,6 +130,28 @@ backup_if_exists() {
   fi
 }
 
+# ~/.config が starship パッケージ全体へのリンクになっている場合は修復
+repair_config_dir() {
+  if [[ -L "${HOME}/.config" ]] && [[ "$(readlink "${HOME}/.config")" == *"starship/.config"* ]]; then
+    echo "🔧 Repairing ~/.config (was symlinked to starship/.config)..."
+    rm "${HOME}/.config"
+    mkdir -p "${HOME}/.config"
+  fi
+}
+
+link_config_entries() {
+  mkdir -p "${HOME}/.config"
+  ln -sf "${DOTFILES_ROOT}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
+  ln -sf "${DOTFILES_ROOT}/starship/.config/tmuxinator" "${HOME}/.config/tmuxinator"
+  ln -sf "${DOTFILES_ROOT}/nvim/.config/nvim" "${HOME}/.config/nvim"
+  ln -sf "${DOTFILES_ROOT}/lazygit/.config/lazygit" "${HOME}/.config/lazygit"
+  ln -sf "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
+  ln -sf "${DOTFILES_ROOT}/tmux/.config/tmux" "${HOME}/.config/tmux"
+}
+
+repair_config_dir
+stow -D starship 2>/dev/null || true
+
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 | while read -r source_path; do
     relative_path=$(basename "$source_path")
@@ -139,23 +161,7 @@ for package in "${STOW_DIRS[@]}"; do
   stow -v --restow "$package"
 done
 
-# .config 手動リンク（Stow がネストを扱わないため）
-if [[ ! -e "$HOME/.config/nvim" ]]; then
-  mkdir -p "$HOME/.config"
-  ln -sf "$DOTFILES_ROOT/nvim/.config/nvim" "$HOME/.config/nvim"
-fi
-if [[ ! -e "$HOME/.config/lazygit" ]]; then
-  mkdir -p "$HOME/.config"
-  ln -sf "$DOTFILES_ROOT/lazygit/.config/lazygit" "$HOME/.config/lazygit"
-fi
-if [[ ! -e "$HOME/.config/mise" ]]; then
-  mkdir -p "$HOME/.config"
-  ln -sf "$DOTFILES_ROOT/lazygit/.config/mise" "$HOME/.config/mise"
-fi
-if [[ ! -e "$HOME/.config/tmux" ]]; then
-  mkdir -p "$HOME/.config"
-  ln -sf "$DOTFILES_ROOT/tmux/.config/tmux" "$HOME/.config/tmux"
-fi
+link_config_entries
 
 # TPM Setup
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then

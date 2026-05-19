@@ -56,12 +56,6 @@ vim.keymap.set("n", "]b", "<cmd>bnext<cr>", { desc = "次のバッファ" })
 vim.keymap.set("n", "[B", "<cmd>bfirst<cr>", { desc = "最初のバッファ" })
 vim.keymap.set("n", "]B", "<cmd>blast<cr>", { desc = "最後のバッファ" })
 
--- 表示行移動（j, k を gj, gk にマッピング）
-vim.keymap.set("n", "j", "gj", { desc = "表示行で下へ移動" })
-vim.keymap.set("n", "k", "gk", { desc = "表示行で上へ移動" })
-vim.keymap.set("v", "j", "gj", { desc = "表示行で下へ移動" })
-vim.keymap.set("v", "k", "gk", { desc = "表示行で上へ移動" })
-
 -- ハイライト解除
 vim.keymap.set("n", "<Esc><Esc>", "<cmd>nohlsearch<cr>", { desc = "ハイライト解除" })
 
