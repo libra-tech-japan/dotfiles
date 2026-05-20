@@ -254,16 +254,27 @@ if command -v devcontainer &> /dev/null; then
     fi
   }
 
-  # devbuild: DevContainerをビルド
-  # 注: dotfilesの注入はdevcontainer upの段階で行われる
+  # devbuild: DevContainer イメージをビルド（--remove-existing-container は build では不可）
+  # 注: dotfiles の注入は devcontainer up の段階で行われる
   function devbuild() {
     local workspace="${1:-.}"
     echo "🔨 Building DevContainer..."
-    devcontainer build \
-      --workspace-folder "$workspace" \
-      --remove-existing-container
+    devcontainer build --workspace-folder "$workspace"
     if [ $? -eq 0 ]; then
       echo "✅ Container Built. Run 'devup' to start with dotfiles injection."
+    fi
+  }
+
+  # devrebuild: 既存コンテナを削除してから up（設定変更の反映用）
+  function devrebuild() {
+    local workspace="${1:-.}"
+    echo "🔨 Rebuilding DevContainer (remove existing + up)..."
+    devcontainer up \
+      --workspace-folder "$workspace" \
+      --remove-existing-container \
+      ${devcontainer_dotfiles_opts[@]}
+    if [ $? -eq 0 ]; then
+      echo "✅ Container Ready. Run 'devsh' to enter."
     fi
   }
 
