@@ -19,10 +19,20 @@ if [[ "$(uname)" == "Darwin" ]]; then
   fi
 else
   # Linux（Linuxbrew: システム導入またはユーザー導入）
+  # コンテナでは末尾に追加（mise.toml があるとき mise の node/python を PATH 先頭にできる）
+  _linuxbrew_bin=""
   if [[ -d "/home/linuxbrew/.linuxbrew/bin" ]]; then
-    export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+    _linuxbrew_bin="/home/linuxbrew/.linuxbrew/bin"
   elif [[ -d "$HOME/.linuxbrew/bin" ]]; then
-    export PATH="$HOME/.linuxbrew/bin:$PATH"
+    _linuxbrew_bin="$HOME/.linuxbrew/bin"
+  fi
+  if [[ -n "$_linuxbrew_bin" ]]; then
+    if [[ -f "/.dockerenv" ]] || [[ -n "${REMOTE_CONTAINERS:-}" ]]; then
+      export PATH="${PATH}:${_linuxbrew_bin}"
+    else
+      export PATH="${_linuxbrew_bin}:${PATH}"
+    fi
+    unset _linuxbrew_bin
   elif [[ -d "/usr/local/bin" ]]; then
     export PATH="/usr/local/bin:$PATH"
   fi

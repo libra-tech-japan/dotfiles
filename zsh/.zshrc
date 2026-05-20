@@ -63,7 +63,37 @@ if command -v volta &> /dev/null; then
 # 上記以外(Mac等)では、Miseが全権を掌握する (特別な設定不要)
 fi
 
-# コンテナ内: カレント $PWD に mise.toml が無いときだけ system（Homebrew/Dockerfile 由来）を使う
+# Linuxbrew bin（.zshenv と同じ判定）
+_linuxbrew_bin_dir() {
+  if [[ -d "/home/linuxbrew/.linuxbrew/bin" ]]; then
+    echo "/home/linuxbrew/.linuxbrew/bin"
+  elif [[ -d "$HOME/.linuxbrew/bin" ]]; then
+    echo "$HOME/.linuxbrew/bin"
+  fi
+}
+
+# PATH 先頭にディレクトリを置く（既存エントリは除去してから先頭へ）
+_prepend_path_dir() {
+  local dir="$1"
+  [[ -n "$dir" && -d "$dir" ]] || return
+  local -a parts
+  parts=("${(@s.:.)PATH}")
+  parts=(${parts:#$dir})
+  export PATH="${dir}:${(j.:.)parts}"
+}
+
+# mise が有効なツールを PATH 先頭へ（hook-env だけでは linuxbrew が勝つ場合の保険）
+_prepend_mise_tool_bin_to_path() {
+  local tool="$1" bin_dir
+  if [[ -n "${MISE_DISABLE_TOOLS:-}" ]] && [[ ",${MISE_DISABLE_TOOLS}," == *",${tool},"* ]]; then
+    return
+  fi
+  bin_dir=$(command mise which "$tool" 2>/dev/null) || return
+  bin_dir="${bin_dir:h}"
+  _prepend_path_dir "$bin_dir"
+}
+
+# コンテナ内: カレント $PWD に mise.toml が無いときだけ Homebrew の node/python を優先
 _apply_mise_container_strategy() {
   if [[ -z "$REMOTE_CONTAINERS" && ! -f "/.dockerenv" ]]; then
     return
@@ -74,9 +104,16 @@ _apply_mise_container_strategy() {
     unset MISE_NODE_VERSION MISE_PYTHON_VERSION 2>/dev/null
     export MISE_DISABLE_TOOLS="node,python"
   fi
-  # 設定変更後に PATH を再構築（chpwd だけだと $HOME 起動時の設定が残る）
   if command -v mise &>/dev/null; then
     eval "$(mise hook-env -s zsh 2>/dev/null)" || true
+  fi
+  if _has_mise_toml 2>/dev/null; then
+    _prepend_mise_tool_bin_to_path node
+    _prepend_mise_tool_bin_to_path python
+  else
+    local brew_bin
+    brew_bin=$(_linuxbrew_bin_dir)
+    _prepend_path_dir "$brew_bin"
   fi
 }
 if [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f "/.dockerenv" ]]; then
