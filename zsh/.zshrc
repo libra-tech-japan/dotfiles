@@ -48,7 +48,7 @@ _has_mise_toml() {
 }
 
 # 1. Container Strategy — 起動時・cd 後に _apply_mise_container_strategy で適用（下記参照）
-# MISE_NODE_VERSION は mise.toml の [tools] より優先されるため、mise.toml があるときは必ず unset する。
+# mise.toml があるときは MISE_DISABLE_TOOLS を unset し、[tools] の node/python を使う。
 
 # 2. Volta Strategy (Client Environment)
 # Voltaがインストールされている場合、Node管理権限をVoltaに委譲する
@@ -56,8 +56,8 @@ if command -v volta &> /dev/null; then
   export VOLTA_HOME="$HOME/.volta"
   export PATH="$VOLTA_HOME/bin:$PATH"
 
-  # MiseはPython等のために起動させるが、Nodeについてはシステム(Volta管理下のNode)を通すように設定
-  export MISE_NODE_VERSION="system"
+  # MiseはPython等のために起動させるが、Nodeは Volta 管理下の system を使う
+  export MISE_DISABLE_TOOLS="node"
 
 # 3. Mise Strategy (Home Environment)
 # 上記以外(Mac等)では、Miseが全権を掌握する (特別な設定不要)
@@ -69,12 +69,12 @@ _apply_mise_container_strategy() {
     return
   fi
   if _has_mise_toml 2>/dev/null; then
-    unset MISE_NODE_VERSION MISE_PYTHON_VERSION 2>/dev/null
+    unset MISE_DISABLE_TOOLS MISE_NODE_VERSION MISE_PYTHON_VERSION 2>/dev/null
   else
-    export MISE_NODE_VERSION="system"
-    export MISE_PYTHON_VERSION="system"
+    unset MISE_NODE_VERSION MISE_PYTHON_VERSION 2>/dev/null
+    export MISE_DISABLE_TOOLS="node,python"
   fi
-  # MISE_*_VERSION 変更後に PATH を再構築（chpwd だけだと $HOME 起動時に system が残る）
+  # 設定変更後に PATH を再構築（chpwd だけだと $HOME 起動時の設定が残る）
   if command -v mise &>/dev/null; then
     eval "$(mise hook-env -s zsh 2>/dev/null)" || true
   fi
