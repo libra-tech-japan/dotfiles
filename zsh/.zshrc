@@ -52,7 +52,7 @@ _has_mise_toml() {
 
 # 2. Volta Strategy (Client Environment)
 # Voltaがインストールされている場合、Node管理権限をVoltaに委譲する
-elif command -v volta &> /dev/null; then
+if command -v volta &> /dev/null; then
   export VOLTA_HOME="$HOME/.volta"
   export PATH="$VOLTA_HOME/bin:$PATH"
 
