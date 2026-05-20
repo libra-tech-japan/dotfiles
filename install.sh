@@ -118,8 +118,8 @@ command -v mise &> /dev/null && mise use --global python@3.12 2>/dev/null || tru
 # Smart Stow Linking (with Auto-Backup)（共通）
 # ---------------------------------------------------------------------------
 echo "🔗 Linking dotfiles..."
-# starship / tmux は .config 配下を Stow すると ~/.config 全体がリンク化するため手動リンクにする
-STOW_DIRS=("git" "lazygit" "nvim" "zsh")
+# .config 配下（starship / nvim / lazygit / tmux）は手動リンクのみ（Stow すると ~/.config 全体のバックアップ/リンク化を招く）
+STOW_DIRS=("git" "zsh")
 
 backup_if_exists() {
   local target="$1"
@@ -150,7 +150,7 @@ link_config_entries() {
 }
 
 repair_config_dir
-stow -D starship 2>/dev/null || true
+stow -D starship lazygit nvim 2>/dev/null || true
 
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 | while read -r source_path; do

@@ -92,7 +92,7 @@ docker run --rm hello-world
 設定は **Stow + 手動リンク** で行います。dotfiles のルートで `./install.sh` を実行すると、`~/.config/nvim` が `nvim/.config/nvim` へのシンボリックリンクになります。
 
 - **確認**: `ls -la ~/.config/nvim` でリンク先が dotfiles の `nvim/.config/nvim` か確認してください。
-- **手動でリンクする場合**: dotfiles のルートで `stow nvim` を実行するか、`./install.sh` を再実行してください。
+- **手動でリンクする場合**: `./install.sh` または `./install-container.sh` を再実行してください（`nvim` / `lazygit` は Stow 対象外です）。
 - **設定パスの確認**: Neovim 起動後 `:lua print(vim.fn.stdpath("config"))` で、`~/.config/nvim`（またはその実体パス）が表示されることを確認してください。
 
 ## 🛠 技術スタック

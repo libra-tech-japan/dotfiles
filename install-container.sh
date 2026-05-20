@@ -75,9 +75,10 @@ link_config_entries() {
   ln -sf "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
 }
 
-STOW_DIRS=("git" "lazygit" "nvim" "zsh")
+# .config 配下は Stow すると ~/.config 全体のバックアップ/リンク化を招くため手動リンクのみ
+STOW_DIRS=("git" "zsh")
 repair_config_dir
-stow -D starship 2>/dev/null || true
+stow -D starship lazygit nvim 2>/dev/null || true
 
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 2>/dev/null | while read -r source_path; do
