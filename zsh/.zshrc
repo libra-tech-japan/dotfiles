@@ -47,14 +47,8 @@ _has_mise_toml() {
   return 1
 }
 
-# 1. Container Strategy
-# コンテナ内: mise.toml が無いときはシステム(Dockerfile由来)を使用。
-# mise.toml があるときは mise.toml を優先し、プロジェクト/リポジトリのバージョンを使う。
-if [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f "/.dockerenv" ]]; then
-  if ! _has_mise_toml 2>/dev/null; then
-    export MISE_NODE_VERSION="system"
-    export MISE_PYTHON_VERSION="system"
-  fi
+# 1. Container Strategy — 起動時・cd 後に _apply_mise_container_strategy で適用（下記参照）
+# MISE_NODE_VERSION は mise.toml の [tools] より優先されるため、mise.toml があるときは必ず unset する。
 
 # 2. Volta Strategy (Client Environment)
 # Voltaがインストールされている場合、Node管理権限をVoltaに委譲する
@@ -69,8 +63,8 @@ elif command -v volta &> /dev/null; then
 # 上記以外(Mac等)では、Miseが全権を掌握する (特別な設定不要)
 fi
 
-# コンテナ内で cd したときに mise.toml の有無に応じて MISE_*_VERSION を更新
-_update_mise_system_in_container() {
+# コンテナ内: カレント $PWD に mise.toml が無いときだけ system（Homebrew/Dockerfile 由来）を使う
+_apply_mise_container_strategy() {
   if [[ -z "$REMOTE_CONTAINERS" && ! -f "/.dockerenv" ]]; then
     return
   fi
@@ -80,14 +74,20 @@ _update_mise_system_in_container() {
     export MISE_NODE_VERSION="system"
     export MISE_PYTHON_VERSION="system"
   fi
+  # MISE_*_VERSION 変更後に PATH を再構築（chpwd だけだと $HOME 起動時に system が残る）
+  if command -v mise &>/dev/null; then
+    eval "$(mise hook-env -s zsh 2>/dev/null)" || true
+  fi
 }
 if [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f "/.dockerenv" ]]; then
-  chpwd_functions+=(_update_mise_system_in_container)
+  chpwd_functions+=(_apply_mise_container_strategy)
 fi
 
 # mise (asdf互換のランタイム管理)
 if command -v mise &> /dev/null; then
   eval "$(mise activate zsh)"
+  # 起動時の $PWD にも適用（cd せずにワークスペースで開いた場合を含む）
+  _apply_mise_container_strategy
 fi
 
 # npm グローバル bin を PATH に追加（devcontainer CLI 等が使えるようにする）
