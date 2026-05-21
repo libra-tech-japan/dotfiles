@@ -40,6 +40,27 @@ echo "=== ~/.config 直下 ==="
 ls -la "$HOME/.config" 2>/dev/null || echo "(~/.config が存在しません)"
 echo ""
 
+echo "=== 入れ子 symlink の誤生成（install の ln -sf 由来。あれば ./install.sh で修復） ==="
+nested_found=false
+for pair in \
+  "starship/.config/tmuxinator:tmuxinator" \
+  "lazygit/.config/lazygit:lazygit" \
+  "nvim/.config/nvim:nvim" \
+  "lazygit/.config/mise:mise" \
+  "tmux/.config/tmux:tmux"; do
+  dir="${pair%%:*}"
+  name="${pair##*:}"
+  path="$DOTFILES_ROOT/$dir/$name"
+  if [[ -L "$path" ]]; then
+    echo "⚠️  $path -> $(readlink "$path")"
+    nested_found=true
+  fi
+done
+if [[ "$nested_found" = false ]]; then
+  echo "(なし)"
+fi
+echo ""
+
 echo "=== Neovim 設定パス確認用（nvim 起動後 :lua print(vim.fn.stdpath(\"config\")) でも確認可） ==="
 if [[ -L "$HOME/.config/nvim" ]]; then
   echo ".config/nvim -> $(readlink -f "$HOME/.config/nvim" 2>/dev/null || readlink "$HOME/.config/nvim")"

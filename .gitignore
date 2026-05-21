@@ -38,5 +38,12 @@ starship/.config/mise
 starship/.config/nvim
 starship/.config/tmux
 
+# link_config_entries の ln -sf 誤作動で作られる入れ子 symlink（ln -sfn で修復済み）
+**/.config/tmuxinator/tmuxinator
+**/.config/lazygit/lazygit
+**/.config/nvim/nvim
+**/.config/mise/mise
+**/.config/tmux/tmux
+
 # --- Tmux Plugins (TPM 既定は ~/.tmux/plugins。config 配下に入った場合の保険) ---
 tmux/.config/tmux/plugins/

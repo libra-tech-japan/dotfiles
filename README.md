@@ -86,6 +86,7 @@ docker run --rm hello-world
 
 - **確認**: `./scripts/check-stow.sh` で `~/.config` が単一 symlink でないこと、各設定が個別にリンクされていることを確認してください。
 - **修復**: 上記の状態になっている場合は dotfiles のルートで `./install.sh` を再実行してください（`repair_config_dir` が壊れたリンクを直します）。
+- **入れ子 symlink**: `~/.config/tmuxinator` などが既にディレクトリへの symlink のとき、`ln -sf` だけで再リンクすると `starship/.config/tmuxinator/tmuxinator` のようなファイルがリポジトリ内に増えます。install スクリプトは `ln -sfn` と `clean_nested_config_symlink` でこれを防ぎます。
 
 ### Neovim でキーマップ・プラグインが読み込まれない場合
 

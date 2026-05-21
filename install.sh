@@ -139,14 +139,40 @@ repair_config_dir() {
   fi
 }
 
+# ln -sf だけだと、リンク先が「ディレクトリへの symlink」のとき
+# ~/.config/xxx/xxx のような入れ子リンクがリポジトリ内に作られる（-n で回避）
+clean_nested_config_symlink() {
+  local config_dir="$1"
+  local base
+  base=$(basename "$config_dir")
+  if [[ -L "${config_dir}/${base}" ]]; then
+    echo "🧹 Removing nested mistaken symlink: ${config_dir}/${base}"
+    rm -f "${config_dir}/${base}"
+  fi
+}
+
+link_config_dir() {
+  local src="$1"
+  local dest="$2"
+  clean_nested_config_symlink "$src"
+  mkdir -p "$(dirname "$dest")"
+  ln -sfn "$src" "$dest"
+}
+
+link_config_file() {
+  local src="$1"
+  local dest="$2"
+  mkdir -p "$(dirname "$dest")"
+  ln -sf "$src" "$dest"
+}
+
 link_config_entries() {
-  mkdir -p "${HOME}/.config"
-  ln -sf "${DOTFILES_ROOT}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
-  ln -sf "${DOTFILES_ROOT}/starship/.config/tmuxinator" "${HOME}/.config/tmuxinator"
-  ln -sf "${DOTFILES_ROOT}/nvim/.config/nvim" "${HOME}/.config/nvim"
-  ln -sf "${DOTFILES_ROOT}/lazygit/.config/lazygit" "${HOME}/.config/lazygit"
-  ln -sf "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
-  ln -sf "${DOTFILES_ROOT}/tmux/.config/tmux" "${HOME}/.config/tmux"
+  link_config_file "${DOTFILES_ROOT}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
+  link_config_dir "${DOTFILES_ROOT}/starship/.config/tmuxinator" "${HOME}/.config/tmuxinator"
+  link_config_dir "${DOTFILES_ROOT}/nvim/.config/nvim" "${HOME}/.config/nvim"
+  link_config_dir "${DOTFILES_ROOT}/lazygit/.config/lazygit" "${HOME}/.config/lazygit"
+  link_config_dir "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
+  link_config_dir "${DOTFILES_ROOT}/tmux/.config/tmux" "${HOME}/.config/tmux"
 }
 
 repair_config_dir

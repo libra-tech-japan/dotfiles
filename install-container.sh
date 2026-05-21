@@ -48,12 +48,40 @@ brew bundle --file="$DOTFILES_ROOT/Brewfile.container" || {
 }
 
 # Stow と .config リンク
+# ファイル単体の bind マウントか（findmnt -T は ext4 上の通常ファイルでも真になるため使わない）
+is_file_bind_mount() {
+  local target="$1"
+  [[ -e "$target" ]] || return 1
+  grep -E " ${target} " /proc/self/mountinfo 2>/dev/null | grep -q ' - bind '
+}
+
 backup_if_exists() {
   local target="$1"
+  if is_file_bind_mount "$target"; then
+    echo "ℹ️  Skipping $target (bind mount; cannot replace)"
+    return 0
+  fi
   if [ -e "$target" ] && [ ! -L "$target" ]; then
     local backup_name="${target}.backup.$(date +%Y%m%d_%H%M%S)"
     echo "⚠️  Conflict detected: Moving existing $target to $backup_name"
-    mv "$target" "$backup_name"
+    mv "$target" "$backup_name" || {
+      echo "ℹ️  Skipping $target (could not move; may be in use or mounted)"
+      return 0
+    }
+  fi
+}
+
+# DevContainer では ~/.gitconfig を stow しない（mv 競合・.gitconfig.local 連携のため）
+install_git_config() {
+  local template="${DOTFILES_ROOT}/git/.gitconfig"
+  [[ -f "$template" ]] || return 0
+  if is_file_bind_mount "${HOME}/.gitconfig"; then
+    echo "ℹ️  ~/.gitconfig is bind-mounted; not modifying"
+    return 0
+  fi
+  if [[ ! -f "${HOME}/.gitconfig" ]] || [[ ! -s "${HOME}/.gitconfig" ]]; then
+    cp "$template" "${HOME}/.gitconfig"
+    echo "ℹ️  Installed ~/.gitconfig from dotfiles template"
   fi
 }
 
@@ -66,19 +94,44 @@ repair_config_dir() {
   fi
 }
 
+clean_nested_config_symlink() {
+  local config_dir="$1"
+  local base
+  base=$(basename "$config_dir")
+  if [[ -L "${config_dir}/${base}" ]]; then
+    echo "🧹 Removing nested mistaken symlink: ${config_dir}/${base}"
+    rm -f "${config_dir}/${base}"
+  fi
+}
+
+link_config_dir() {
+  local src="$1"
+  local dest="$2"
+  clean_nested_config_symlink "$src"
+  mkdir -p "$(dirname "$dest")"
+  ln -sfn "$src" "$dest"
+}
+
+link_config_file() {
+  local src="$1"
+  local dest="$2"
+  mkdir -p "$(dirname "$dest")"
+  ln -sf "$src" "$dest"
+}
+
 link_config_entries() {
-  mkdir -p "${HOME}/.config"
-  ln -sf "${DOTFILES_ROOT}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
-  ln -sf "${DOTFILES_ROOT}/starship/.config/tmuxinator" "${HOME}/.config/tmuxinator"
-  ln -sf "${DOTFILES_ROOT}/nvim/.config/nvim" "${HOME}/.config/nvim"
-  ln -sf "${DOTFILES_ROOT}/lazygit/.config/lazygit" "${HOME}/.config/lazygit"
-  ln -sf "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
+  link_config_file "${DOTFILES_ROOT}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
+  link_config_dir "${DOTFILES_ROOT}/starship/.config/tmuxinator" "${HOME}/.config/tmuxinator"
+  link_config_dir "${DOTFILES_ROOT}/nvim/.config/nvim" "${HOME}/.config/nvim"
+  link_config_dir "${DOTFILES_ROOT}/lazygit/.config/lazygit" "${HOME}/.config/lazygit"
+  link_config_dir "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
 }
 
 # .config 配下は Stow すると ~/.config 全体のバックアップ/リンク化を招くため手動リンクのみ
-STOW_DIRS=("git" "zsh")
+STOW_DIRS=("zsh")
+install_git_config
 repair_config_dir
-stow -D starship lazygit nvim 2>/dev/null || true
+stow -D starship lazygit nvim git 2>/dev/null || true
 
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 2>/dev/null | while read -r source_path; do
