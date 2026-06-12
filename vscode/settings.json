@@ -1,8 +1,4 @@
 {
-  // =================================================================
-  // 1. General UI & Workbench
-  // =================================================================
-  "workbench.colorTheme": "Dracula Theme",
   "workbench.iconTheme": "vscode-icons",
   "workbench.startupEditor": "newUntitledFile",
   "workbench.editorAssociations": {
@@ -17,8 +13,8 @@
   // =================================================================
   // 2. Editor: Appearance & Behavior
   // =================================================================
-  "editor.fontFamily": "'HackGenNerd Console','JetBrains Mono','Andale Mono',Menlo, Monaco, 'Courier New', monospace",
-  "editor.fontSize": 16,
+  "editor.fontFamily": "'HackGen Console NF','JetBrains Mono','Andale Mono',Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontSize": 14,
   "editor.tabSize": 2,
   "editor.minimap.enabled": false,
   "editor.stickyScroll.enabled": false,
@@ -100,6 +96,7 @@
   // 6. Terminal Settings
   // =================================================================
   "terminal.integrated.fontSize": 16,
+  "terminal.integrated.fontFamily": "'HackGenNerd Console'",
   "terminal.integrated.defaultProfile.windows": "Ubuntu (WSL)",
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.defaultProfile.linux": "zsh",
@@ -173,9 +170,6 @@
   "workbench.settings.applyToAllProfiles": [
     "editor.fontFamily"
   ],
-  // =================================================================
-  // 9. Spell Checker & Custom Dictionaries
-  // =================================================================
   "cSpell.userWords": [
     "awscli",
     "elif",
@@ -207,7 +201,19 @@
   },
   "vsicons.dontShowNewVersionMessage": true,
   "aws.cloudformation.telemetry.enabled": true,
-  "claudeCode.preferredLocation": "panel",
   "remote.autoForwardPortsSource": "hybrid",
   "terminal.integrated.stickyScroll.enabled": false,
+  "json.schemaDownload.trustedDomains": {
+    "https://schemastore.azurewebsites.net/": true,
+    "https://raw.githubusercontent.com/": true,
+    "https://www.schemastore.org/": true,
+    "https://json.schemastore.org/": true,
+    "https://json-schema.org/": true,
+    "https://biomejs.dev": true
+  },
+  "workbench.colorTheme": "Dracula Theme Soft",
+  "redhat.telemetry.enabled": true,
+  "claudeCode.initialPermissionMode": "bypassPermissions",
+  "claudeCode.useCtrlEnterToSend": true,
+  "claudeCode.preferredLocation": "panel",
 }
