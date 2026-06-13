@@ -40,16 +40,16 @@ Layer 3 — Runtime Layer（ホストのみ）
 
 ## プラットフォームマトリクス
 
-| 機能 | macOS | Linux/EC2 | WSL2 | DevContainer |
-|------|:-----:|:---------:|:----:|:------------:|
-| Homebrew | ✅ `/opt/homebrew` | ✅ `/home/linuxbrew` | ✅ Linuxbrew | ✅ Linuxbrew |
-| apt ripgrep/fd | — | ✅ | ✅ | ✅ |
-| mise (runtime) | ✅ | ✅ | ✅ | ❌ (無効化) |
-| tmux / TPM | ✅ | ✅ | ✅ | ❌ |
-| OrbStack / Docker Desktop | ✅ | — | — | — |
-| VS Code リンク | ✅ | — | ✅ (Windows側) | — |
-| Ghostty | ✅ | — | — | — |
-| win32yank | — | — | ✅ | — |
+| 機能                      |       macOS        |      Linux/EC2       |      WSL2      | DevContainer |
+| ------------------------- | :----------------: | :------------------: | :------------: | :----------: |
+| Homebrew                  | ✅ `/opt/homebrew` | ✅ `/home/linuxbrew` |  ✅ Linuxbrew  | ✅ Linuxbrew |
+| apt ripgrep/fd            |         —          |          ✅          |       ✅       |      ✅      |
+| mise (runtime)            |         ✅         |          ✅          |       ✅       | ❌ (無効化)  |
+| tmux / TPM                |         ✅         |          ✅          |       ✅       |      ❌      |
+| OrbStack / Docker Desktop |         ✅         |          —           |       —        |      —       |
+| VS Code リンク            |         ✅         |          —           | ✅ (Windows側) |      —       |
+| Ghostty                   |         ✅         |          —           |       —        |      —       |
+| win32yank                 |         —          |          —           |       ✅       |      —       |
 
 ---
 
@@ -107,6 +107,7 @@ docker/                 # 検証環境（層1: install-container.sh 単体 / 層
 ```
 
 **やってはいけないこと:**
+
 - `stow nvim` や `stow starship` を直接実行しない
 - `~/.config` 自体をシンボリックリンクにしない
 - `claude/` を汎用 STOW_DIRS に追加する / `~/.claude` 自体を symlink にする
