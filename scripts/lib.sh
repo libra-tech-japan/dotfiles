@@ -166,13 +166,22 @@ link_vscode_config() {
 }
 
 # ni (@antfu/ni) のインストール: パッケージマネージャ差分を吸収するツール
+# node の出所は環境で異なる（ホスト=mise activate 済み / コンテナ=mise・base image・node feature）。
+# install-container.sh は mise activate しないため、mise 管理の node では非対話 bash で npm が
+# PATH に出ず、過去は黙ってスキップされていた。npm が直接無くても mise で解決できれば入れる。
 install_ni() {
-  if ! command -v ni &>/dev/null; then
-    if command -v npm &>/dev/null; then
-      echo "Installing ni (via npm)..."
-      npm install -g @antfu/ni || echo "⚠️ Failed to install ni"
-    fi
-  else
+  if command -v ni &>/dev/null; then
     echo "ni is already installed, skipping"
+    return 0
+  fi
+  if command -v npm &>/dev/null; then
+    echo "Installing ni (via npm)..."
+    npm install -g @antfu/ni || echo "⚠️ Failed to install ni"
+  elif command -v mise &>/dev/null && mise which npm &>/dev/null; then
+    # コンテナで node が mise 管理かつ shell 未 activate のケース（install-container.sh）
+    echo "Installing ni (via mise exec npm)..."
+    mise exec -- npm install -g @antfu/ni || echo "⚠️ Failed to install ni (via mise)"
+  else
+    echo "npm not found; skipping ni install (node 未確立)"
   fi
 }
