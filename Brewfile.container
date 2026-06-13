@@ -1,27 +1,4 @@
-# コンテナ用。install-container.sh の brew bundle で使用。neovim 含む。tmux/htop は含めない。
-# Core
-brew "git"
-brew "stow"
-brew "wget"
-brew "curl"
-brew "unzip"
-brew "git-secrets"
-
-# Shell Tools
-brew "starship"
-brew "zoxide"
-brew "bat"
-brew "eza"
-brew "ripgrep"
-brew "fd"
-brew "jq"
-brew "fzf"
-
-# Editor & File
-brew "neovim"
-brew "ranger"
-
-# Git & Review
-brew "lazygit"
-brew "git-delta"
-brew "difftastic"
+# コンテナ専用追加パッケージ。
+# install-container.sh の run_brew_bundle("Brewfile.container") で Brewfile.common と結合して実行される。
+# 共通パッケージは Brewfile.common を参照。
+# 現時点ではコンテナ固有追加パッケージなし。コンテナでのみ必要なツールをここに追加する。

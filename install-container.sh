@@ -1,12 +1,16 @@
 #!/bin/bash
-# コンテナ用: Linuxbrew 導入 + brew bundle (Brewfile.container) + Stow。mise グローバル / VS Code / Ghostty は行わない。
-# neovim は含める。tmux/htop は含めない。DevContainer の installCommand で使用する想定。
+# コンテナ用: Linuxbrew 導入 + brew bundle (Brewfile.common + Brewfile.container) + Stow。
+# mise グローバル / VS Code / Ghostty は行わない。neovim は含める。tmux/htop は含めない。
+# DevContainer の installCommand で使用する想定。
 set -e
 
 echo "📦 Container: Linuxbrew + brew bundle + dotfiles link..."
 
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_ROOT"
+
+# shellcheck source=scripts/lib.sh
+source "${DOTFILES_ROOT}/scripts/lib.sh"
 
 # .gitignore_global が無ければ用意
 if [ ! -f "$HOME/.gitignore_global" ]; then
@@ -24,6 +28,9 @@ if ! command -v curl &> /dev/null || ! command -v git &> /dev/null; then
   fi
 fi
 
+# VSCode 拡張が system PATH で期待するツール（ripgrep, fd）を apt でインストール
+install_apt_vscode_tools
+
 # Linuxbrew のインストールと PATH
 if ! command -v brew &> /dev/null; then
   echo "🍺 Installing Homebrew (Linux)..."
@@ -39,9 +46,9 @@ else
   eval "$(brew shellenv)"
 fi
 
-# brew bundle（Brewfile.container）
-echo "📦 Bundling packages (Brewfile.container)..."
-brew bundle --file="$DOTFILES_ROOT/Brewfile.container" || {
+# brew bundle（Brewfile.common + Brewfile.container）
+echo "📦 Bundling packages (Brewfile.common + Brewfile.container)..."
+run_brew_bundle "Brewfile.container" || {
   echo ""
   echo "⚠️  brew bundle failed. Check the errors above."
   exit 1
@@ -85,48 +92,6 @@ install_git_config() {
   fi
 }
 
-# ~/.config が starship パッケージ全体へのリンクになっている場合は修復
-repair_config_dir() {
-  if [[ -L "${HOME}/.config" ]] && [[ "$(readlink "${HOME}/.config")" == *"starship/.config"* ]]; then
-    echo "🔧 Repairing ~/.config (was symlinked to starship/.config)..."
-    rm "${HOME}/.config"
-    mkdir -p "${HOME}/.config"
-  fi
-}
-
-clean_nested_config_symlink() {
-  local config_dir="$1"
-  local base
-  base=$(basename "$config_dir")
-  if [[ -L "${config_dir}/${base}" ]]; then
-    echo "🧹 Removing nested mistaken symlink: ${config_dir}/${base}"
-    rm -f "${config_dir}/${base}"
-  fi
-}
-
-link_config_dir() {
-  local src="$1"
-  local dest="$2"
-  clean_nested_config_symlink "$src"
-  mkdir -p "$(dirname "$dest")"
-  ln -sfn "$src" "$dest"
-}
-
-link_config_file() {
-  local src="$1"
-  local dest="$2"
-  mkdir -p "$(dirname "$dest")"
-  ln -sf "$src" "$dest"
-}
-
-link_config_entries() {
-  link_config_file "${DOTFILES_ROOT}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
-  link_config_dir "${DOTFILES_ROOT}/starship/.config/tmuxinator" "${HOME}/.config/tmuxinator"
-  link_config_dir "${DOTFILES_ROOT}/nvim/.config/nvim" "${HOME}/.config/nvim"
-  link_config_dir "${DOTFILES_ROOT}/lazygit/.config/lazygit" "${HOME}/.config/lazygit"
-  link_config_dir "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
-}
-
 # .config 配下は Stow すると ~/.config 全体のバックアップ/リンク化を招くため手動リンクのみ
 STOW_DIRS=("zsh")
 install_git_config
@@ -142,16 +107,8 @@ for package in "${STOW_DIRS[@]}"; do
   stow -v --restow "$package"
 done
 
-link_config_entries
+link_config_entries "false"  # tmux はコンテナ内では不要
 
-
-if ! command -v ni &> /dev/null; then
-  if command -v npm &> /dev/null; then
-    echo "Installing ni (via npm)..."
-    npm install -g @antfu/ni || echo "⚠️ Failed to install ni"
-  fi
-else
-  echo "ni is already installed, skipping"
-fi
+install_ni
 
 echo "✅ Container dotfiles ready. Run 'exec zsh' to reload."

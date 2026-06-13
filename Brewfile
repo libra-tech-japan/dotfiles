@@ -1,35 +1,15 @@
-# ホスト用（install.sh の brew bundle で使用）。コンテナでは Brewfile.container を install-container.sh が参照する。
-# Core
-brew "git"
-brew "stow"
+# ホスト専用パッケージ。
+# install.sh の run_brew_bundle("Brewfile") で Brewfile.common と結合して実行される。
+# 共通パッケージは Brewfile.common を参照。
+
+# Runtime & Dev Tools
 brew "mise"
-brew "wget"
-brew "curl"
-brew "git-secrets"
-brew "unzip"
-
-# Shell Tools (Rust-based)
 brew "devcontainer"
-brew "starship"
-brew "zoxide"
-brew "bat"
-brew "eza"
-brew "ripgrep"
-brew "fd"
-brew "jq"
-brew "fzf"
 
-# Editor & Terminal
-brew "neovim"
+# Terminal
 brew "tmux"
 brew "tmuxinator"
-brew "ranger"
 brew "htop"
-
-# Git & Review
-brew "lazygit"
-brew "git-delta"
-brew "difftastic"
 
 # AWS
 brew "awscli"

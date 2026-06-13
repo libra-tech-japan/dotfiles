@@ -7,6 +7,9 @@ echo "🚀 Starting Libratech Lab. Dotfiles Setup (2026)..."
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_ROOT"
 
+# shellcheck source=scripts/lib.sh
+source "${DOTFILES_ROOT}/scripts/lib.sh"
+
 # 単一実行のためロックを取得（二重実行による brew のロック競合を防止）
 INSTALL_LOCK="$DOTFILES_ROOT/.install.lock"
 exec 200>"$INSTALL_LOCK"
@@ -49,11 +52,13 @@ if [ "$IS_UBUNTU_OR_DEBIAN" = true ]; then
       eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     fi
   fi
+  # VSCode 拡張が system PATH で期待するツール（ripgrep, fd）を apt でインストール
+  install_apt_vscode_tools
 fi
 
 # ---------------------------------------------------------------------------
 # Darwin（オプション）: Homebrew、brew bundle 用に PATH 確保
-# --------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 if [ "$IS_DARWIN" = true ]; then
   if ! command -v brew &> /dev/null; then
     echo "🍺 Installing Homebrew (macOS)..."
@@ -67,9 +72,9 @@ if [ "$IS_DARWIN" = true ]; then
   echo "🍎 macOS detected. Ensure OrbStack is running for Docker."
 fi
 
-# brew bundle（全プラットフォーム共通）
+# brew bundle（全プラットフォーム共通: Brewfile.common + Brewfile）
 echo "📦 Bundling packages..."
-brew bundle --file="$DOTFILES_ROOT/Brewfile" || {
+run_brew_bundle "Brewfile" || {
   echo ""
   echo "⚠️  brew bundle failed. If you saw 'already locked' errors:"
   echo "   Another install or brew process may be running. Wait for it to finish, then run ./install.sh again."
@@ -130,51 +135,6 @@ backup_if_exists() {
   fi
 }
 
-# ~/.config が starship パッケージ全体へのリンクになっている場合は修復
-repair_config_dir() {
-  if [[ -L "${HOME}/.config" ]] && [[ "$(readlink "${HOME}/.config")" == *"starship/.config"* ]]; then
-    echo "🔧 Repairing ~/.config (was symlinked to starship/.config)..."
-    rm "${HOME}/.config"
-    mkdir -p "${HOME}/.config"
-  fi
-}
-
-# ln -sf だけだと、リンク先が「ディレクトリへの symlink」のとき
-# ~/.config/xxx/xxx のような入れ子リンクがリポジトリ内に作られる（-n で回避）
-clean_nested_config_symlink() {
-  local config_dir="$1"
-  local base
-  base=$(basename "$config_dir")
-  if [[ -L "${config_dir}/${base}" ]]; then
-    echo "🧹 Removing nested mistaken symlink: ${config_dir}/${base}"
-    rm -f "${config_dir}/${base}"
-  fi
-}
-
-link_config_dir() {
-  local src="$1"
-  local dest="$2"
-  clean_nested_config_symlink "$src"
-  mkdir -p "$(dirname "$dest")"
-  ln -sfn "$src" "$dest"
-}
-
-link_config_file() {
-  local src="$1"
-  local dest="$2"
-  mkdir -p "$(dirname "$dest")"
-  ln -sf "$src" "$dest"
-}
-
-link_config_entries() {
-  link_config_file "${DOTFILES_ROOT}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
-  link_config_dir "${DOTFILES_ROOT}/starship/.config/tmuxinator" "${HOME}/.config/tmuxinator"
-  link_config_dir "${DOTFILES_ROOT}/nvim/.config/nvim" "${HOME}/.config/nvim"
-  link_config_dir "${DOTFILES_ROOT}/lazygit/.config/lazygit" "${HOME}/.config/lazygit"
-  link_config_dir "${DOTFILES_ROOT}/lazygit/.config/mise" "${HOME}/.config/mise"
-  link_config_dir "${DOTFILES_ROOT}/tmux/.config/tmux" "${HOME}/.config/tmux"
-}
-
 repair_config_dir
 stow -D starship lazygit nvim 2>/dev/null || true
 
@@ -187,22 +147,14 @@ for package in "${STOW_DIRS[@]}"; do
   stow -v --restow "$package"
 done
 
-link_config_entries
+link_config_entries  # include_tmux=true（デフォルト）
 
 # TPM Setup
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
 
-# ni (npm i replacement)
-if ! command -v ni &> /dev/null; then
-  if command -v npm &> /dev/null; then
-    echo "Installing ni (via npm)..."
-    npm install -g @antfu/ni || echo "⚠️ Failed to install ni"
-  fi
-else
-  echo "ni is already installed, skipping"
-fi
+install_ni
 
 # ---------------------------------------------------------------------------
 # VS Code Setup: Darwin または WSL 時のみ

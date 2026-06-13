@@ -1,0 +1,32 @@
+# ホスト・コンテナ共通パッケージ。
+# install.sh / install-container.sh の run_brew_bundle() が環境固有 Brewfile と結合して実行する。
+# ここに書いたパッケージを Brewfile / Brewfile.container に重複して書かないこと。
+
+# Core
+brew "git"
+brew "stow"
+brew "wget"
+brew "curl"
+brew "git-secrets"
+brew "unzip"
+
+# Shell Tools
+# 注: ripgrep / fd は apt でも入れる（VSCode 拡張が /usr/bin を期待するため）。
+#     brew 版は zsh セッションで PATH 優先になり最新版を使う。
+brew "starship"
+brew "zoxide"
+brew "bat"
+brew "eza"
+brew "ripgrep"
+brew "fd"
+brew "jq"
+brew "fzf"
+
+# Editor & File
+brew "neovim"
+brew "ranger"
+
+# Git & Review
+brew "lazygit"
+brew "git-delta"
+brew "difftastic"
