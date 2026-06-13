@@ -143,6 +143,19 @@ chpwd_functions+=(_add_npm_global_bin_to_path)
 
 # starship プロンプト
 if command -v starship &> /dev/null; then
+  # コンテナ内は緑系パレットに切り替える（表示要素は共通、色のみ）。
+  # ~/.config/starship.toml の palette 行だけ 'green' に差し替えた派生設定をキャッシュに生成し、
+  # それを STARSHIP_CONFIG で指す。ホストは既定（tokyo）の設定をそのまま使う。
+  if { [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f "/.dockerenv" ]]; } && [[ -f "$HOME/.config/starship.toml" ]]; then
+    _ss_src="$HOME/.config/starship.toml"
+    _ss_gen="${XDG_CACHE_HOME:-$HOME/.cache}/starship/container.toml"
+    if [[ ! -f "$_ss_gen" || "$_ss_src" -nt "$_ss_gen" ]]; then
+      mkdir -p "${_ss_gen:h}"
+      sed "s/^palette = .*/palette = 'green'/" "$_ss_src" > "$_ss_gen"
+    fi
+    export STARSHIP_CONFIG="$_ss_gen"
+    unset _ss_src _ss_gen
+  fi
   eval "$(starship init zsh)"
 fi
 

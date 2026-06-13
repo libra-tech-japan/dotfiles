@@ -149,6 +149,31 @@ fi
 
 ---
 
+## starship のホスト/コンテナ色分け
+
+ホストとコンテナで**表示要素は共通・色だけ変える**。実体は starship のパレット機能。
+
+```
+starship/.config/starship.toml
+  palette = 'tokyo'        ← ホスト既定（既存の配色）
+  [palettes.tokyo]         ← 色名 → hex（ホスト）
+  [palettes.green]         ← 色名 → hex（コンテナ・緑系）
+  format / 各モジュールは色を「名前」で参照（hex 直書きしない）
+```
+
+コンテナ内では `.zshrc` の starship 初期化が、`~/.config/starship.toml` の
+`palette` 行だけを `green` に差し替えた派生ファイルを
+`${XDG_CACHE_HOME}/starship/container.toml` に生成し、`STARSHIP_CONFIG` で指す。
+ソースは単一（重複なし）。元ファイルが新しければ `-nt` 判定で自動再生成される。
+
+**不変条件:**
+- format / モジュールの色は**必ずパレット色名**で書く（hex 直書きすると green に追従しない）
+- 2つのパレットは**同じ色名キー集合**を持つ（一方に増やしたら他方にも追加）
+- `palette = '...'` は行頭に置く（zsh の sed 差し替えが `^palette = ` を前提にしている）
+- powerline グリフ（U+E0B4 等の不可視文字）を含む行は**打ち直さず**機械置換で編集する
+
+---
+
 ## 拡張ポイント
 
 - マシン固有の設定: `~/.zshrc-local`（git 管理外）

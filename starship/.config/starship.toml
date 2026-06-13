@@ -1,17 +1,23 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# パレット: ホスト = tokyo（既存の配色）/ コンテナ = green。
+# 表示要素（format / 各モジュール）は共通で、色だけパレットで切り替える。
+# コンテナ内では zsh が STARSHIP_CONFIG を palette='green' に差し替えた派生設定へ向ける
+# （zsh/.zshrc の starship 初期化を参照）。ホストはこの既定（tokyo）をそのまま使うため見た目は不変。
+palette = 'tokyo'
+
 # format: AWSを削除済み、OSとUsernameは継続。$hostname は SSH/リモート時のみ表示
 format = """
-[░▒▓](#a3aed2)\
+[░▒▓](c_head)\
 $os\
 $username\
 $hostname\
-[](bg:#769ff0 fg:#a3aed2)\
+[](bg:c_dir fg:c_head)\
 $directory\
-[](fg:#769ff0 bg:#394260)\
+[](fg:c_dir bg:c_git)\
 $git_branch\
 $git_status\
-[](fg:#394260 bg:#212736)\
+[](fg:c_git bg:c_mid)\
 $docker_context\
 $container\
 $nodejs\
@@ -19,17 +25,45 @@ $python\
 $rust\
 $golang\
 $php\
-[](fg:#212736 bg:#1d2230)\
+[](fg:c_mid bg:c_tail)\
 $memory_usage\
 $time\
-[ ](fg:#1d2230)\
+[ ](fg:c_tail)\
 \n$character"""
+
+# 既存の配色（ホスト用）。色名→hex はすべて元の値と同一なので描画は従来どおり。
+[palettes.tokyo]
+c_head      = '#a3aed2'
+c_dir       = '#769ff0'
+c_git       = '#394260'
+c_mid       = '#212736'
+c_tail      = '#1d2230'
+c_dir_text  = '#e3e5e5'
+c_dark      = '#090c0c'
+c_accent    = '#8be9fd'
+c_warn      = '#ff5555'
+c_time_text = '#a0a9cb'
+c_root      = '#ff0000'
+
+# コンテナ用（緑系統）。構造色を緑へ寄せ、警告/ルートの赤は視認性のため維持。
+[palettes.green]
+c_head      = '#a3d9b1'
+c_dir       = '#6cc08b'
+c_git       = '#33503c'
+c_mid       = '#1d2a20'
+c_tail      = '#15211a'
+c_dir_text  = '#e6f2e9'
+c_dark      = '#0a0f0b'
+c_accent    = '#7ee787'
+c_warn      = '#ff5555'
+c_time_text = '#9cc5a8'
+c_root      = '#ff0000'
 
 # --- 1. ユーザー名設定 ---
 [username]
 show_always = true
-style_user = "bg:#a3aed2 fg:#090c0c bold"
-style_root = "bg:#a3aed2 fg:#ff0000 bold"
+style_user = "bg:c_head fg:c_dark bold"
+style_root = "bg:c_head fg:c_root bold"
 format = '[$user ]($style)' # ユーザー名の後ろにスペース維持
 disabled = false
 
@@ -41,13 +75,13 @@ ssh_only = true
 detect_env_vars = ["STARSHIP_HOSTNAME_SHOW"]
 ssh_symbol = " "
 format = '[@$hostname ]($style)'
-style = "bg:#a3aed2 fg:#090c0c bold"
+style = "bg:c_head fg:c_dark bold"
 trim_at = "."
 
 # --- 3. OS設定 (余白修正) ---
 [os]
 disabled = false
-style = "bg:#a3aed2 fg:#090c0c"
+style = "bg:c_head fg:c_dark"
 # 修正: $symbol の後ろにスペースを追加しました
 format = '[ $symbol ]($style)'
 
@@ -60,20 +94,20 @@ Windows = ""
 
 # --- 4. Docker設定 ---
 [docker_context]
-style = "bg:#212736"
-format = '[[ $symbol$context ](fg:#8be9fd bg:#212736)]($style)'
+style = "bg:c_mid"
+format = '[[ $symbol$context ](fg:c_accent bg:c_mid)]($style)'
 symbol = " "
 
 # --- 5. メモリ使用率 ---
 [memory_usage]
 disabled = false
 threshold = 75
-style = "bg:#1d2230"
-format = '[[ $symbol${ram_pct} ](fg:#ff5555 bg:#1d2230)]($style)'
+style = "bg:c_tail"
+format = '[[ $symbol${ram_pct} ](fg:c_warn bg:c_tail)]($style)'
 symbol = "󰍛 "
 
 [directory]
-style = "fg:#e3e5e5 bg:#769ff0"
+style = "fg:c_dir_text bg:c_dir"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -86,48 +120,48 @@ truncation_symbol = "…/"
 
 [git_branch]
 symbol = ""
-style = "bg:#394260"
-format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
+style = "bg:c_git"
+format = '[[ $symbol $branch ](fg:c_dir bg:c_git)]($style)'
 
 [git_status]
-style = "bg:#394260"
-format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
+style = "bg:c_git"
+format = '[[($all_status$ahead_behind )](fg:c_dir bg:c_git)]($style)'
 
 [nodejs]
 symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "bg:c_mid"
+format = '[[ $symbol ($version) ](fg:c_dir bg:c_mid)]($style)'
 
 [rust]
 symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "bg:c_mid"
+format = '[[ $symbol ($version) ](fg:c_dir bg:c_mid)]($style)'
 
 [golang]
 symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "bg:c_mid"
+format = '[[ $symbol ($version) ](fg:c_dir bg:c_mid)]($style)'
 
 [python]
 symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "bg:c_mid"
+format = '[[ $symbol ($version) ](fg:c_dir bg:c_mid)]($style)'
 
 [php]
 symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "bg:c_mid"
+format = '[[ $symbol ($version) ](fg:c_dir bg:c_mid)]($style)'
 
 [time]
 disabled = false
 time_format = "%R"
-style = "bg:#1d2230"
-format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
+style = "bg:c_tail"
+format = '[[  $time ](fg:c_time_text bg:c_tail)]($style)'
 
 # --- 6. コンテナ内表示 (DevContainer/Docker内でのみ出現) ---
 [container]
 disabled = false
-# 視認性向上のため、色はDockerと同じ水色系(fg:#8be9fd)を採用
-format = '[[ $symbol$name ](fg:#8be9fd bg:#212736)]($style)'
+# 視認性向上のため、色はDockerと同じ水色系(fg:c_accent)を採用
+format = '[[ $symbol$name ](fg:c_accent bg:c_mid)]($style)'
 symbol = "📦 "
-style = "bg:#212736"
+style = "bg:c_mid"
