@@ -86,6 +86,11 @@ install_git_config() {
     echo "ℹ️  ~/.gitconfig is bind-mounted; not modifying"
     return 0
   fi
+  # 旧バージョンが git を stow 管理していた名残の symlink（… git/.gitconfig 指し）は
+  # 除去して実ファイル管理へ寄せる。dangling link もここで掃除される。
+  if [[ -L "${HOME}/.gitconfig" ]] && [[ "$(readlink "${HOME}/.gitconfig")" == *git/.gitconfig ]]; then
+    rm -f "${HOME}/.gitconfig"
+  fi
   if [[ ! -f "${HOME}/.gitconfig" ]] || [[ ! -s "${HOME}/.gitconfig" ]]; then
     cp "$template" "${HOME}/.gitconfig"
     echo "ℹ️  Installed ~/.gitconfig from dotfiles template"
@@ -99,7 +104,7 @@ repair_config_dir
 # stow の対象は常に $HOME を明示する。
 # 既定の target はリポジトリの親（cwd の親）になるため、リポジトリが $HOME/dotfiles 以外
 # （例: /workspaces/dotfiles）にあると $HOME 外へ書こうとして失敗する。backup_if_exists も $HOME 前提。
-stow -t "$HOME" -D starship lazygit nvim git 2>/dev/null || true
+stow -t "$HOME" -D starship lazygit nvim 2>/dev/null || true
 
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 2>/dev/null | while read -r source_path; do
