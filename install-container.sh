@@ -112,7 +112,7 @@ for package in "${STOW_DIRS[@]}"; do
     target_path="$HOME/$relative_path"
     backup_if_exists "$target_path"
   done
-  stow -t "$HOME" -v --restow "$package"
+  stow -t "$HOME" "${STOW_IGNORE_OPTS[@]}" -v --restow "$package"
 done
 
 link_config_entries container  # コンテナは scope=all のみ（tmux/tmuxinator/ghostty は除外）

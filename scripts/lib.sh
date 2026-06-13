@@ -26,6 +26,12 @@ CONFIG_ENTRIES=(
 # 旧構造（stow starship/lazygit/nvim）の名残リンクを剥がす stow -D 対象
 STOW_LEGACY_UNSTOW=(starship lazygit nvim)
 
+# stow が $HOME へ展開してはいけない非設定ファイルの除外パターン。
+# 各パッケージ直下に置く CLAUDE.md（ドキュメント）が ~/CLAUDE.md として漏れるのを防ぐ。
+# --ignore は加算式で、stow 組み込みの除外（README/.gitignore/.git 等）はそのまま維持される。
+# install.sh / install-container.sh の「リンクする」stow 呼び出し（--restow）が共有する。
+STOW_IGNORE_OPTS=(--ignore='CLAUDE\.md' --ignore='\.DS_Store')
+
 # ---------------------------------------------------------------------------
 # 外部取得 URL（ハードコード散在を防ぐため一元管理）
 # ---------------------------------------------------------------------------

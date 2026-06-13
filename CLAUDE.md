@@ -91,6 +91,23 @@ docker/                 # 検証環境（層1: install-container.sh 単体 / 層
       それを防ぐため .config 配下は link_config_dir() / link_config_file() で個別リンク。
 ```
 
+### パッケージ直下の CLAUDE.md を $HOME へ漏らさない
+
+stow はパッケージ直下のファイルを**すべて** `$HOME` へリンクする。`zsh/CLAUDE.md` のような
+ドキュメントもそのままでは `~/CLAUDE.md` として展開されてしまう（stow の組み込み除外は
+README/LICENSE/.gitignore 等のみで CLAUDE.md を含まない）。
+
+これを防ぐため、リンクする stow 呼び出し（`--restow`）はすべて `lib.sh` の
+`STOW_IGNORE_OPTS`（`--ignore='CLAUDE\.md'` `--ignore='\.DS_Store'`）を渡す。
+`--ignore` は加算式なので stow 組み込みの除外も維持される。
+
+```
+- 除外パターンの単一真実源は lib.sh の STOW_IGNORE_OPTS。install.sh / install-container.sh の
+  全 --restow 呼び出しが共有する。新しい「漏らしたくないファイル名」はここに1パターン足す。
+- stow が読む .stow-local-ignore は $STOW_DIR/<package>/ 直下 か ~/.stow-global-ignore のみ。
+  リポジトリ root に .stow-local-ignore を置いても読まれない（過去にそれで CLAUDE.md が漏れた）。
+```
+
 ### claude/（~/.claude）の特例
 
 `~/.claude` は **共有設定（settings.json 等）と認証情報・履歴などの実行時データが同居**する混在ディレクトリ。
