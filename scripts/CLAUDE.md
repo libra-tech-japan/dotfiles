@@ -141,7 +141,12 @@ link_vscode_config "$(wslpath -u "$WIN_APPDATA")/Code/User"        # WSL
 
 ### `install_ni()`
 
-`@antfu/ni` をグローバルインストール。`npm` が PATH になければ何もしない。
+`@antfu/ni` をインストール。`ni` が既にあれば skip。
+- **mise がある環境**: `mise install npm:@antfu/ni@latest`（npm backend）で入れる。
+  global mise 設定の `"npm:@antfu/ni"` 宣言とあわせ、node 版非依存の shim になる。
+- **mise の無い環境**（base image / node feature の node）: `npm -g @antfu/ni` でフォールバック。
+- どちらも無ければ何もしない。
+
 **node が確立した後（mise activate または volta PATH 設定後）に呼ぶこと。**
 
 ---

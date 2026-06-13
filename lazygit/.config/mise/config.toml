@@ -1,3 +1,6 @@
 [tools]
 node = "lts"
 python = "3.12"
+# ni (@antfu/ni): npm backend で宣言。node 版に依存しない shim になり、コンテナ戦略の
+# MISE_DISABLE_TOOLS="node,python" 下でも ni/nr/nlx/na が使える（npm -g の版分離を回避）。
+"npm:@antfu/ni" = "latest"

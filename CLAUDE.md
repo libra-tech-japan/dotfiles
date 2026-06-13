@@ -28,8 +28,10 @@ Layer 2 — Package Layer（環境別ルール）
   Tier B: Homebrew (CLI 最新版)
           → neovim, lazygit, bat, eza, starship ...
           → brew 版が zsh セッションで PATH 優先になる
-  Tier C: npm global (node 確立後)
-          → @antfu/ni
+  Tier C: ni (@antfu/ni)
+          → mise 環境: global mise 設定の "npm:@antfu/ni"（npm backend）で宣言。
+            node 版非依存の shim になり MISE_DISABLE_TOOLS 下/別 node のディレクトリでも使える。
+          → mise の無い環境: npm -g @antfu/ni でフォールバック（node 確立後）
 
 Layer 3 — Runtime Layer（ホストのみ）
   mise: node LTS, python 3.12
