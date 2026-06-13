@@ -10,13 +10,34 @@ cd "$DOTFILES_ROOT"
 # shellcheck source=scripts/lib.sh
 source "${DOTFILES_ROOT}/scripts/lib.sh"
 
-# 単一実行のためロックを取得（二重実行による brew のロック競合を防止）
+# 単一実行のためロックを取得（二重実行による brew のロック競合を防止）。
+# flock は macOS に標準搭載されないため、mkdir のアトミック性で移植性を確保する。
 INSTALL_LOCK="$DOTFILES_ROOT/.install.lock"
-exec 200>"$INSTALL_LOCK"
-if ! flock -n 200; then
+acquire_install_lock() {
+  # mkdir はアトミック: 同時実行でも片方の mkdir だけが成功する
+  if mkdir "$INSTALL_LOCK" 2>/dev/null; then
+    echo $$ > "$INSTALL_LOCK/pid"
+    return 0
+  fi
+  # 取得失敗。既存ロックのプロセスが生きていなければ stale とみなし奪取する
+  # （旧 flock 実装が残したファイル形式のロックもこの経路で除去される）。
+  local pid
+  pid=$(cat "$INSTALL_LOCK/pid" 2>/dev/null || true)
+  if [[ -z "$pid" ]] || ! kill -0 "$pid" 2>/dev/null; then
+    rm -rf "$INSTALL_LOCK"
+    if mkdir "$INSTALL_LOCK" 2>/dev/null; then
+      echo $$ > "$INSTALL_LOCK/pid"
+      return 0
+    fi
+  fi
+  return 1
+}
+if ! acquire_install_lock; then
   echo "⚠️  Another install is already running. Wait for it to finish or remove $INSTALL_LOCK and retry."
   exit 1
 fi
+# 正常・異常終了いずれでもロックを解放する（flock の自動解放に相当）
+trap 'rm -rf "$INSTALL_LOCK"' EXIT
 
 # 0. コードベース内の .DS_Store を削除（Stow 競合防止）
 if find "$DOTFILES_ROOT" -name '.DS_Store' -type f 2>/dev/null | grep -q .; then
