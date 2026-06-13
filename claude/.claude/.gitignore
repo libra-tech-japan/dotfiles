@@ -1,0 +1,31 @@
+# === ~/.claude (Stow パッケージ) — 認証情報・個人情報・実行時データの混入防止 ===
+#
+# このディレクトリは「全無視 → 共有してよい物だけ明示許可」のホワイトリスト方式。
+# 万一 .credentials.json / projects/ などを誤ってここへコピーしても git は追跡しない。
+#
+# ~/.claude 側に実体として残し、ここへは絶対に置かない物（参考）:
+#   .credentials.json        OAuth アクセス/リフレッシュトークン
+#   .claude.json / backups/  userID・oauthAccount(メール等)
+#   projects/                会話トランスクリプト（コード片・貼り付け秘密を含みうる）
+#   history.jsonl            入力プロンプト履歴
+#   sessions/ session-env/   セッション実行時状態
+#   shell-snapshots/         シェルスナップショット（env を取り込みうる）
+#   cache/ ide/ downloads/   再取得可能・一時データ
+#   settings.local.json      マシンローカル層（.local は共有しない方針）
+#   plugins/marketplaces/    外部取得物（再現可能・サイズ大）
+
+# 既定で全無視
+*
+
+# 共有する物だけ許可
+!.gitignore
+!settings.json
+!CLAUDE.md
+!commands/
+!commands/**
+!agents/
+!agents/**
+!skills/
+!skills/**
+!output-styles/
+!output-styles/**

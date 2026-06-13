@@ -157,6 +157,15 @@ for package in "${STOW_DIRS[@]}"; do
   stow -t "$HOME" -v --restow "$package"
 done
 
+# claude（~/.claude）は混在ディレクトリ — 共有設定 + 認証情報/履歴などの実行時データが同居する。
+# 汎用 STOW_DIRS ループに入れてはいけない（最上位 .claude を backup_if_exists が見て
+# ~/.claude を認証情報ごと退避してしまう）。--no-folding で ~/.claude を実ディレクトリのまま
+# 維持し、共有設定ファイルだけを個別リンクする。実行時データ・秘密は repo に入らない。
+if [ -d "claude" ]; then
+  backup_if_exists "$HOME/.claude/settings.json"
+  stow -t "$HOME" --no-folding -v --restow claude
+fi
+
 # macOS は darwin scope（ghostty）も含めてリンク。それ以外のホストは host scope まで。
 link_config_entries "$([ "$IS_DARWIN" = true ] && echo host-darwin || echo host)"
 

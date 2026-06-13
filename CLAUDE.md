@@ -66,6 +66,7 @@ zsh/                    # zsh 設定（Stow で ~/配下にリンク）
 nvim/                   # Neovim 設定（手動リンク ~/.config/nvim へ）
 git/                    # gitconfig（Stow で ~/配下にリンク・name/email は持たない）
 .gitconfig.local.example # Git identity テンプレ（install.sh が ~/.gitconfig.local 無ければコピー）
+claude/                 # ~/.claude の共有設定（Stow --no-folding・認証情報/履歴は除外）
 vscode/                 # VS Code settings / keybindings（手動リンク）
 starship/               # starship.toml（手動リンク ~/.config/ へ）
 tmuxinator/             # tmuxinator agent.yml（手動リンク ~/.config/tmuxinator へ・ホストのみ）
@@ -81,7 +82,8 @@ docker/                 # 検証環境（層1: install-container.sh 単体 / 層
 
 ## Stow 戦略（不変の契約）
 
-`git/` と `zsh/` のみ Stow でリンク。それ以外の `.config` 配下は手動 symlink。
+通常リンクは `git/` と `zsh/` のみ（汎用 STOW_DIRS ループ）。それ以外の `.config` 配下は手動 symlink。
+`claude/` は **`--no-folding` 付きの専用ステップ**で別扱い（後述）。
 
 ```
 理由: stow <パッケージ> を実行すると ~/.config 全体が
@@ -89,9 +91,25 @@ docker/                 # 検証環境（層1: install-container.sh 単体 / 層
       それを防ぐため .config 配下は link_config_dir() / link_config_file() で個別リンク。
 ```
 
+### claude/（~/.claude）の特例
+
+`~/.claude` は **共有設定（settings.json 等）と認証情報・履歴などの実行時データが同居**する混在ディレクトリ。
+`.config` と同じ folding 危険があるため、汎用ループには入れず専用ステップで扱う。
+
+```
+- stow -t "$HOME" --no-folding --restow claude で個別ファイルだけリンク
+  （~/.claude 自体は実ディレクトリのまま。新規マシンでも symlink に畳まれない）
+- 汎用 STOW_DIRS には絶対に入れない
+  （最上位 .claude を backup_if_exists が見て ~/.claude を認証情報ごと退避するため）
+- 共有するのは settings.json / CLAUDE.md / commands/ / agents/ / skills/ のみ。
+  .credentials.json・projects/・history.jsonl・sessions/・settings.local.json 等は
+  claude/.claude/.gitignore のホワイトリストで除外（repo に入れない）
+```
+
 **やってはいけないこと:**
 - `stow nvim` や `stow starship` を直接実行しない
 - `~/.config` 自体をシンボリックリンクにしない
+- `claude/` を汎用 STOW_DIRS に追加する / `~/.claude` 自体を symlink にする
 - `check-stow.sh` が警告を出す構造を作らない
 - stow の `-t "$HOME"` を外さない（install.sh / install-container.sh 共通）
 
