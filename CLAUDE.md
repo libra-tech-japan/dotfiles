@@ -66,7 +66,8 @@ zsh/                    # zsh 設定（Stow で ~/配下にリンク）
 nvim/                   # Neovim 設定（手動リンク ~/.config/nvim へ）
 git/                    # gitconfig（Stow で ~/配下にリンク）
 vscode/                 # VS Code settings / keybindings（手動リンク）
-starship/               # starship.toml + tmuxinator（手動リンク ~/.config/ へ）
+starship/               # starship.toml（手動リンク ~/.config/ へ）
+tmuxinator/             # tmuxinator agent.yml（手動リンク ~/.config/tmuxinator へ・ホストのみ）
 lazygit/                # lazygit config + mise config（手動リンク ~/.config/ へ）
 tmux/                   # tmux.conf（手動リンク ~/.config/tmux へ）
 ghostty/                # Ghostty config（手動リンク ~/.config/ghostty へ）

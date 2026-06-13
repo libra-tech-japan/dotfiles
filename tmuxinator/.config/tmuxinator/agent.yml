@@ -18,10 +18,10 @@ windows:
       panes:
         - htop
         - docker stats
-  - cursor:
+  - dev:
       layout: main-vertical
       panes:
-        - cursor:
+        - dev:
             - cd ~/workspace/bihada-connect-monorepo/dev
             - devcontainer up --workspace-folder .
             - devcontainer exec --workspace-folder . /bin/zsh

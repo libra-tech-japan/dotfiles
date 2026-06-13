@@ -26,6 +26,36 @@ source "${DOTFILES_ROOT}/scripts/lib.sh"
 `DOTFILES_ROOT` が未設定だと lib.sh 内の全パス参照が壊れる。
 source する前に必ず設定すること。
 
+lib.sh はトップレベルで副作用を持たない（定数・配列・関数定義のみ）。
+そのため `check-stow.sh` のような診断スクリプトからも安全に source できる。
+
+---
+
+## 定数・配列（単一真実源）
+
+### `CONFIG_ENTRIES`
+
+`.config` 配下のリンク対象を定義する**唯一の場所**。`link_config_entries`（リンク実行）と
+`check-stow.sh`（リンク状態・入れ子検出）の両方がここから導出する。
+**新しい設定ツールを追加するときはこの配列に1行足すだけでよい。**
+
+```
+format: "src(DOTFILES_ROOT相対):dest($HOME相対):type(file|dir):scope(all|host|darwin)"
+  scope: all    = 常時（ホスト・コンテナ共通）
+         host   = container 以外（tmux / tmuxinator）
+         darwin = host-darwin のみ（ghostty）
+```
+
+### `STOW_LEGACY_UNSTOW`
+
+旧構造（`stow starship/lazygit/nvim`）の名残リンクを剥がす `stow -D` 対象の配列。
+install.sh / install-container.sh が共有する。
+
+### URL 定数
+
+`HOMEBREW_INSTALL_URL` / `DOCKER_INSTALL_URL` / `TPM_REPO_URL` /
+`WIN32YANK_VERSION` / `WIN32YANK_URL` を一元管理。スクリプト側にハードコードしない。
+
 ---
 
 ## 関数一覧と契約
@@ -81,22 +111,33 @@ link_config_file "$DOTFILES_ROOT/starship/.config/starship.toml" "$HOME/.config/
 - `link_config_file`: ファイルを `-sf` でリンク
 - いずれも `mkdir -p "$(dirname "$dest")"` を先に実行する
 
-### `link_config_entries(include_tmux?)`
+### `link_config_entries(context?)`
 
-`.config` 配下のエントリをまとめてリンクする。
+`CONFIG_ENTRIES` をループし、`context` の scope に該当するエントリをリンクする。
+リンク対象は `CONFIG_ENTRIES`（上記）が単一の真実源。
 
 ```bash
-link_config_entries        # ホスト: tmux を含む（デフォルト true）
-link_config_entries "false"  # コンテナ: tmux を含まない
+link_config_entries host-darwin  # macOS ホスト: all + host + darwin（ghostty 含む）
+link_config_entries host         # macOS 以外のホスト: all + host（tmux/tmuxinator 含む）
+link_config_entries container    # コンテナ: all のみ（tmux/tmuxinator/ghostty 除外）
 ```
 
-リンク対象:
-- `starship/.config/starship.toml` → `~/.config/starship.toml`
-- `starship/.config/tmuxinator`   → `~/.config/tmuxinator`
-- `nvim/.config/nvim`             → `~/.config/nvim`
-- `lazygit/.config/lazygit`       → `~/.config/lazygit`
-- `lazygit/.config/mise`          → `~/.config/mise`
-- `tmux/.config/tmux`             → `~/.config/tmux`（include_tmux=true のみ）
+- 引数省略時のデフォルトは `host`。
+- 補助関数 `config_entry_in_scope(scope, context)` が scope 判定を行う。
+- file 型は `link_config_file`、dir 型は `link_config_dir` を再利用。
+
+### `link_vscode_config(user_dir)`
+
+VS Code の User ディレクトリへ settings / keybindings / snippets をリンクし、
+`vscode/extensions.txt` があれば拡張をインストールする。Darwin / WSL で共有。
+
+```bash
+link_vscode_config "$HOME/Library/Application Support/Code/User"   # macOS
+link_vscode_config "$(wslpath -u "$WIN_APPDATA")/Code/User"        # WSL
+```
+
+- `user_dir` が存在しなければ何もせず戻り値 1（呼び出し側でスキップ判定に使う）。
+- `code` が PATH になければ拡張インストールはスキップ。
 
 ### `install_ni()`
 
@@ -114,7 +155,8 @@ link_config_entries "false"  # コンテナ: tmux を含まない
 | TPM (tmux plugin) | ✅ | ❌ |
 | VS Code リンク | ✅ | ❌ |
 | Ghostty リンク | ✅ | ❌ |
-| `link_config_entries` | `"true"` (tmux含む) | `"false"` |
+| `link_config_entries` | `host-darwin` / `host` | `container` |
+| tmuxinator リンク | ✅（host scope） | ❌ |
 | `backup_if_exists` | シンプル版 | bind mount 検出あり |
 | `install_git_config` | なし（stow） | あり（cp、bind mount考慮） |
 | `Brewfile` | `common + Brewfile` | `common + Brewfile.container` |
@@ -124,8 +166,11 @@ link_config_entries "false"  # コンテナ: tmux を含まない
 
 ## check-stow.sh
 
+- lib.sh を source し、`CONFIG_ENTRIES` からリンク対象・入れ子検出リストを導出（ハードコードしない）
 - `~/.config` が単一 symlink になっていないかを確認
-- nvim / lazygit / starship / tmux のリンク先が正しいかを確認
+- `CONFIG_ENTRIES` の各 dest のリンク先が正しいかを確認
 - 入れ子 symlink の誤生成を検出
 
 インストール後の検証や問題調査に使う診断ツール。install.sh からは呼ばれない。
+ホスト前提の診断のため、コンテナで実行すると host/darwin scope のエントリ
+（tmuxinator / tmux / ghostty）は `(なし)` と表示される（正常）。

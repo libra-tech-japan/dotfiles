@@ -34,7 +34,7 @@ install_apt_vscode_tools
 # Linuxbrew のインストールと PATH
 if ! command -v brew &> /dev/null; then
   echo "🍺 Installing Homebrew (Linux)..."
-  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL "$HOMEBREW_INSTALL_URL")"
 fi
 # インストール先に応じて shellenv を評価
 if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
@@ -104,7 +104,7 @@ repair_config_dir
 # stow の対象は常に $HOME を明示する。
 # 既定の target はリポジトリの親（cwd の親）になるため、リポジトリが $HOME/dotfiles 以外
 # （例: /workspaces/dotfiles）にあると $HOME 外へ書こうとして失敗する。backup_if_exists も $HOME 前提。
-stow -t "$HOME" -D starship lazygit nvim 2>/dev/null || true
+stow -t "$HOME" -D "${STOW_LEGACY_UNSTOW[@]}" 2>/dev/null || true
 
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 2>/dev/null | while read -r source_path; do
@@ -115,7 +115,7 @@ for package in "${STOW_DIRS[@]}"; do
   stow -t "$HOME" -v --restow "$package"
 done
 
-link_config_entries "false"  # tmux はコンテナ内では不要
+link_config_entries container  # コンテナは scope=all のみ（tmux/tmuxinator/ghostty は除外）
 
 install_ni
 

@@ -38,7 +38,7 @@ IS_WSL=false
 if [ "$IS_UBUNTU_OR_DEBIAN" = true ]; then
   if ! command -v docker &> /dev/null; then
     echo "🐧 Linux detected. Installing Docker Engine..."
-    curl -fsSL https://get.docker.com | sh
+    curl -fsSL "$DOCKER_INSTALL_URL" | sh
     sudo usermod -aG docker "$USER"
   fi
   # Linuxbrew: 既に brew が入っていても PATH に入っていないことがあるため bundle 前に確実に設定
@@ -47,7 +47,7 @@ if [ "$IS_UBUNTU_OR_DEBIAN" = true ]; then
   fi
   if ! command -v brew &> /dev/null; then
     echo "🍺 Installing Homebrew (Linux)..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    /bin/bash -c "$(curl -fsSL "$HOMEBREW_INSTALL_URL")"
     if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
       eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     fi
@@ -62,7 +62,7 @@ fi
 if [ "$IS_DARWIN" = true ]; then
   if ! command -v brew &> /dev/null; then
     echo "🍺 Installing Homebrew (macOS)..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    /bin/bash -c "$(curl -fsSL "$HOMEBREW_INSTALL_URL")"
   fi
   if [[ -f "/opt/homebrew/bin/brew" ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -92,7 +92,7 @@ fi
 if [ "$IS_WSL" = true ]; then
   if ! command -v win32yank.exe &> /dev/null; then
     echo "🪟 WSL2 detected. Setting up win32yank..."
-    curl -sLo /tmp/win32yank.zip https://github.com/equalsraf/win32yank/releases/download/v0.0.4/win32yank-x64.zip
+    curl -sLo /tmp/win32yank.zip "$WIN32YANK_URL"
     mkdir -p "$HOME/.local/bin"
     if command -v unzip &> /dev/null; then
       unzip -p /tmp/win32yank.zip win32yank.exe > "$HOME/.local/bin/win32yank.exe"
@@ -138,7 +138,7 @@ backup_if_exists() {
 repair_config_dir
 # stow の対象は常に $HOME を明示する（既定の target はリポジトリの親になり、
 # リポジトリが $HOME 直下以外にあると $HOME 外へ書こうとして失敗するため）。
-stow -t "$HOME" -D starship lazygit nvim 2>/dev/null || true
+stow -t "$HOME" -D "${STOW_LEGACY_UNSTOW[@]}" 2>/dev/null || true
 
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 | while read -r source_path; do
@@ -149,61 +149,34 @@ for package in "${STOW_DIRS[@]}"; do
   stow -t "$HOME" -v --restow "$package"
 done
 
-link_config_entries  # include_tmux=true（デフォルト）
+# macOS は darwin scope（ghostty）も含めてリンク。それ以外のホストは host scope まで。
+link_config_entries "$([ "$IS_DARWIN" = true ] && echo host-darwin || echo host)"
 
 # TPM Setup
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
-  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  git clone "$TPM_REPO_URL" ~/.tmux/plugins/tpm
 fi
 
 install_ni
 
 # ---------------------------------------------------------------------------
-# VS Code Setup: Darwin または WSL 時のみ
+# VS Code Setup: Darwin または WSL 時のみ（リンク処理は lib.sh に集約）
 # ---------------------------------------------------------------------------
-if [ "$IS_DARWIN" = true ] && [ -d "$HOME/Library/Application Support/Code/User" ]; then
+if [ "$IS_DARWIN" = true ]; then
   echo "💻 Linking VS Code settings (macOS)..."
-  VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
-  ln -sf "$DOTFILES_ROOT/vscode/settings.json" "$VSCODE_USER_DIR/settings.json"
-  ln -sf "$DOTFILES_ROOT/vscode/keybindings.json" "$VSCODE_USER_DIR/keybindings.json"
-  if [ -d "$DOTFILES_ROOT/vscode/snippets" ]; then
-    rm -rf "$VSCODE_USER_DIR/snippets"
-    ln -sf "$DOTFILES_ROOT/vscode/snippets" "$VSCODE_USER_DIR/snippets"
-  fi
-  if [ -f "$DOTFILES_ROOT/vscode/extensions.txt" ] && command -v code &> /dev/null; then
-    echo "🧩 Installing VS Code extensions..."
-    xargs -L 1 -P 4 code --install-extension < "$DOTFILES_ROOT/vscode/extensions.txt"
-  fi
+  link_vscode_config "$HOME/Library/Application Support/Code/User" || true
 fi
 
 if [ "$IS_WSL" = true ]; then
   echo "🪟 WSL2: Linking VS Code settings to Windows side..."
   WIN_APPDATA=$(cmd.exe /c "echo %APPDATA%" 2>/dev/null | tr -d '\r')
-  VSCODE_USER_DIR=$(wslpath -u "$WIN_APPDATA")/Code/User
-  if [ -d "$VSCODE_USER_DIR" ]; then
-    ln -sf "$DOTFILES_ROOT/vscode/settings.json" "$VSCODE_USER_DIR/settings.json"
-    ln -sf "$DOTFILES_ROOT/vscode/keybindings.json" "$VSCODE_USER_DIR/keybindings.json"
-    if [ -d "$DOTFILES_ROOT/vscode/snippets" ]; then
-      rm -rf "$VSCODE_USER_DIR/snippets"
-      ln -sf "$DOTFILES_ROOT/vscode/snippets" "$VSCODE_USER_DIR/snippets"
-    fi
-    if [ -f "$DOTFILES_ROOT/vscode/extensions.txt" ] && command -v code &> /dev/null; then
-      echo "🧩 Installing VS Code extensions..."
-      xargs -L 1 -P 4 code --install-extension < "$DOTFILES_ROOT/vscode/extensions.txt"
-    fi
+  if link_vscode_config "$(wslpath -u "$WIN_APPDATA")/Code/User"; then
     echo "✅ VS Code settings linked to Windows AppData."
   else
     echo "⚠️  VS Code User directory not found in Windows. Skipping."
   fi
 fi
 
-# ---------------------------------------------------------------------------
-# Ghostty Configuration: Darwin 時のみ（Brewfile の cask も Mac のみ）
-# ---------------------------------------------------------------------------
-if [ "$IS_DARWIN" = true ]; then
-  echo "👻 Setting up Ghostty configuration..."
-  mkdir -p "$HOME/.config/ghostty"
-  ln -sf "$DOTFILES_ROOT/ghostty/config" "$HOME/.config/ghostty/config"
-fi
+# Ghostty 設定（macOS のみ）は link_config_entries の darwin scope でリンク済み。
 
 echo "🎉 Setup Complete! Run 'exec zsh' to start."
