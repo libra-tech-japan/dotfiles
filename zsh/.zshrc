@@ -329,7 +329,7 @@ if command -v devcontainer &> /dev/null; then
     echo "🔄 Updating dotfiles inside DevContainer..."
     devcontainer exec \
       --workspace-folder "$workspace" \
-      zsh -c "cd ~/dotfiles && git pull && ./install.sh"
+      zsh -c "cd ~/dotfiles && git pull && ./install-container.sh"
   }
 
   # devsh: コンテナ内に入るショートカット
