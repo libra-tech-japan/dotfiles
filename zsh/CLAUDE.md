@@ -113,14 +113,26 @@ Homebrew の PATH を設定（Darwin: /opt/homebrew / Linux: /home/linuxbrew）
 
 | 関数 | 役割 |
 |------|------|
-| `devup [dir]` | dotfiles 注入付きで DevContainer を起動 |
+| `devup [dir] [repo]` | dotfiles 注入付きで DevContainer を起動 |
 | `devbuild [dir]` | イメージビルドのみ（dotfiles 注入は up 時） |
-| `devrebuild [dir]` | 既存コンテナ削除 + up |
+| `devrebuild [dir] [repo]` | 既存コンテナ削除 + up |
 | `devdotfiles [dir]` | コンテナ内で `git pull && ./install.sh` |
 | `devsh [dir]` | コンテナ内の zsh/bash に入る |
 
-dotfiles リポジトリ URL は `devcontainer_dotfiles_opts` 配列で一元管理されている。
-URL を変更する場合は配列の値を変更する（`devup` / `devrebuild` の引数を個別に変えない）。
+dotfiles リポジトリ URL は `_build_dotfiles_opts` ヘルパで一元生成される
+（`--dotfiles-*` オプションの唯一の組み立て点。`devup` / `devrebuild` が共用）。
+
+リポジトリの上書き優先度は **引数 `[repo]` > 環境変数 `DOTFILES_REPO` > 既定の GitHub URL**。
+既定値そのものを変える場合は `: ${DOTFILES_REPO:=...}` の行を編集する。
+
+```zsh
+devup .                                  # 既定リポジトリ
+devup . https://github.com/me/fork       # 第2引数で上書き
+DOTFILES_REPO=https://github.com/me/fork devup .   # 環境変数で上書き
+```
+
+注: `devup` は git リポジトリを clone するため、検証されるのは push 済みの状態。
+ローカルの未コミット変更を試すなら `docker/` の層1検証（`./docker/test.sh`）を使う。
 
 ---
 

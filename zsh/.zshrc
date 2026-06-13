@@ -234,20 +234,37 @@ fi
 
 # --- DevContainer 関数（devcontainer コマンドがある場合のみ定義）---
 if command -v devcontainer &> /dev/null; then
-  # dotfiles関連のオプション（共通）
-  typeset -a devcontainer_dotfiles_opts=(
-    --dotfiles-repository "https://github.com/libra-tech-japan/dotfiles"
-    --dotfiles-target-path "~/dotfiles"
-    --dotfiles-install-command "./install-container.sh"
-  )
+  # dotfiles リポジトリの既定値。環境変数 DOTFILES_REPO で上書きできる。
+  # 各 dev* 関数の第2引数 [repo] でも上書き可能（優先度: 引数 > DOTFILES_REPO > 既定）。
+  : ${DOTFILES_REPO:="https://github.com/libra-tech-japan/dotfiles"}
+
+  # dotfiles 注入オプションを reply 配列に組み立てる（URL の唯一の生成点）。
+  # 第1引数があれば優先、無ければ $DOTFILES_REPO を使う。devup / devrebuild が共用。
+  function _build_dotfiles_opts() {
+    local repo="${1:-$DOTFILES_REPO}"
+    reply=(
+      --dotfiles-repository "$repo"
+      --dotfiles-target-path "~/dotfiles"
+      --dotfiles-install-command "./install-container.sh"
+    )
+  }
 
   # devup: DevContainerにdotfilesを注入して起動
+  #   使い方: devup [workspace] [repo]
+  #   repo 省略時は $DOTFILES_REPO（既定は GitHub の dotfiles）。
+  #   注: devup は git リポジトリを clone するため、検証されるのは push 済みの状態。
+  #       ローカル別リポジトリ/フォークを試す例:
+  #         DOTFILES_REPO=https://github.com/me/dotfiles devup .
   function devup() {
     local workspace="${1:-.}"
+    local repo="${2:-$DOTFILES_REPO}"
+    local -a reply
+    _build_dotfiles_opts "$repo"
     echo "🚀 Starting DevContainer with Dotfiles Injection..."
+    echo "   📦 dotfiles: $repo"
     devcontainer up \
       --workspace-folder "$workspace" \
-      ${devcontainer_dotfiles_opts[@]}
+      "${reply[@]}"
 
     if [ $? -eq 0 ]; then
       echo "✅ Container Ready. Run 'devsh' to enter."
@@ -266,13 +283,18 @@ if command -v devcontainer &> /dev/null; then
   }
 
   # devrebuild: 既存コンテナを削除してから up（設定変更の反映用）
+  #   使い方: devrebuild [workspace] [repo]
   function devrebuild() {
     local workspace="${1:-.}"
+    local repo="${2:-$DOTFILES_REPO}"
+    local -a reply
+    _build_dotfiles_opts "$repo"
     echo "🔨 Rebuilding DevContainer (remove existing + up)..."
+    echo "   📦 dotfiles: $repo"
     devcontainer up \
       --workspace-folder "$workspace" \
       --remove-existing-container \
-      ${devcontainer_dotfiles_opts[@]}
+      "${reply[@]}"
     if [ $? -eq 0 ]; then
       echo "✅ Container Ready. Run 'devsh' to enter."
     fi
