@@ -96,7 +96,10 @@ install_git_config() {
 STOW_DIRS=("zsh")
 install_git_config
 repair_config_dir
-stow -D starship lazygit nvim git 2>/dev/null || true
+# stow の対象は常に $HOME を明示する。
+# 既定の target はリポジトリの親（cwd の親）になるため、リポジトリが $HOME/dotfiles 以外
+# （例: /workspaces/dotfiles）にあると $HOME 外へ書こうとして失敗する。backup_if_exists も $HOME 前提。
+stow -t "$HOME" -D starship lazygit nvim git 2>/dev/null || true
 
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 2>/dev/null | while read -r source_path; do
@@ -104,7 +107,7 @@ for package in "${STOW_DIRS[@]}"; do
     target_path="$HOME/$relative_path"
     backup_if_exists "$target_path"
   done
-  stow -v --restow "$package"
+  stow -t "$HOME" -v --restow "$package"
 done
 
 link_config_entries "false"  # tmux はコンテナ内では不要

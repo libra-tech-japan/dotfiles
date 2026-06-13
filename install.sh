@@ -136,7 +136,9 @@ backup_if_exists() {
 }
 
 repair_config_dir
-stow -D starship lazygit nvim 2>/dev/null || true
+# stow の対象は常に $HOME を明示する（既定の target はリポジトリの親になり、
+# リポジトリが $HOME 直下以外にあると $HOME 外へ書こうとして失敗するため）。
+stow -t "$HOME" -D starship lazygit nvim 2>/dev/null || true
 
 for package in "${STOW_DIRS[@]}"; do
   find "$package" -maxdepth 1 -mindepth 1 | while read -r source_path; do
@@ -144,7 +146,7 @@ for package in "${STOW_DIRS[@]}"; do
     target_path="$HOME/$relative_path"
     backup_if_exists "$target_path"
   done
-  stow -v --restow "$package"
+  stow -t "$HOME" -v --restow "$package"
 done
 
 link_config_entries  # include_tmux=true（デフォルト）
