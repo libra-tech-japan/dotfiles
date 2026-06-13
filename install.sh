@@ -86,6 +86,14 @@ if [ ! -f "$HOME/.gitignore_global" ]; then
   touch "$HOME/.gitignore_global"
 fi
 
+# Git の個人情報（user.name/email）は公開リポジトリに載せず ~/.gitconfig.local に分離する。
+# 無い場合のみテンプレートから作成（既存ファイルは絶対に上書きしない＝再実行で冪等、
+# 開発サーバー等に既にある ~/.gitconfig.local をマージ/破壊しない）。
+if [ ! -f "$HOME/.gitconfig.local" ]; then
+  cp "$DOTFILES_ROOT/.gitconfig.local.example" "$HOME/.gitconfig.local"
+  echo "📝 Created ~/.gitconfig.local from template. Edit it with your name/email (commits are blocked until set)."
+fi
+
 # ---------------------------------------------------------------------------
 # WSL（オプション）: win32yank
 # ---------------------------------------------------------------------------

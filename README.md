@@ -69,16 +69,24 @@ docker run --rm hello-world
 
 問題があれば `systemctl status docker` で状態確認を推奨します。
 
-### 3. インストール後の設定
+### 3. インストール後の設定（Git identity）
 
-ローカルの Git 設定ファイルを作成してください:
+個人情報（name/email）は公開リポジトリの `git/.gitconfig` には置かず、各マシンの
+`~/.gitconfig.local` に分離します（`git/.gitconfig` の `[include]` が読み込む）。
 
-```bash
+`install.sh` は `~/.gitconfig.local` が**無い場合のみ** `.gitconfig.local.example` から
+作成します（既存ファイルは上書きしないため再実行しても冪等）。作成後、自分の値に書き換えてください:
+
+```ini
 # ~/.gitconfig.local
 [user]
     name = Your Name
-    email = your@email.com
+    email = your-id+username@users.noreply.github.com
 ```
+
+`git/.gitconfig` には `[user] useConfigOnly = true` が入っており、上記を設定するまで
+コミットは拒否されます（identity 未設定時に `username@hostname` から著者情報が
+勝手に生成され、実名・実メールが意図せず混入するのを防ぐ安全策）。
 
 ### `~/.config` と Stow の方針
 

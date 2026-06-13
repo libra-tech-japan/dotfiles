@@ -39,6 +39,12 @@
 	patterns = (\"|')?(AWS|aws|Aws)?_?(SECRET|secret|Secret)?_?(ACCESS|access|Access)?_?(KEY|key|Key)(\"|')?\\s*(:|=>|=)\\s*(\"|')?[A-Za-z0-9/\\+=]{40}(\"|')?
 	patterns = (\"|')?(AWS|aws|Aws)?_?(ACCOUNT|account|Account)_?(ID|id|Id)?(\"|')?\\s*(:|=>|=)\\s*(\"|')?[0-9]{4}\\-?[0-9]{4}\\-?[0-9]{4}(\"|')?
 
+[user]
+	# 個人情報（name/email）は公開リポジトリに載せず ~/.gitconfig.local に置き、下の [include] で読み込む。
+	# useConfigOnly=true は identity 未設定時に git が username@hostname から著者情報を
+	# 勝手に生成してコミットするのを防ぐ（実名・実メールの意図せぬ混入と誤 author を防止）。
+	useConfigOnly = true
+
 [include]
 	path = ~/.gitconfig.local
 

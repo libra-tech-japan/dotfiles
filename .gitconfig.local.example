@@ -1,0 +1,18 @@
+# ~/.gitconfig.local のテンプレート（個人の Git identity 用）。
+#
+# 目的: name / email を公開リポジトリ（git/.gitconfig）に載せず、各マシンの
+#       ~/.gitconfig.local に分離する。~/.gitconfig の [include] が読み込む。
+#       このファイルは install.sh が「~/.gitconfig.local が無ければ」コピーする
+#       （既存ファイルは上書きしない＝再実行しても冪等）。
+#
+# 使い方: 下の [user] のコメント（先頭の #）を外し、自分の値に書き換える。
+#         書き換えるまでは useConfigOnly=true によりコミットが拒否される
+#         （= 設定し忘れに即気づける安全策）。GitHub のメール秘匿には
+#         `<id>+<user>@users.noreply.github.com` 形式を推奨。
+#
+# 手動コピーの例:
+#   cp .gitconfig.local.example ~/.gitconfig.local
+
+# [user]
+#     name = Your Name
+#     email = your-id+username@users.noreply.github.com
