@@ -1,0 +1,5 @@
+# 層1検証イメージのビルドコンテキストから不要物を除外（BuildKit の per-Dockerfile ignore）。
+.git
+**/.DS_Store
+docker/test-workspace
+**/node_modules

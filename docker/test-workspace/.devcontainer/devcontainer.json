@@ -1,0 +1,14 @@
+{
+  // devup の「対象」となる最小サンプルプロジェクト。
+  //
+  // 層2検証では、軽量 DevContainer（リポジトリ直下の .devcontainer）の中から
+  //   devup ./docker/test-workspace
+  // を実行する。これで devcontainer up + dotfiles 注入 + install-container.sh が
+  // 子コンテナ側で走り、devup フロー全体をエンドツーエンドで確認できる。
+  //
+  // dotfiles の注入は devup 側の --dotfiles-* オプションで行われるため、
+  // ここには features を持たせず素の base イメージだけにしておく。
+  "name": "devup-target",
+  // LTS に固定（floating の :ubuntu=25.10 だと Homebrew/install の挙動が不安定なため）。
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04"
+}

@@ -1,0 +1,49 @@
+# syntax=docker/dockerfile:1
+# 層1検証: install-container.sh 単体が素の Ubuntu で通るかを確認する。
+# build 段階で install-container.sh を2回実行する:
+#   1回目 = クリーンインストール
+#   2回目 = 冪等性チェック（差分なく再実行できること）
+# devup フロー全体の検証は .devcontainer/ 側（層2）が担当する。ここはデーモン不要。
+
+ARG UBUNTU_VERSION=24.04
+FROM ubuntu:${UBUNTU_VERSION}
+
+ARG USERNAME=dev
+
+# install-container.sh と Linuxbrew の前提パッケージ。
+#   - curl / git / ca-certificates : スクリプト冒頭の前提と https 取得
+#   - build-essential / procps / file : Linuxbrew のビルド依存
+#   - sudo : install_apt_vscode_tools が apt を叩くため
+#   - zsh  : 最終的に exec zsh する想定のログインシェル
+# stow は Brewfile.common 由来なので apt では入れない（brew bundle で入る）。
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      curl git ca-certificates sudo zsh \
+      build-essential procps file \
+    && rm -rf /var/lib/apt/lists/*
+
+# 非 root ユーザー（passwordless sudo）。install-container.sh は sudo apt を使う。
+# Homebrew は root 実行を拒否するため、必ず非 root で流す。
+RUN useradd -m -s /usr/bin/zsh "${USERNAME}" \
+    && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}" \
+    && chmod 0440 "/etc/sudoers.d/${USERNAME}"
+
+USER ${USERNAME}
+ENV HOME=/home/${USERNAME}
+WORKDIR ${HOME}/dotfiles
+
+# リポジトリを投入（.git 等は Dockerfile.ubuntu.dockerignore で除外）
+COPY --chown=${USERNAME}:${USERNAME} . .
+
+# 1回目: クリーンインストール
+RUN bash install-container.sh
+
+# 2回目: 冪等性チェック（同じ状態で通ること）
+RUN bash install-container.sh
+
+# Linuxbrew の PATH を後続コマンド向けに通しておく
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:${HOME}/.linuxbrew/bin:${PATH}"
+
+CMD ["zsh"]

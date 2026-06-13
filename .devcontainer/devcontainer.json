@@ -1,0 +1,37 @@
+{
+  // 層2検証: この dotfiles リポジトリ自体を「軽量 DevContainer」として開き、
+  // その中から devup を実行して「devcontainer up + dotfiles 注入 + install」の
+  // 統合フローをエンドツーエンドで確認する。
+  //
+  // Docker は docker-in-docker (DinD)。理由:
+  //   devup は内部で `devcontainer up`（= 子 DevContainer 起動）を呼ぶため、
+  //   ネストした Docker daemon を持つ DinD ならホスト/コンテナ間のパス整合問題が
+  //   起きない（docker-outside-of-docker だと子コンテナのバインドマウントがズレる）。
+  "name": "dotfiles-verify",
+  // LTS に固定する。floating の :ubuntu は現在 25.10(resolute) を指し、
+  // docker-in-docker feature の moby パッケージが無く install に失敗するため。
+  // 層1の Dockerfile（24.04 既定）とも揃える。
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+
+  // 標準の /workspaces マウントを使う（workspaceMount は指定しない）。
+  // install-container.sh は stow -t "$HOME" で堅牢化済みのため、リポジトリが
+  // /workspaces/dotfiles にあっても dotfiles は正しく $HOME へリンクされる。
+  // この構成自体が「リポジトリを直接 Reopen in Container した場合」の回帰テストになる。
+
+  "features": {
+    // ネストした Docker daemon。devup が子コンテナを起動するために必須。
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    // devcontainer CLI と ni のための node。
+    // node（npm）が無いと devcontainer CLI を入れられず、
+    // devup 関数自体が `command -v devcontainer` ガードで未定義になる。
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
+  },
+
+  // 1) devcontainer CLI を導入 → これが無いと devup 関数が定義されない
+  // 2) install-container.sh で dotfiles をリンク → devup 等の zsh 関数が読める
+  // 注: install-container.sh は Linuxbrew + brew bundle を含むため初回は数分かかる。
+  //     devup の検証だけが目的なら、ここを軽量化する余地がある（README 参照）。
+  "postCreateCommand": "npm install -g @devcontainers/cli && ./install-container.sh",
+
+  "remoteUser": "vscode"
+}

@@ -71,6 +71,8 @@ lazygit/                # lazygit config + mise config（手動リンク ~/.conf
 tmux/                   # tmux.conf（手動リンク ~/.config/tmux へ）
 ghostty/                # Ghostty config（手動リンク ~/.config/ghostty へ）
 scripts/check-stow.sh   # Stow リンク状態の確認ツール
+.devcontainer/          # 層2検証用の軽量 DevContainer（DinD + devcontainer CLI）
+docker/                 # 検証環境（層1: install-container.sh 単体 / 層2: devup フロー）
 ```
 
 ---
@@ -89,6 +91,14 @@ scripts/check-stow.sh   # Stow リンク状態の確認ツール
 - `stow nvim` や `stow starship` を直接実行しない
 - `~/.config` 自体をシンボリックリンクにしない
 - `check-stow.sh` が警告を出す構造を作らない
+- stow の `-t "$HOME"` を外さない（install.sh / install-container.sh 共通）
+
+```
+stow は必ず -t "$HOME" でターゲットを明示する。
+省略すると既定ターゲットが「リポジトリの親ディレクトリ」になり、
+リポジトリが $HOME/dotfiles 以外（例: /workspaces/dotfiles）にあると
+$HOME の外へリンクを書こうとして誤配置・Permission denied になる。
+```
 
 ---
 
@@ -118,13 +128,31 @@ scripts/check-stow.sh   # Stow リンク状態の確認ツール
 
 ## 検証コマンド
 
+### 静的チェック（高速・コミット前に常時）
+
 ```bash
-# 構文チェック
+# 構文チェック（3スクリプト）
 bash -n install.sh && bash -n install-container.sh && bash -n scripts/lib.sh
 
-# Stow リンク状態確認
+# Stow / .config リンク状態の確認（診断ツール）
 bash scripts/check-stow.sh
-
-# macOS で再実行（冪等性確認）
-./install.sh
 ```
+
+### 実機検証（冪等性は再実行で確認）
+
+```bash
+# ホスト（macOS）— 再実行して冪等性を確認
+./install.sh
+
+# 層1: install-container.sh 単体を Docker で検証（クリーン+冪等+リンク確認・デーモン不要）
+./docker/test.sh
+
+# 層2: devup フロー全体を DinD で検証
+#   VSCode なら .devcontainer を「Reopen in Container」、CLI なら以下:
+devcontainer up --workspace-folder .
+devcontainer exec --workspace-folder . zsh -ic 'devup ./docker/test-workspace'
+```
+
+検証は2層に分かれる（層1=ローカル変更の高速検証 / 層2=push 済み devup の統合確認）。
+2層の使い分け・落とし穴・軽量化メモは [docker/README.md](docker/README.md) と
+[docker/CLAUDE.md](docker/CLAUDE.md) を参照。
