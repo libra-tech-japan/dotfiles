@@ -127,15 +127,25 @@ if command -v mise &> /dev/null; then
   _apply_mise_container_strategy
 fi
 
-# npm グローバル bin を PATH に追加（devcontainer CLI 等が使えるようにする）
-# mise 等は cd ごとに PATH を変えるため、chpwd でも再追加してディレクトリに依存しないようにする
+# npm グローバル bin を PATH に追加（devcontainer CLI / ni 等のグローバル CLI を使えるように）
+# mise 等は cd ごとに node を切り替えるため、chpwd でも再評価してディレクトリに依存しないようにする。
+# 注: `npm bin -g` は npm 9 で削除されたため使えない（常に空を返し PATH に何も足さなくなる）。
+#     現行 npm では `npm prefix -g`/bin が旧 `npm bin -g` と等価。
+#     npm 実体パスが変わらない限り prefix をキャッシュし、chpwd ごとの node 起動コストを避ける。
+typeset -g _NPM_GLOBAL_BIN_NPM=""   # 最後に評価した npm 実体パス
+typeset -g _NPM_GLOBAL_BIN_DIR=""   # その npm のグローバル bin（$prefix/bin）
 _add_npm_global_bin_to_path() {
-  if command -v npm &> /dev/null; then
-    local npm_bin
-    npm_bin=$(npm bin -g 2>/dev/null)
-    if [[ -n "$npm_bin" && ":$PATH:" != *":$npm_bin:"* ]]; then
-      export PATH="${PATH}:${npm_bin}"
-    fi
+  local npm_path
+  npm_path=$(command -v npm 2>/dev/null) || return
+  if [[ "$npm_path" != "$_NPM_GLOBAL_BIN_NPM" ]]; then
+    local npm_prefix
+    npm_prefix=$(npm prefix -g 2>/dev/null) || return
+    _NPM_GLOBAL_BIN_NPM="$npm_path"
+    _NPM_GLOBAL_BIN_DIR="${npm_prefix:+$npm_prefix/bin}"
+  fi
+  local npm_bin="$_NPM_GLOBAL_BIN_DIR"
+  if [[ -n "$npm_bin" && -d "$npm_bin" && ":$PATH:" != *":$npm_bin:"* ]]; then
+    export PATH="${PATH}:${npm_bin}"
   fi
 }
 _add_npm_global_bin_to_path
