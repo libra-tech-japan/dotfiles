@@ -18,6 +18,19 @@
   // /workspaces/dotfiles にあっても dotfiles は正しく $HOME へリンクされる。
   // この構成自体が「リポジトリを直接 Reopen in Container した場合」の回帰テストになる。
 
+  // ホストの Git identity を透過利用する（コンテナ側で生成・コピーしない）。
+  //   ~/.gitconfig       : stow の symlink（実体は git/.gitconfig）。Docker が source の
+  //                        symlink を解決してマウントする。
+  //   ~/.gitconfig.local : 個人の name/email（公開リポジトリには持たない実ファイル）。
+  // 両方マウントするのは [include] path = ~/.gitconfig.local がコンテナ内の ~ を参照する
+  // ため。これにより install_git_config() は bind 検知で no-op になり、identity の二重管理が
+  // 起きない。前提: ホスト側に両ファイルが存在すること（無いと空ディレクトリが作られ得る）。
+  // 書き込みを禁じたい場合は各行末に ,readonly を付ける。
+  "mounts": [
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind",
+    "source=${localEnv:HOME}/.gitconfig.local,target=/home/vscode/.gitconfig.local,type=bind"
+  ],
+
   "features": {
     // ネストした Docker daemon。devup が子コンテナを起動するために必須。
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
