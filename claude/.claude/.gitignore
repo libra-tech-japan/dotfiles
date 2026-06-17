@@ -20,6 +20,7 @@
 # 共有する物だけ許可
 !.gitignore
 !settings.json
+!statusline.sh
 !CLAUDE.md
 !commands/
 !commands/**
