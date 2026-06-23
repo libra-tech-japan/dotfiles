@@ -1,6 +1,7 @@
 # ホスト・コンテナ共通パッケージ。
-# install.sh / install-container.sh の run_brew_bundle() が環境固有 Brewfile と結合して実行する。
-# ここに書いたパッケージを Brewfile / Brewfile.container に重複して書かないこと。
+# host は run_brew_bundle("Brewfile") で Brewfile と結合、container は run_brew_bundle()（引数なし）で
+# この common のみを実行する（いずれも install.sh 経由）。
+# ここに書いたパッケージを host 専用 Brewfile に重複して書かないこと。
 
 # Core
 brew "git"

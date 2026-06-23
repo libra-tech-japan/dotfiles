@@ -165,6 +165,54 @@ link_vscode_config() {
   fi
 }
 
+# ファイル単体の bind マウントか（findmnt -T は ext4 上の通常ファイルでも真になるため使わない）。
+# DevContainer ではホストの ~/.gitconfig 等が bind mount されることがある。
+is_file_bind_mount() {
+  local target="$1"
+  [[ -e "$target" ]] || return 1
+  grep -E " ${target} " /proc/self/mountinfo 2>/dev/null | grep -q ' - bind '
+}
+
+# 既存の実ファイル/ディレクトリが stow/リンクの邪魔になる場合に退避する。
+# - bind mount（DevContainer の ~/.gitconfig 等）は置換不能なのでスキップ。
+# - host では bind mount が無く is_file_bind_mount は即 false（安価な no-op）になるため、
+#   ホスト・コンテナ共通でこの1実装を使える。
+backup_if_exists() {
+  local target="$1"
+  if is_file_bind_mount "$target"; then
+    echo "ℹ️  Skipping $target (bind mount; cannot replace)"
+    return 0
+  fi
+  if [ -e "$target" ] && [ ! -L "$target" ]; then
+    local backup_name="${target}.backup.$(date +%Y%m%d_%H%M%S)"
+    echo "⚠️  Conflict detected: Moving existing $target to $backup_name"
+    mv "$target" "$backup_name" || {
+      echo "ℹ️  Skipping $target (could not move; may be in use or mounted)"
+      return 0
+    }
+  fi
+}
+
+# DevContainer では ~/.gitconfig を stow しない（mv 競合・.gitconfig.local 連携のため）。
+# git/.gitconfig テンプレートを実ファイルとしてコピーする（symlink にはしない）。container でのみ呼ぶ。
+install_git_config() {
+  local template="${DOTFILES_ROOT}/git/.gitconfig"
+  [[ -f "$template" ]] || return 0
+  if is_file_bind_mount "${HOME}/.gitconfig"; then
+    echo "ℹ️  ~/.gitconfig is bind-mounted; not modifying"
+    return 0
+  fi
+  # 旧バージョンが git を stow 管理していた名残の symlink（… git/.gitconfig 指し）は
+  # 除去して実ファイル管理へ寄せる。dangling link もここで掃除される。
+  if [[ -L "${HOME}/.gitconfig" ]] && [[ "$(readlink "${HOME}/.gitconfig")" == *git/.gitconfig ]]; then
+    rm -f "${HOME}/.gitconfig"
+  fi
+  if [[ ! -f "${HOME}/.gitconfig" ]] || [[ ! -s "${HOME}/.gitconfig" ]]; then
+    cp "$template" "${HOME}/.gitconfig"
+    echo "ℹ️  Installed ~/.gitconfig from dotfiles template"
+  fi
+}
+
 # ni (@antfu/ni) のインストール: パッケージマネージャ差分を吸収するツール
 # mise 環境では ni を mise の npm backend で入れる（global mise 設定で "npm:@antfu/ni" を宣言）。
 # これにより node 版に依存しない shim になり、コンテナ戦略の MISE_DISABLE_TOOLS="node,python" 下や

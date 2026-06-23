@@ -47,13 +47,15 @@ docker/
 1. **層1は Docker デーモンアクセスを前提にしない。** 単なる `docker build`。
    `install-container.sh` を build 内で**2回**実行し、2回目で冪等性を担保する。
    この「2回実行」を削らない。
+   なお `install-container.sh` は `exec install.sh --container` の薄い shim なので、
+   層1は実体である **install.sh の container 経路**を検証していることになる。
 
 2. **層1の Dockerfile は非 root ユーザーで install を流す。**
    Homebrew は root 実行を拒否し、`install_apt_vscode_tools` は sudo を使うため、
    passwordless sudo を持つ非 root ユーザーが必須。
 
 3. **層1で stow を apt で入れない。** `stow` は Brewfile.common 由来。
-   `install-container.sh` の `run_brew_bundle` → その後 `stow` の順なので、
+   container 経路（install.sh --container）の `run_brew_bundle` → その後 `stow` の順なので、
    Dockerfile が用意するのは Linuxbrew のビルド依存（build-essential / procps / file /
    curl / git / ca-certificates）まで。
 

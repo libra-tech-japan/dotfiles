@@ -8,7 +8,7 @@
 
 ```
 scripts/
-├── lib.sh          # 共有ユーティリティ（install.sh / install-container.sh が source）
+├── lib.sh          # 共有ユーティリティ（install.sh が source。install-container.sh は install.sh の shim）
 └── check-stow.sh   # Stow リンク状態の確認ツール（診断用、インストールには不使用）
 ```
 
@@ -49,7 +49,7 @@ format: "src(DOTFILES_ROOT相対):dest($HOME相対):type(file|dir):scope(all|hos
 ### `STOW_LEGACY_UNSTOW`
 
 旧構造（`stow starship/lazygit/nvim`）の名残リンクを剥がす `stow -D` 対象の配列。
-install.sh / install-container.sh が共有する。
+install.sh の host / container 両経路で共有する。
 
 ### URL 定数
 
@@ -82,8 +82,7 @@ VSCode には apt 版の `/usr/bin/rg` が見える。
 
 ```bash
 run_brew_bundle "Brewfile"            # ホスト: common + Brewfile
-run_brew_bundle "Brewfile.container"  # コンテナ: common + Brewfile.container
-run_brew_bundle                       # 引数省略: common のみ
+run_brew_bundle                       # コンテナ（引数省略）: common のみ
 ```
 
 - `brew` が PATH にない状態で呼ぶと失敗する。Homebrew セットアップ後に呼ぶこと。
@@ -139,6 +138,32 @@ link_vscode_config "$(wslpath -u "$WIN_APPDATA")/Code/User"        # WSL
 - `user_dir` が存在しなければ何もせず戻り値 1（呼び出し側でスキップ判定に使う）。
 - `code` が PATH になければ拡張インストールはスキップ。
 
+### `is_file_bind_mount(target)`
+
+`target` が**ファイル単体の bind マウント**かを `/proc/self/mountinfo` で判定。
+DevContainer ではホストの `~/.gitconfig` 等が bind mount されることがあり、それを置換しないために使う。
+
+- `findmnt -T` は ext4 上の通常ファイルでも真になるため使わない。
+- host では該当が無く即 false（安価な no-op）。
+
+### `backup_if_exists(target)`
+
+既存の実ファイル/ディレクトリが stow/リンクの邪魔になる場合に `*.backup.<timestamp>` へ退避する。
+**host / container 共通の唯一の実装**（以前は両スクリプトに別実装があったのを統合）。
+
+- bind mount（`is_file_bind_mount`）はスキップ（置換不能）。
+- `mv` 失敗時も `return 0` で続行（マウント/使用中ファイルで止めない）。
+- host では bind mount が無いので従来のシンプル退避と同じ挙動になる。
+
+### `install_git_config()`
+
+**container でのみ呼ぶ。** `git/.gitconfig` テンプレートを `~/.gitconfig` へ**実ファイルとして cp**する
+（host は git/ を stow するため呼ばない）。
+
+- `~/.gitconfig` が bind mount なら何もしない。
+- 旧 stow 管理の名残 symlink（`… git/.gitconfig` 指し）と dangling link は除去して実ファイル管理へ寄せる。
+- 既存の非空ファイルは上書きしない（冪等）。
+
 ### `install_ni()`
 
 `@antfu/ni` をインストール。`ni` が既にあれば skip。
@@ -151,21 +176,28 @@ link_vscode_config "$(wslpath -u "$WIN_APPDATA")/Code/User"        # WSL
 
 ---
 
-## install.sh と install-container.sh の差分
+## install.sh の host / container 分岐
 
-| 処理 | install.sh | install-container.sh |
+install.sh は `CONTEXT`（`host` / `host-darwin` / `container`）で分岐する単一スクリプト。
+`install-container.sh` は `exec install.sh --container` の薄い shim。各ステップの差分:
+
+| 処理 | host / host-darwin | container（`--container`） |
 |------|:----------:|:--------------------:|
-| Docker セットアップ | ✅ | ❌ |
+| 実行ロック / `.DS_Store` 掃除 | ✅ | ❌ |
+| Docker セットアップ | ✅（Ubuntu） | ❌ |
 | mise グローバル runtime | ✅ | ❌ |
 | TPM (tmux plugin) | ✅ | ❌ |
-| VS Code リンク | ✅ | ❌ |
-| Ghostty リンク | ✅ | ❌ |
+| VS Code リンク | ✅（Darwin/WSL） | ❌ |
+| Ghostty リンク | ✅（darwin scope） | ❌ |
 | `link_config_entries` | `host-darwin` / `host` | `container` |
 | tmuxinator リンク | ✅（host scope） | ❌ |
-| `backup_if_exists` | シンプル版 | bind mount 検出あり |
-| `install_git_config` | なし（stow） | あり（cp、bind mount考慮） |
-| `Brewfile` | `common + Brewfile` | `common + Brewfile.container` |
+| git 設定 | `git/` を stow + `.gitconfig.local` テンプレ | `install_git_config`（cp 実ファイル） |
+| `claude/` stow | ✅（`--no-folding`） | ❌ |
+| `Brewfile` | `common + Brewfile` | `common` のみ |
 | win32yank | WSL のみ | ❌ |
+
+`backup_if_exists` / `is_file_bind_mount` / `install_git_config` は lib.sh に集約され host/container 共通
+（bind mount 対応版に一本化）。
 
 ---
 
