@@ -22,6 +22,55 @@ chmod +x install.sh install-container.sh
 
 **DevContainer で利用する場合:** 各リポジトリの devcontainer 設定で dotfiles の `installCommand` に `./install-container.sh` を指定してください（実体は `install.sh --container` の薄い shim）。コンテナでは Linuxbrew を導入し、Brewfile.common でツールを一括インストールしたうえで、設定（Git・Starship・Neovim・zsh 等）を Stow でリンクします。
 
+### 2.2 コンテナへの持ち込み（生 docker / docker compose・devcontainer 非依存）
+
+devcontainer を使わず `docker compose up` + `docker exec` + tmux で開発する環境向け。
+個人 dotfiles は**チーム共用の compose / bootstrap とは分離**して持ち込みます。
+
+**初回展開（コンテナに `docker exec` 後、1コマンド）:**
+
+```bash
+# repo が無い環境（git 必須）
+curl -fsSL https://raw.githubusercontent.com/libra-tech-japan/dotfiles/main/scripts/container-bootstrap.sh | bash
+# または手動で
+git clone https://github.com/libra-tech-japan/dotfiles ~/dotfiles && ~/dotfiles/scripts/container-bootstrap.sh
+```
+
+`container-bootstrap.sh` は冪等で、`~/dotfiles` が無ければ clone、あれば clone をスキップして
+`install.sh --container`（Linuxbrew + brew bundle + リンク）を実行します。
+`DOTFILES_REPO` / `DOTFILES_DIR` で clone 元・展開先を上書きできます。
+
+**自分の compose（編集できる場合）— ほぼ自動:**
+
+`~/dotfiles`（必要なら `$HOME` 全体）を named volume で永続化します。`compose.yaml` 例:
+
+```yaml
+volumes:
+  dotfiles:
+
+services:
+  dev:
+    volumes:
+      - dotfiles:/home/dev/dotfiles   # ~/dotfiles を永続化（clone は初回のみ）
+```
+
+`~/dotfiles` を永続化すると2回目以降は clone 不要。さらに **`$HOME` も永続化すれば symlink ごと
+残る**ため、`docker exec` で対話 zsh に入った瞬間に自動で使えます。`$HOME` を永続化しない場合でも、
+`zsh` の **self-heal**（コンテナ・対話シェルのみ）が `~/.config/nvim` 等の symlink 欠落を検知し、
+`install.sh --container --relink`（brew を走らせない高速再リンク）で自動復元します。
+
+> compose.yaml の named volume 追加は**対象プロジェクト側（別リポジトリ）の変更**です。dotfiles 側の
+> 変更ではありません（チーム共用 bootstrap には dotfiles 処理を入れない方針）。
+
+**他人の compose（編集できない場合）:**
+
+`compose.yaml` を触れなくても、`docker exec` 後に上記の初回展開コマンドを1回流せば展開されます。
+volume が無ければコンテナ再作成のたびに clone が走ります（private repo は SSH agent forwarding が必要）。
+
+**SSH agent forwarding（private repo を `git@` で clone する場合）:** ホストで `ssh-add` 済みの鍵を
+コンテナへ転送します。HTTPS + token でも可。`DOTFILES_REPO=git@github.com:libra-tech-japan/dotfiles.git`
+のように上書きできます。
+
 ### 2.1 Docker 導入ガイド
 
 #### macOS（OrbStack）

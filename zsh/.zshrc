@@ -35,6 +35,22 @@ setopt interactive_comments
 # ツール初期化
 # ============================================================================
 
+# --- dotfiles self-heal (コンテナ・対話シェルのみ) ---
+# 生 docker / docker compose（devcontainer 非依存）では home リセットで ~/.config 等の
+# symlink が消える。~/dotfiles はあるのにリンクが欠落している時だけ、links-only の
+# 高速再リンク（install.sh --container --relink）で自己修復する。brew は走らせない。
+# - 非対話ガードより後なので AI / CI / 非対話では実行されない。
+# - 健全時は数回の stat（-L 判定）だけでほぼ無コスト。欠落時のみ relink。
+# - 初回展開は scripts/container-bootstrap.sh を使う（こちらは復旧専用）。
+# - DOTFILES_NO_SELF_HEAL=1 で無効化。
+if [[ -z "${DOTFILES_NO_SELF_HEAL:-}" ]] \
+   && { [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f "/.dockerenv" ]]; } \
+   && [[ -d "$HOME/dotfiles/.git" ]] && command -v stow &>/dev/null \
+   && [[ ! -L "$HOME/.config/nvim" ]]; then
+  echo "🔗 dotfiles: restoring links..."
+  "$HOME/dotfiles/install.sh" --container --relink || true
+fi
+
 # --- Context-Aware Runtime Strategy ---
 
 # カレントまたは親ディレクトリに mise.toml があるか判定

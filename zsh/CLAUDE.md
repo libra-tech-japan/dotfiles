@@ -22,17 +22,23 @@ zsh/
 ```
 1. 非対話ガード（AI / CI / dumb 端末では即 return）
 2. 履歴・補完設定
-3. Runtime Strategy（Volta / Mise / Container 判定）
-4. PATH 操作ユーティリティ関数
-5. mise activate / container strategy 適用
-6. npm global PATH 追加
-7. starship / zoxide 初期化
-8. エイリアス（ツール置き換え: ls→eza, cat→bat, grep→rg, vim→nvim）
-9. エイリアス（Git / Lazygit / Claude Code / Docker）
-10. 関数定義（devup / t / tb / dev-start 等）
-11. キーバインド（bindkey -e は ここ — ツール初期化より後に設定して上書きを防ぐ）
-12. ~/.zshrc-local の読み込み
+3. dotfiles self-heal（コンテナ・対話のみ。~/.config/nvim の symlink 欠落時だけ
+   install.sh --container --relink で高速再リンク。非対話ガードの後・starship 初期化の前）
+4. Runtime Strategy（Volta / Mise / Container 判定）
+5. PATH 操作ユーティリティ関数
+6. mise activate / container strategy 適用
+7. npm global PATH 追加
+8. starship / zoxide 初期化
+9. エイリアス（ツール置き換え: ls→eza, cat→bat, grep→rg, vim→nvim）
+10. エイリアス（Git / Lazygit / Claude Code / Docker）
+11. 関数定義（devup / t / tb / dev-start 等）
+12. キーバインド（bindkey -e は ここ — ツール初期化より後に設定して上書きを防ぐ）
+13. ~/.zshrc-local の読み込み
 ```
+
+self-heal は**非対話ガードより後**に置く（AI / CI では走らせない）。starship 初期化より前に置くのは、
+復元した `~/.config/starship.toml` をその起動で使えるようにするため。`DOTFILES_NO_SELF_HEAL=1` で無効化。
+初回展開（clone + フル install）は `scripts/container-bootstrap.sh` を使う（self-heal は復旧専用）。
 
 **キーバインドをツール初期化より前に移動しない。** starship/zoxide が bindkey を上書きする場合がある。
 
