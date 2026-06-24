@@ -232,6 +232,7 @@ alias src='source ~/.zshrc'
 # tmuxinator の短縮
 if command -v tmuxinator &> /dev/null; then
   alias mux="tmuxinator"
+  alias m="mux agent"
 fi
 
 # Git エイリアス
@@ -265,7 +266,32 @@ fi
 # Docker
 if command -v docker &> /dev/null; then
   alias d='docker'
+  alias dps='docker ps'
+  alias dpsa='docker ps -a'
+  alias dex='docker exec -it'        # dex コンテナ名 bash
+  alias dlogs='docker logs -f'       # dlogs コンテナ名
+  alias dstop='docker stop'
+  alias drm='docker rm'
+  alias dri='docker rmi'
+
+  alias dc='docker compose'          # docker-compose より新しい書き方
+  alias dcu='docker compose up -d'
+  alias dcd='docker compose down'
+  alias dcr='docker compose restart'
+  alias dcl='docker compose logs -f'
+  alias dcps='docker compose ps'
+
+
+  alias ddf='docker system df'       # ディスク使用量
+  alias dstats='docker stats --no-stream'
+  # 使っていないリソースを全部消す（volumeは除く）
+  alias dprune='docker system prune -f'
+  # 停止中含む全コンテナを削除
+  alias drmall='docker rm $(docker ps -aq)'
+  # タグなしイメージを一括削除
+  alias dclean='docker image prune -f'
 fi
+
 
 # ============================================================================
 # 関数定義
@@ -381,6 +407,20 @@ function tb() {
     npm run build "$@"
   fi
 }
+
+
+# --- Docker 関数 ---
+# 実行中コンテナにbashで入る
+function dsh() { docker exec -it "$1" bash; }
+
+# コンテナ名をfzfで選んでexec（fzf必須）
+function dexf() {
+  local cname
+  cname=$(docker ps --format '{{.Names}}' | fzf)
+  [ -n "$cname" ] && docker exec -it "$cname" bash
+}
+
+
 
 # --- Dev Machine Control (EC2 + SSM) ---
 # タグ名は .zshrc-local で WORK_DEV_MACHINE_TAG を上書き可能（未設定時はデフォルト）
