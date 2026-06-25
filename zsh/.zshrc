@@ -456,6 +456,41 @@ dev-connect() {
     fi
 }
 
+# 開発機の dev サーバを Mac へポートフォワードする（SSH over SSM トンネル / BHD-204）
+#   使い方: dev-fwd [PORT ...]
+#     例) dev-fwd 9000              # Clinic だけ
+#         dev-fwd 9000 3000 8080    # 複数ポート同時
+#     引数省略時は既定ポート（Clinic 9000 / Patient 3000 / OpenAPI 8080 / SST 53000）。
+#   ポート番号だけ渡せば "-L PORT:localhost:PORT" を自動生成する（-L のタイポ防止）。
+#   前提: ~/.ssh/config に SSM 越しの `Host dev` があること（dev-connect と同じ接続）。
+#   切断耐性が要るときは DEV_FWD_AUTOSSH=1 dev-fwd ... で autossh による自動再接続を使う。
+dev-fwd() {
+    local -a ports
+    if (( $# == 0 )); then
+        ports=(9000 3000 8080 53000)
+    else
+        ports=("$@")
+    fi
+    # ポート番号の妥当性チェック（数字のみ）＋ -L オプション組み立て
+    local -a lopts
+    local p
+    for p in "${ports[@]}"; do
+        if [[ "$p" != <-> ]]; then
+            echo "⚠️ Invalid port: '$p' (ポート番号は数字のみ)"
+            return 1
+        fi
+        lopts+=(-L "${p}:localhost:${p}")
+    done
+    echo "🌐 Forwarding ${ports[*]} → http://localhost:<port> (Ctrl-C で終了)"
+    if [[ -n "$DEV_FWD_AUTOSSH" ]] && command -v autossh &> /dev/null; then
+        autossh -M 0 -N \
+            -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes \
+            "${lopts[@]}" dev
+    else
+        ssh -N -o ExitOnForwardFailure=yes "${lopts[@]}" dev
+    fi
+}
+
 # 開発機を停止する（課金停止）
 dev-stop() {
     echo "💤 Stopping ${WORK_DEV_MACHINE_TAG}..."
