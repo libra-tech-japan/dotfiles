@@ -2,14 +2,14 @@
 # host は run_brew_bundle("Brewfile") で Brewfile と結合、container は run_brew_bundle()（引数なし）で
 # この common のみを実行する（いずれも install.sh 経由）。
 # ここに書いたパッケージを host 専用 Brewfile に重複して書かないこと。
+#
+# 責任分解（BHD-205）: de-facto 標準ツール（git / curl / wget / unzip）と git-secrets は
+# ここに置かない。これらは「プラットフォーム層（ホスト OS / コンテナを提供するプロジェクトの
+# Docker イメージ）」が用意する責務とし、ホストでのみ必要な分は host 専用 Brewfile に置く。
+# この common に置くのは「stow（dotfiles の機構）」と「コンテナにも欲しい個人 CLI ツール」のみ。
 
-# Core
-brew "git"
+# Core（dotfiles の機構。設定をリンクするため全環境で必要）
 brew "stow"
-brew "wget"
-brew "curl"
-brew "git-secrets"
-brew "unzip"
 
 # Shell Tools
 # 注: ripgrep / fd は apt でも入れる（VSCode 拡張が /usr/bin を期待するため）。
