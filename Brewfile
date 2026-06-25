@@ -12,6 +12,9 @@ brew "wget"
 brew "unzip"
 # git-secrets はホストの個人 git hook 用に残す。コンテナ/チーム強制はプロジェクト側へ移管（BHD-205）。
 brew "git-secrets"
+# gh はホストの GitHub 操作（PR/issue/auth）+ git credential helper（!gh）の PATH 解決用。
+# コンテナでは入れない（プロジェクト Docker イメージが /usr/bin/gh を apt で提供。bihada-connect BHD-206）。
+brew "gh"
 
 # Runtime & Dev Tools
 brew "mise"
