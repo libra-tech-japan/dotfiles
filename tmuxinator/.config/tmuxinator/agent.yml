@@ -5,50 +5,37 @@ root: ~/workspace/bihada-connect
 
 # セッション生成前にコンテナを確実に起動（compose up -d は冪等。失敗してもセッションは続行）。
 on_project_start: cd ~/workspace/bihada-connect && ./docker/up.sh || true
-
-# コンテナ入室は service 名 `app` 経由の `docker compose exec`（root=~/workspace/bihada-connect で compose.yaml を解決）。
-# `bihada-connect` は compose の project 名であってコンテナ名ではない（実体は bihada-connect-app）。
-# project 名固定＋service 経由なら、worktree からも同一コンテナに入れる（BHD-143）。
-# docker stats だけは compose サブコマンドが無いため実コンテナ名 bihada-connect-app を直書きする
-# （compose.yaml の container_name で固定。未指定なら末尾にレプリカ連番 -1 が付く）。
+on_project_stop: docker compose stop
 
 startup_window: agent
 attach: true
 
 windows:
-  # 1) AI 自律開発: コンテナ内 Claude Code。先頭(main)で `claude` /
-  #    `claude --dangerously-skip-permissions`(yolo)。右はテスト/ビルド観察やコンテナ内 git 用の予備シェル。
   - agent:
-      layout: main-vertical
+      layout: main-horizontal
       panes:
         - docker compose exec -w /workspace app zsh
 
-  # 2) LazyVim 編集: ホストの nvim で bind マウント済みコードを編集（コンテナに nvim 無し）。
-  #    右ペインはコンテナ内シェル（エディタの隣で `pnpm test` / `pnpm lint` をコンテナ側で実行）。
   - edit:
-      layout: main-vertical
+      layout: main-horizontal
       panes:
         - nvim .
-        - docker compose exec -w /workspace app zsh
 
-  # 3) git / worktree: ホスト lazygit でレビュー。右は worktree 分離開発用シェル（必要時）。
   - git:
-      layout: main-vertical
+      layout: main-horizontal
       panes:
         - lazygit
-        - "# worktree: git worktree add .worktrees/<name> -b <branch> && cd .worktrees/<name>"
 
-  # 4) CI(GitHub Actions): ホスト gh。先頭はライブ更新の run ボード、右は操作用シェル。
   - ci:
-      layout: even-horizontal
+      # 先頭(run ボード)を main として大きく、右に操作用シェルを細く。
+      layout: main-horizontal
       panes:
         - watch -n 20 -c gh run list -L 15
         - "# gh run watch | gh run view --log-failed | gh pr checks | gh run rerun --failed"
 
-  # 5) リソース監視: ホスト(htop)とコンテナ(docker stats)を並べ、3つ目でホスト/コンテナを俯瞰。
   - monitor:
       layout: tiled
       panes:
         - htop
-        - docker stats bihada-connect-app
         - watch -n 30 'uptime; echo; df -h / /home/ubuntu; echo; docker ps --format "table {{.Names}}\t{{.Status}}\t{{.RunningFor}}"'
+        - docker stats bihada-connect-app

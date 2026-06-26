@@ -231,8 +231,10 @@ alias src='source ~/.zshrc'
 
 # tmuxinator の短縮
 if command -v tmuxinator &> /dev/null; then
-  alias mux="tmuxinator"
-  alias m="mux agent"
+  alias m="tmuxinator"
+
+  alias ma="m start agent"
+  alias mta="m stop agent"
 fi
 
 # Git エイリアス
