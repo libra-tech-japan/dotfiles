@@ -37,7 +37,7 @@ STOW_IGNORE_OPTS=(--ignore='CLAUDE\.md' --ignore='\.DS_Store')
 # ---------------------------------------------------------------------------
 HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 DOCKER_INSTALL_URL="https://get.docker.com"
-TPM_REPO_URL="https://github.com/tmux-plugins/tpm"
+CATPPUCCIN_TMUX_REPO_URL="https://github.com/catppuccin/tmux"
 WIN32YANK_VERSION="0.0.4"
 WIN32YANK_URL="https://github.com/equalsraf/win32yank/releases/download/v${WIN32YANK_VERSION}/win32yank-x64.zip"
 
