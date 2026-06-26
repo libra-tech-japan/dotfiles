@@ -66,7 +66,7 @@ Layer 3 — Runtime Layer（ホストのみ）
 | Homebrew                  | ✅ `/opt/homebrew` | ✅ `/home/linuxbrew` |  ✅ Linuxbrew  | ✅ Linuxbrew |
 | apt ripgrep/fd            |         —          |          ✅          |       ✅       |      ✅      |
 | mise (runtime)            |         ✅         |          ✅          |       ✅       | ❌ (無効化)  |
-| tmux / TPM                |         ✅         |          ✅          |       ✅       |      ❌      |
+| tmux / Catppuccin         |         ✅         |          ✅          |       ✅       |      ❌      |
 | OrbStack / Docker Desktop |         ✅         |          —           |       —        |      —       |
 | VS Code リンク            |         ✅         |          —           | ✅ (Windows側) |      —       |
 | Ghostty                   |         ✅         |          —           |       —        |      —       |

@@ -272,9 +272,12 @@ else
 fi
 link_config_entries "$LINK_CONTEXT"
 
-# TPM Setup（host のみ・非 relink。container に tmux は無い）
-if [ "$CONTEXT" != container ] && [ "$RELINK" != true ] && [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
-  git clone "$TPM_REPO_URL" ~/.tmux/plugins/tpm
+# Catppuccin (tmux テーマ) Setup（host のみ・非 relink。container に tmux は無い）。
+# TPM 不使用 — catppuccin/tmux を直接 clone し、tmux.conf が run で読み込む。
+# clone 先は ~/.tmux/plugins 配下（~/.config/tmux は repo への symlink のため、
+# その配下へ clone すると dotfiles repo を汚染する）。
+if [ "$CONTEXT" != container ] && [ "$RELINK" != true ] && [ ! -d "$HOME/.tmux/plugins/catppuccin/tmux" ]; then
+  git clone "$CATPPUCCIN_TMUX_REPO_URL" ~/.tmux/plugins/catppuccin/tmux
 fi
 
 # ni（パッケージ導入なので非 relink）
